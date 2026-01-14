@@ -1,0 +1,83 @@
+{
+  "name": "Memorial",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nom de la personne comm\u00e9mor\u00e9e"
+    },
+    "birth_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "death_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "biography": {
+      "type": "string",
+      "description": "Biographie ou texte comm\u00e9moratif"
+    },
+    "profile_photo": {
+      "type": "string",
+      "description": "URL de la photo principale"
+    },
+    "cover_photo": {
+      "type": "string",
+      "description": "URL de la photo de couverture"
+    },
+    "photos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs des photos"
+    },
+    "videos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "thumbnail": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "allow_comments": {
+      "type": "boolean",
+      "default": true
+    },
+    "require_moderation": {
+      "type": "boolean",
+      "default": true
+    },
+    "qr_code_url": {
+      "type": "string"
+    },
+    "access_code": {
+      "type": "string",
+      "description": "Code unique pour acc\u00e9der au m\u00e9morial"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": false
+    },
+    "theme": {
+      "type": "string",
+      "enum": [
+        "classic",
+        "modern",
+        "nature",
+        "elegant",
+        "custom"
+      ],
+      "default": "classic"
+    },
+ 

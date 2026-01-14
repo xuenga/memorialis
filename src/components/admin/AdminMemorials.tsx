@@ -1,0 +1,156 @@
+import React, { useEffect, useState } from 'react';
+import { api } from '@/api/apiClient';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { motion } from 'framer-motion';
+import { Search, Eye, Edit, Heart, QrCode, Users } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+
+export default function AdminMemorials() {
+  const [memorials, setMemorials] = useState([]);
+  const [filteredMemorials, setFilteredMemorials] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    const loadMemorials = async () => {
+      const allMemorials = await api.entities.Memorial.list('-created_date');
+      setMemorials(allMemorials);
+      setFilteredMemorials(allMemorials);
+      setIsLoading(false);
+    };
+    loadMemorials();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery) {
+      setFilteredMemorials(
+        memorials.filter(memorial =>
+          memorial.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          memorial.owner_email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          memorial.access_code?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredMemorials(memorials);
+    }
+  }, [searchQuery, memorials]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-8 h-8 border-2 border-[#e0bd3e] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#2f4858]/40" />
+        <Input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Rechercher un mémorial..."
+          className="pl-10 border-[#2f4858]/20"
+        />
+      </div>
+
+      {/* Memorials Grid */}
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredMemorials.length === 0 ? (
+          <div className="col-span-full text-center py-12 text-[#2f4858]/40">
+            Aucun mémorial trouvé
+          </div>
+        ) : (
+          filteredMemorials.map((memorial, index) => (
+            <motion.div
+              key={memorial.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              className="bg-white rounded-2xl border border-[#2f4858]/10 overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              {/* Cover/Profile */}
+              <div className="relative h-32 bg-gradient-to-br from-[#2f4858]/10 to-[#2f4858]/5">
+                {memorial.cover_photo ? (
+                  <img
+                    src={memorial.cover_photo}
+                    alt={memorial.name}
+                    className="w-full h-full object-cover opacity-40"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Heart className="w-12 h-12 text-[#2f4858]/10" />
+                  </div>
+                )}
+                
+                <div className="absolute -bottom-8 left-4">
+                  <div className="w-16 h-16 rounded-xl bg-white border-4 border-white overflow-hidden shadow-lg">
+                    {memorial.profile_photo ? (
+                      <img
+                        src={memorial.profile_photo}
+                        alt={memorial.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#e6e6da] flex items-center justify-center">
+                        <Heart className="w-6 h-6 text-[#2f4858]/20" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="pt-10 p-6">
+                <h3 className="font-serif text-lg text-[#2f4858] mb-2 truncate">
+                  {memorial.name}
+                </h3>
+                
+                <div className="flex items-center gap-2 text-xs text-[#e0bd3e] mb-3">
+                  <QrCode className="w-3 h-3" />
+                  <span className="font-mono">{memorial.access_code}</span>
+                </div>
+
+                <p className="text-xs text-[#2f4858]/50 mb-1">
+                  Créé le {format(new Date(memorial.created_date), 'dd MMM yyyy', { locale: fr })}
+                </p>
+                <p className="text-xs text-[#2f4858]/50 mb-4 truncate">
+                  {memorial.owner_email}
+                </p>
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <Link to={`${createPageUrl('ViewMemorial')}?id=${memorial.id}`} className="flex-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full rounded-full border-[#2f4858]/20 text-[#2f4858]"
+                    >
+                      <Eye className="w-3 h-3 mr-1" />
+                      Voir
+                    </Button>
+                  </Link>
+                  <Link to={`${createPageUrl('EditMemorial')}?id=${memorial.id}`} className="flex-1">
+                    <Button
+                      size="sm"
+                      className="w-full btn-accent rounded-full"
+                    >
+                      <Edit className="w-3 h-3 mr-1" />
+                      Éditer
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}

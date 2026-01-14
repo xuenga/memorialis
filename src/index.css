@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 60 17% 85%;
+    /* #e6e6da */
+    --foreground: 203 30% 26%;
+    /* #2f4858 */
+    --card: 0 0% 100%;
+    --card-foreground: 203 30% 26%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 203 30% 26%;
+
+    --primary: 203 30% 26%;
+    /* #2f4858 */
+    --primary-foreground: 60 17% 85%;
+
+    --secondary: 46 73% 56%;
+    /* #e0bd3e (Gold) */
+    --secondary-foreground: 203 30% 26%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 203 30% 40%;
+
+    --accent: 46 73% 56%;
+    /* Gold */
+    --accent-foreground: 203 30% 26%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 100 0% 100%;
+
+    --border: 203 30% 90%;
+    --input: 203 30% 90%;
+    --ring: 46 73% 56%;
+    --radius: 1rem;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #e6e6da;
+  color: #2f4858;
+}
+
+@layer utilities {
+  .font-serif {
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .gold-glow {
+    box-shadow: 0 0 20px rgba(224, 189, 62, 0.2);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[#2f4858] text-white hover:bg-[#e0bd3e] hover:text-[#2f4858] transition-all duration-500 shadow-md hover:shadow-xl active:scale-95;
+  }
+
+  .btn-accent {
+    @apply bg-[#e0bd3e] text-[#2f4858] hover:bg-[#2f4858] hover:text-white transition-all duration-500 shadow-md hover:shadow-xl active:scale-95;
+  }
+
+  .nav-link {
+    @apply relative py-2 transition-all duration-300;
+  }
+}
+
+/* Custom transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}

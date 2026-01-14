@@ -1,0 +1,48 @@
+{
+  "name": "CartItem",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "ID de session ou user ID"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "product_image": {
+      "type": "string"
+    },
+    "material": {
+      "type": "string"
+    },
+    "price": {
+      "type": "number"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "personalization": {
+      "type": "object",
+      "properties": {
+        "deceased_name": {
+          "type": "string"
+        },
+        "dates": {
+          "type": "string"
+        },
+        "custom_text": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "session_id",
+    "product_id",
+    "price"
+  ]
+}

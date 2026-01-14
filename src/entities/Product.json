@@ -1,0 +1,83 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nom du produit"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "plaques",
+        "accessoires",
+        "personnalisation",
+        "services"
+      ],
+      "default": "plaques",
+      "description": "Cat\u00e9gorie du produit"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description courte"
+    },
+    "long_description": {
+      "type": "string",
+      "description": "Description d\u00e9taill\u00e9e"
+    },
+    "price": {
+      "type": "number",
+      "description": "Prix en euros"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "URL de l'image principale"
+    },
+    "gallery": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs des images de la galerie"
+    },
+    "material": {
+      "type": "string",
+      "enum": [
+        "autocollant",
+        "plexiglass",
+        "metal"
+      ],
+      "description": "Type de mat\u00e9riau"
+    },
+    "dimensions": {
+      "type": "string",
+      "description": "Dimensions du produit"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Caract\u00e9ristiques du produit"
+    },
+    "stock": {
+      "type": "number",
+      "default": 0,
+      "description": "Quantit\u00e9 en stock"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "price",
+    "material",
+    "category"
+  ]
+}
