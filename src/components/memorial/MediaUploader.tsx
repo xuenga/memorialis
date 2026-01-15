@@ -14,14 +14,31 @@ export default function MediaUploader({ onUpload, currentVideos, onRemove }: Med
   const [videoUrl, setVideoUrl] = useState('');
   const [videoTitle, setVideoTitle] = useState('');
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // In a real app, you would upload to Bunny Storage here
+    // For now, we mock the URL
+    const fileUrl = URL.createObjectURL(file);
+
+    onUpload({
+      url: fileUrl,
+      title: file.name,
+      type: 'file'
+    });
+
+    // Reset input
+    e.target.value = '';
+  };
+
   const handleAddVideo = () => {
     if (!videoUrl) return;
 
-    // Simple mock video data
     onUpload({
       url: videoUrl,
-      title: videoTitle || 'Sans titre',
-      type: 'youtube' // for example
+      title: videoTitle || 'Lien vidéo',
+      type: 'link'
     });
 
     setVideoUrl('');
@@ -30,26 +47,44 @@ export default function MediaUploader({ onUpload, currentVideos, onRemove }: Med
 
   return (
     <div className="space-y-6">
-      <div className="grid md:grid-cols-2 gap-4 p-6 bg-background rounded-2xl border border-primary/5">
-        <div className="space-y-2">
-          <Label>Lien vidéo (YouTube, Vimeo, etc.)</Label>
-          <Input
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-            placeholder="https://www.youtube.com/watch?v=..."
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Titre de la vidéo</Label>
-          <div className="flex gap-2">
+      <div className="grid md:grid-cols-2 gap-6 p-8 bg-background rounded-3xl border border-primary/5">
+        <div className="space-y-4">
+          <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Télécharger une vidéo</Label>
+          <div className="relative group aspect-video rounded-2xl overflow-hidden bg-white border-2 border-dashed border-primary/10 flex flex-col items-center justify-center hover:border-accent/50 transition-colors cursor-pointer">
+            <Video className="w-8 h-8 text-primary/20 mb-2 group-hover:text-accent transition-colors" />
+            <p className="text-[10px] text-primary/40 uppercase tracking-widest font-bold">Choisir un fichier</p>
             <Input
-              value={videoTitle}
-              onChange={(e) => setVideoTitle(e.target.value)}
-              placeholder="Ex: Hommage famille"
+              type="file"
+              accept="video/*"
+              className="absolute inset-0 opacity-0 cursor-pointer"
+              onChange={handleFileUpload}
             />
-            <Button onClick={handleAddVideo} className="btn-primary rounded-xl">
-              <Plus className="w-4 h-4" />
-            </Button>
+          </div>
+          <p className="text-[10px] text-primary/40">Fichiers mp4, mov, webm recommandés. Stocké sur Bunny Storage.</p>
+        </div>
+
+        <div className="space-y-4">
+          <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Ou ajouter un lien</Label>
+          <div className="space-y-4 pt-2">
+            <div className="space-y-2">
+              <Input
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                placeholder="Lien YouTube, Vimeo, etc."
+                className="rounded-xl h-12"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={videoTitle}
+                onChange={(e) => setVideoTitle(e.target.value)}
+                placeholder="Titre de la vidéo"
+                className="rounded-xl h-12"
+              />
+              <Button onClick={handleAddVideo} className="btn-primary rounded-xl px-6 h-12">
+                <Plus className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>

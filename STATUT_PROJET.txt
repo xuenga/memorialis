@@ -11,6 +11,7 @@
   1. ✅ Désactivation de produit → FONCTIONNE
   2. ✅ Mise à jour de produit   → FONCTIONNE
   3. ✅ Suppression de produit   → FONCTIONNE
+  4. ✅ Retrait Bunny Stream      → OK (Utilisation exclusive de Bunny Storage)
 
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │ 📊 AVERTISSEMENTS SUPABASE (7 au total)                                     │

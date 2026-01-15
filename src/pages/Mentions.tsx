@@ -28,8 +28,7 @@ export default function Mentions() {
               <h2 className="font-serif text-xl text-[#2f4858] mb-4">Hébergement</h2>
               <div className="text-[#2f4858]/70 leading-relaxed space-y-2">
                 <p><strong>Site web :</strong> Memorialis Platform</p>
-                <p><strong>Médias (photos) :</strong> Bunny Storage</p>
-                <p><strong>Médias (vidéos) :</strong> Bunny Stream</p>
+                <p><strong>Médias (photos & vidéos) :</strong> Bunny Storage</p>
               </div>
             </section>
 

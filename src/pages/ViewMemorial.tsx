@@ -216,6 +216,42 @@ export default function ViewMemorial() {
           </div>
         </section>
 
+        {/* Videos */}
+        {memorial.videos && memorial.videos.length > 0 && (
+          <section className="mt-12">
+            <div className="flex items-center justify-between mb-8 px-4">
+              <h2 className="font-serif text-2xl lg:text-3xl text-primary">Vidéos de souvenirs</h2>
+              <span className="text-sm text-primary/40">{memorial.videos.length} vidéos</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {memorial.videos.map((video: any, index: number) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-primary/5 group"
+                >
+                  <div className="aspect-video bg-black relative">
+                    <video
+                      src={video.url}
+                      className="w-full h-full object-contain"
+                      controls
+                      poster={memorial.cover_photo}
+                    >
+                      Votre navigateur ne supporte pas la lecture de vidéos.
+                    </video>
+                  </div>
+                  <div className="p-6 lg:p-8">
+                    <h3 className="font-serif text-xl text-primary">{video.title || 'Sans titre'}</h3>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Tributes */}
         <section className="mt-12">
           <div className="bg-primary rounded-[3rem] p-8 lg:p-16 text-white overflow-hidden relative">
