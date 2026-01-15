@@ -1,6 +1,10 @@
 import syncToSupabase from './syncToSupabase';
 
-export default async function onCartItemCreate(event, context) {
+interface TriggerEvent {
+  record: any;
+}
+
+export default async function onCartItemCreate(event: TriggerEvent, context: any) {
   const cartItem = event.record;
   await syncToSupabase({
     entityName: 'CartItem',

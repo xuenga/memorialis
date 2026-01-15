@@ -1,6 +1,10 @@
 import syncToSupabase from './syncToSupabase';
 
-export default async function onMemorialCreate(event, context) {
+interface TriggerEvent {
+  record: any;
+}
+
+export default async function onMemorialCreate(event: TriggerEvent, context: any) {
   const memorial = event.record;
   await syncToSupabase({
     entityName: 'Memorial',

@@ -1,6 +1,10 @@
 import syncToSupabase from './syncToSupabase';
 
-export default async function onTributeCreate(event, context) {
+interface TriggerEvent {
+  record: any;
+}
+
+export default async function onTributeCreate(event: TriggerEvent, context: any) {
   const tribute = event.record;
   await syncToSupabase({
     entityName: 'Tribute',

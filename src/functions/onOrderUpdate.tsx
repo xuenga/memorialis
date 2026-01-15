@@ -1,6 +1,10 @@
 import syncToSupabase from './syncToSupabase';
 
-export default async function onOrderUpdate(event, context) {
+interface TriggerEvent {
+  record: any;
+}
+
+export default async function onOrderUpdate(event: TriggerEvent, context: any) {
   const order = event.record;
   await syncToSupabase({
     entityName: 'Order',
