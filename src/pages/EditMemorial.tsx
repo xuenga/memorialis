@@ -92,7 +92,8 @@ export default function EditMemorial() {
     try {
       const loadingToast = toast.loading('Téléchargement de la photo...');
 
-      const file_url = await api.storage.upload(file);
+      const uploadFolder = memorialId ? `memorials/${memorialId}` : 'memorials';
+      const file_url = await api.storage.upload(file, uploadFolder);
 
       if (type === 'profile') {
         setMemorial(prev => prev ? { ...prev, profile_photo: file_url } : null);
@@ -405,6 +406,7 @@ export default function EditMemorial() {
                     onUpload={handleVideoUpload}
                     currentVideos={memorial.videos || []}
                     onRemove={removeVideo}
+                    memorialId={memorialId}
                   />
                 </div>
               </TabsContent>

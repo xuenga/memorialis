@@ -10,9 +10,10 @@ interface MediaUploaderProps {
   onUpload: (videoData: any) => void;
   currentVideos: any[];
   onRemove: (index: number) => void;
+  memorialId?: string;
 }
 
-export default function MediaUploader({ onUpload, currentVideos, onRemove }: MediaUploaderProps) {
+export default function MediaUploader({ onUpload, currentVideos, onRemove, memorialId }: MediaUploaderProps) {
   const [videoUrl, setVideoUrl] = useState('');
   const [videoTitle, setVideoTitle] = useState('');
 
@@ -23,7 +24,8 @@ export default function MediaUploader({ onUpload, currentVideos, onRemove }: Med
     try {
       const loadingToast = toast.loading('Téléchargement de la vidéo...');
 
-      const fileUrl = await api.storage.upload(file, 'memorials');
+      const uploadFolder = memorialId ? `memorials/${memorialId}` : 'memorials';
+      const fileUrl = await api.storage.upload(file, uploadFolder);
 
       onUpload({
         url: fileUrl,
