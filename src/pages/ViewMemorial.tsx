@@ -294,7 +294,8 @@ export default function ViewMemorial() {
               {memorial.allow_comments !== false && (
                 <Button
                   onClick={() => setShowTributeForm(true)}
-                  className="btn-accent rounded-full px-8 py-6 text-lg text-primary"
+                  variant="secondary"
+                  className="rounded-full px-8 py-6 text-lg"
                 >
                   Laisser un message
                 </Button>
@@ -468,7 +469,8 @@ export default function ViewMemorial() {
         <div className="fixed bottom-0 left-0 right-0 p-6 lg:hidden z-50 pointer-events-none">
           <Button
             onClick={() => setShowTributeForm(true)}
-            className="w-full btn-accent h-16 rounded-full text-lg shadow-2xl pointer-events-auto text-primary"
+            variant="secondary"
+            className="w-full h-16 rounded-full text-lg shadow-2xl pointer-events-auto"
           >
             <Heart className="w-6 h-6 mr-2" />
             Laisser un hommage
