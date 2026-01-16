@@ -442,7 +442,7 @@ export default function EditMemorial() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-4">
                             <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold">
-                              {tribute.author_name ? tribute.author_name[0] : 'A'}
+                              {(tribute.author_name && tribute.author_name.length > 0) ? tribute.author_name[0] : 'A'}
                             </div>
                             <div>
                               <span className="font-bold text-primary block">{tribute.author_name}</span>

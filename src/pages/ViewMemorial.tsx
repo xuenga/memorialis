@@ -31,8 +31,8 @@ interface MemorialData {
 
 interface TributeData {
   id: string;
-  author: string;
-  content: string;
+  author_name: string;
+  message: string;
   is_approved: boolean;
   created_at: string;
 }
@@ -93,8 +93,8 @@ export default function ViewMemorial() {
     try {
       await api.entities.Tribute.create({
         memorial_id: memorialId,
-        author: tributeForm.author_name,
-        content: tributeForm.message,
+        author_name: tributeForm.author_name,
+        message: tributeForm.message,
         created_at: new Date().toISOString()
       });
 
@@ -288,16 +288,16 @@ export default function ViewMemorial() {
                   >
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-serif text-accent">
-                        {tribute.author ? tribute.author[0] : 'A'}
+                        {(tribute.author_name && tribute.author_name.length > 0) ? tribute.author_name[0] : 'A'}
                       </div>
                       <div>
-                        <p className="font-medium text-white">{tribute.author}</p>
+                        <p className="font-medium text-white">{tribute.author_name || 'Anonyme'}</p>
                         <p className="text-xs text-white/40">
                           {tribute.created_at ? format(new Date(tribute.created_at), 'dd MMMM yyyy', { locale: fr }) : ''}
                         </p>
                       </div>
                     </div>
-                    <p className="text-lg text-white/80 italic leading-relaxed">"{tribute.content}"</p>
+                    <p className="text-lg text-white/80 italic leading-relaxed">"{tribute.message || '...'}"</p>
                   </motion.div>
                 ))
               )}
