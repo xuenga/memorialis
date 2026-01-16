@@ -101,5 +101,48 @@ export const api = {
                 return { success: true };
             };
         }
-    }) as any
+    }) as any,
+    storage: {
+        upload: async (file: File, folder: string = 'memorials') => {
+            const storageName = import.meta.env.VITE_BUNNY_STORAGE_NAME;
+            const apiKey = import.meta.env.VITE_BUNNY_API_KEY;
+            const pullZone = import.meta.env.VITE_BUNNY_PULL_ZONE;
+
+            if (!storageName || !apiKey || !pullZone) {
+                console.error('Bunny.net configuration missing:', { storageName: !!storageName, apiKey: !!apiKey, pullZone: !!pullZone });
+                throw new Error('Bunny.net storage is not configured');
+            }
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+            // Construct the path: storage_zone_name/folder/filename
+            // Note: Bunny API URL format is https://storage.bunnycdn.com/STORAGE_ZONE_NAME/PATH/FILENAME
+            const uploadUrl = `https://storage.bunnycdn.com/${storageName}/${folder}/${fileName}`;
+
+            try {
+                const response = await fetch(uploadUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'AccessKey': apiKey,
+                        'Content-Type': 'application/octet-stream', // Bunny recommends octet-stream or actual type
+                    },
+                    body: file,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Bunny upload failed: ${response.statusText}`);
+                }
+
+                // Construct public URL
+                // Ensure pullZone doesn't have trailing slash and path doesn't have leading slash duplication
+                const cleanPullZone = pullZone.replace(/\/$/, '');
+                const publicUrl = `${cleanPullZone}/${folder}/${fileName}`;
+
+                return publicUrl;
+            } catch (error) {
+                console.error('Bunny upload error:', error);
+                throw error;
+            }
+        }
+    }
 };

@@ -131,9 +131,18 @@ export default function AdminProducts() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // TODO: Implement file upload to a storage service
-    // For now, just show a placeholder message
-    toast.info('Upload d\'image non configuré - utilisez une URL directe');
+    try {
+      const loadingToast = toast.loading('Téléchargement de l\'image...');
+      const file_url = await api.storage.upload(file, 'products'); // Use 'products' bucket
+
+      setFormData(prev => ({ ...prev, image_url: file_url }));
+
+      toast.dismiss(loadingToast);
+      toast.success('Image téléchargée !');
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Erreur lors du téléchargement. Assurez-vous que le bucket "products" existe.');
+    }
   };
 
   const categories = [

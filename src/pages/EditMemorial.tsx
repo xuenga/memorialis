@@ -90,7 +90,9 @@ export default function EditMemorial() {
     if (!file || !memorial) return;
 
     try {
-      const file_url = URL.createObjectURL(file); // Mock upload
+      const loadingToast = toast.loading('Téléchargement de la photo...');
+
+      const file_url = await api.storage.upload(file);
 
       if (type === 'profile') {
         setMemorial(prev => prev ? { ...prev, profile_photo: file_url } : null);
@@ -104,9 +106,11 @@ export default function EditMemorial() {
         });
       }
 
+      toast.dismiss(loadingToast);
       toast.success('Photo téléchargée !');
     } catch (error) {
-      toast.error('Erreur lors du téléchargement');
+      console.error('Upload error:', error);
+      toast.error('Erreur lors du téléchargement. Assurez-vous que le stockage est configuré.');
     }
   };
 

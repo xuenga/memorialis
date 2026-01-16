@@ -3,6 +3,8 @@ import { Plus, X, Video, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { api } from '@/api/apiClient';
+import { toast } from 'sonner';
 
 interface MediaUploaderProps {
   onUpload: (videoData: any) => void;
@@ -14,19 +16,27 @@ export default function MediaUploader({ onUpload, currentVideos, onRemove }: Med
   const [videoUrl, setVideoUrl] = useState('');
   const [videoTitle, setVideoTitle] = useState('');
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // In a real app, you would upload to Bunny Storage here
-    // For now, we mock the URL
-    const fileUrl = URL.createObjectURL(file);
+    try {
+      const loadingToast = toast.loading('Téléchargement de la vidéo...');
 
-    onUpload({
-      url: fileUrl,
-      title: file.name,
-      type: 'file'
-    });
+      const fileUrl = await api.storage.upload(file, 'memorials');
+
+      onUpload({
+        url: fileUrl,
+        title: file.name,
+        type: 'file'
+      });
+
+      toast.dismiss(loadingToast);
+      toast.success('Vidéo téléchargée !');
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Erreur lors du téléchargement de la vidéo.');
+    }
 
     // Reset input
     e.target.value = '';
