@@ -57,7 +57,7 @@ export default function ViewMemorial() {
       if (memorialId) {
         try {
           const memorials = await api.entities.Memorial.filter({ id: memorialId });
-          if (memorials.length > 0) {
+          if (memorials && memorials.length > 0) {
             setMemorial(memorials[0]);
           }
 
@@ -65,7 +65,7 @@ export default function ViewMemorial() {
             memorial_id: memorialId,
             is_approved: true
           });
-          setTributes(tributesList);
+          setTributes(Array.isArray(tributesList) ? tributesList : []);
 
           // Track visit
           await api.entities.MemorialVisit.create({
@@ -288,7 +288,7 @@ export default function ViewMemorial() {
                   >
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-serif text-accent">
-                        {tribute.author?.[0] || 'A'}
+                        {tribute.author ? tribute.author[0] : 'A'}
                       </div>
                       <div>
                         <p className="font-medium text-white">{tribute.author}</p>
