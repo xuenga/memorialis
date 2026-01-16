@@ -89,6 +89,20 @@
       ],
       "default": "classic"
     },
+    "custom_colors": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "string"
+        },
+        "accent": {
+          "type": "string"
+        },
+        "bg": {
+          "type": "string"
+        }
+      }
+    },
     "created_date": {
       "type": "string",
       "format": "date-time"

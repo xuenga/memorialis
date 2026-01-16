@@ -30,6 +30,11 @@ interface MemorialData {
   allow_comments?: boolean;
   require_moderation?: boolean;
   access_code?: string;
+  custom_colors?: {
+    primary?: string;
+    accent?: string;
+    bg?: string;
+  };
 }
 
 interface TributeData {
@@ -578,6 +583,8 @@ export default function EditMemorial() {
                   <ThemeSelector
                     currentTheme={memorial.theme || 'classic'}
                     onSelect={(theme: string) => setMemorial(prev => prev ? { ...prev, theme } : null)}
+                    customColors={memorial.custom_colors}
+                    onCustomColorsChange={(colors: any) => setMemorial(prev => prev ? { ...prev, custom_colors: colors } : null)}
                   />
                 </div>
 
