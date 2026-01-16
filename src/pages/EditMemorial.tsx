@@ -55,15 +55,15 @@ export default function EditMemorial() {
       if (memorialId) {
         try {
           const memorials = await api.entities.Memorial.filter({ id: memorialId });
-          if (memorials.length > 0) {
+          if (memorials && memorials.length > 0) {
             setMemorial(memorials[0]);
           }
 
           const tributesList = await api.entities.Tribute.filter({ memorial_id: memorialId });
-          setTributes(tributesList);
+          setTributes(Array.isArray(tributesList) ? tributesList : []);
 
           const visitsList = await api.entities.MemorialVisit.filter({ memorial_id: memorialId });
-          setVisits(visitsList);
+          setVisits(Array.isArray(visitsList) ? visitsList : []);
         } catch (e) {
           console.error(e);
         }
@@ -442,7 +442,7 @@ export default function EditMemorial() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-4">
                             <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold">
-                              {tribute.author_name?.[0] || 'A'}
+                              {tribute.author_name ? tribute.author_name[0] : 'A'}
                             </div>
                             <div>
                               <span className="font-bold text-primary block">{tribute.author_name}</span>
