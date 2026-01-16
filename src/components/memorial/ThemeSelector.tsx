@@ -52,9 +52,9 @@ export default function ThemeSelector({ currentTheme, onSelect, customColors, on
       value: 'custom',
       name: 'Perso',
       colors: {
-        primary: customColors?.text || '#2f4858',
+        primary: customColors?.primary || '#2f4858',
         accent: customColors?.accent || '#e0bd3e',
-        bg: customColors?.background || '#e6e6da'
+        bg: customColors?.bg || '#e6e6da'
       }
     }
   ];
@@ -67,8 +67,8 @@ export default function ThemeSelector({ currentTheme, onSelect, customColors, on
             key={theme.value}
             onClick={() => onSelect(theme.value)}
             className={`relative p-5 rounded-[2rem] border-2 transition-all group ${currentTheme === theme.value
-                ? 'border-accent bg-accent/5'
-                : 'border-primary/5 hover:border-accent/40 bg-background'
+              ? 'border-accent bg-accent/5'
+              : 'border-primary/5 hover:border-accent/40 bg-background'
               }`}
           >
             {currentTheme === theme.value && (
@@ -109,16 +109,16 @@ export default function ThemeSelector({ currentTheme, onSelect, customColors, on
             <div className="space-y-3">
               <Label>Fond</Label>
               <div className="flex gap-3">
-                <Input
+                <input
                   type="color"
-                  value={customColors?.background || '#e6e6da'}
-                  onChange={(e) => onCustomColorsChange({ ...customColors, background: e.target.value })}
+                  value={customColors?.bg || '#e6e6da'}
+                  onChange={(e) => onCustomColorsChange({ ...customColors, bg: e.target.value })}
                   className="w-16 h-12 p-1 cursor-pointer rounded-xl border-primary/10"
                 />
                 <Input
                   type="text"
-                  value={customColors?.background || '#e6e6da'}
-                  onChange={(e) => onCustomColorsChange({ ...customColors, background: e.target.value })}
+                  value={customColors?.bg || '#e6e6da'}
+                  onChange={(e) => onCustomColorsChange({ ...customColors, bg: e.target.value })}
                   className="flex-1 rounded-xl"
                   placeholder="#e6e6da"
                 />
@@ -128,16 +128,16 @@ export default function ThemeSelector({ currentTheme, onSelect, customColors, on
             <div className="space-y-3">
               <Label>Texte principal</Label>
               <div className="flex gap-3">
-                <Input
+                <input
                   type="color"
-                  value={customColors?.text || '#2f4858'}
-                  onChange={(e) => onCustomColorsChange({ ...customColors, text: e.target.value })}
+                  value={customColors?.primary || '#2f4858'}
+                  onChange={(e) => onCustomColorsChange({ ...customColors, primary: e.target.value })}
                   className="w-16 h-12 p-1 cursor-pointer rounded-xl border-primary/10"
                 />
                 <Input
                   type="text"
-                  value={customColors?.text || '#2f4858'}
-                  onChange={(e) => onCustomColorsChange({ ...customColors, text: e.target.value })}
+                  value={customColors?.primary || '#2f4858'}
+                  onChange={(e) => onCustomColorsChange({ ...customColors, primary: e.target.value })}
                   className="flex-1 rounded-xl"
                   placeholder="#2f4858"
                 />
@@ -147,7 +147,7 @@ export default function ThemeSelector({ currentTheme, onSelect, customColors, on
             <div className="space-y-3">
               <Label>Accentuation</Label>
               <div className="flex gap-3">
-                <Input
+                <input
                   type="color"
                   value={customColors?.accent || '#e0bd3e'}
                   onChange={(e) => onCustomColorsChange({ ...customColors, accent: e.target.value })}
