@@ -43,8 +43,8 @@ body {
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #e6e6da;
-  color: #2f4858;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
 }
 
 @layer utilities {

@@ -154,27 +154,32 @@ export default function ViewMemorial() {
     };
 
     const selectedTheme = memorial.theme || 'classic';
+    const baseColors = themeColors[selectedTheme] || themeColors.classic;
+
+    // Merge with custom colors if theme is custom
     const colors = selectedTheme === 'custom'
-      ? memorial.custom_colors
-      : themeColors[selectedTheme];
+      ? { ...themeColors.classic, ...(memorial.custom_colors || {}) }
+      : baseColors;
 
     if (colors) {
-      if (colors.primary) document.documentElement.style.setProperty('--primary', hexToHSL(colors.primary));
-      if (colors.accent) document.documentElement.style.setProperty('--accent', hexToHSL(colors.accent));
-      if (colors.bg) document.documentElement.style.setProperty('--background', hexToHSL(colors.bg));
-
-      // Update body background
-      if (colors.bg) document.body.style.backgroundColor = colors.bg;
-      if (colors.primary) document.body.style.color = colors.primary;
+      if (colors.primary) {
+        const hsl = hexToHSL(colors.primary);
+        document.documentElement.style.setProperty('--primary', hsl);
+        document.documentElement.style.setProperty('--foreground', hsl);
+      }
+      if (colors.accent) {
+        document.documentElement.style.setProperty('--accent', hexToHSL(colors.accent));
+      }
+      if (colors.bg) {
+        document.documentElement.style.setProperty('--background', hexToHSL(colors.bg));
+      }
     }
 
     return () => {
-      // Reset to defaults on unmount
       document.documentElement.style.removeProperty('--primary');
       document.documentElement.style.removeProperty('--accent');
       document.documentElement.style.removeProperty('--background');
-      document.body.style.backgroundColor = '';
-      document.body.style.color = '';
+      document.documentElement.style.removeProperty('--foreground');
     };
   }, [memorial]);
 
