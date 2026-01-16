@@ -108,9 +108,9 @@ export default function EditMemorial() {
 
       toast.dismiss(loadingToast);
       toast.success('Photo téléchargée !');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      toast.error('Erreur lors du téléchargement. Assurez-vous que le stockage est configuré.');
+      toast.error(`Erreur: ${error.message || 'Problème de configuration'}`);
     }
   };
 
