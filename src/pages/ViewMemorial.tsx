@@ -56,9 +56,25 @@ export default function ViewMemorial() {
     const loadData = async () => {
       if (memorialId) {
         try {
+          // Get current user if logged in (for owner preview)
+          let currentUser = null;
+          try {
+            currentUser = await api.auth.me();
+          } catch (e) {
+            // Not logged in
+          }
+
           const memorials = await api.entities.Memorial.filter({ id: memorialId });
           if (memorials && memorials.length > 0) {
-            setMemorial(memorials[0]);
+            const mem = memorials[0];
+
+            // SECURITY CHECK: If not public and user is not owner
+            const isOwner = currentUser && mem.owner_email === currentUser.email;
+            if (mem.is_public === false && !isOwner) {
+              setMemorial(null); // Will trigger the "Not found" view
+            } else {
+              setMemorial(mem);
+            }
           }
 
           const tributesList = await api.entities.Tribute.filter({
@@ -67,12 +83,14 @@ export default function ViewMemorial() {
           });
           setTributes(Array.isArray(tributesList) ? tributesList : []);
 
-          // Track visit
-          await api.entities.MemorialVisit.create({
-            memorial_id: memorialId,
-            device: /mobile/i.test(navigator.userAgent) ? 'mobile' :
-              /tablet/i.test(navigator.userAgent) ? 'tablet' : 'desktop'
-          });
+          // Track visit (only for public memorials or non-owners)
+          if (memorials.length > 0 && memorials[0].is_public) {
+            await api.entities.MemorialVisit.create({
+              memorial_id: memorialId,
+              device: /mobile/i.test(navigator.userAgent) ? 'mobile' :
+                /tablet/i.test(navigator.userAgent) ? 'tablet' : 'desktop'
+            });
+          }
         } catch (error) {
           console.error(error);
         }
@@ -95,12 +113,18 @@ export default function ViewMemorial() {
         memorial_id: memorialId,
         author_name: tributeForm.author_name,
         message: tributeForm.message,
+        is_approved: !memorial?.require_moderation, // Auto-approve if no moderation required
         created_at: new Date().toISOString()
       });
 
       toast.success(memorial?.require_moderation ? 'Merci ! Votre message sera visible après modération.' : 'Merci pour votre hommage.');
       setShowTributeForm(false);
       setTributeForm({ author_name: '', author_email: '', relationship: '', message: '' });
+
+      // If auto-approved, we might want to refresh the list or let the user know
+      if (!memorial?.require_moderation) {
+        // Optionnel: Recharger la liste des hommages
+      }
     } catch (e) {
       toast.error('Une erreur est survenue');
     }
@@ -119,8 +143,8 @@ export default function ViewMemorial() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6 text-center">
         <div>
-          <h1 className="font-serif text-3xl text-primary mb-4">Mémorial non trouvé</h1>
-          <p className="text-primary/60 mb-8">Ce mémorial n'existe pas ou n'est plus accessible.</p>
+          <h1 className="font-serif text-3xl text-primary mb-4">Mémorial non trouvé ou privé</h1>
+          <p className="text-primary/60 mb-8">Ce mémorial n'existe pas ou son propriétaire a restreint sa visibilité.</p>
           <Link to={createPageUrl('Home')}>
             <Button className="btn-primary rounded-full px-8">Retour à l'accueil</Button>
           </Link>
@@ -258,17 +282,23 @@ export default function ViewMemorial() {
           <div className="bg-primary rounded-[3rem] p-8 lg:p-16 text-white overflow-hidden relative">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl" />
 
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 relative z-10">
+            <div className={`flex flex-col md:flex-row md:items-center justify-between gap-8 ${memorial.allow_comments !== false ? 'mb-12' : 'mb-0'} relative z-10`}>
               <div>
                 <h2 className="font-serif text-3xl lg:text-4xl mb-4 text-white">Hommages & Témoignages</h2>
-                <p className="text-white/60">Partagez vos souvenirs et vos pensées</p>
+                <p className="text-white/60">
+                  {memorial.allow_comments !== false
+                    ? 'Partagez vos souvenirs et vos pensées'
+                    : 'Les hommages sont fermés pour ce mémorial'}
+                </p>
               </div>
-              <Button
-                onClick={() => setShowTributeForm(true)}
-                className="btn-accent rounded-full px-8 py-6 text-lg text-primary"
-              >
-                Laisser un message
-              </Button>
+              {memorial.allow_comments !== false && (
+                <Button
+                  onClick={() => setShowTributeForm(true)}
+                  className="btn-accent rounded-full px-8 py-6 text-lg text-primary"
+                >
+                  Laisser un message
+                </Button>
+              )}
             </div>
 
             <div className="space-y-8 relative z-10">
@@ -434,15 +464,17 @@ export default function ViewMemorial() {
       )}
 
       {/* Fixed Footer for Mobile */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 lg:hidden z-50 pointer-events-none">
-        <Button
-          onClick={() => setShowTributeForm(true)}
-          className="w-full btn-accent h-16 rounded-full text-lg shadow-2xl pointer-events-auto text-primary"
-        >
-          <Heart className="w-6 h-6 mr-2" />
-          Laisser un hommage
-        </Button>
-      </div>
+      {memorial.allow_comments !== false && (
+        <div className="fixed bottom-0 left-0 right-0 p-6 lg:hidden z-50 pointer-events-none">
+          <Button
+            onClick={() => setShowTributeForm(true)}
+            className="w-full btn-accent h-16 rounded-full text-lg shadow-2xl pointer-events-auto text-primary"
+          >
+            <Heart className="w-6 h-6 mr-2" />
+            Laisser un hommage
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
