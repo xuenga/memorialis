@@ -104,9 +104,9 @@ export const api = {
     }) as any,
     storage: {
         upload: async (file: File, folder: string = 'memorials') => {
-            const storageName = import.meta.env.VITE_BUNNY_STORAGE_NAME;
-            const apiKey = import.meta.env.VITE_BUNNY_API_KEY;
-            const pullZone = import.meta.env.VITE_BUNNY_PULL_ZONE;
+            const storageName = import.meta.env.VITE_BUNNY_STORAGE_ZONE;
+            const apiKey = import.meta.env.VITE_BUNNY_ACCESS_KEY;
+            const pullZone = import.meta.env.VITE_BUNNY_PULL_ZONE_URL;
 
             if (!storageName || !apiKey || !pullZone) {
                 console.error('Bunny.net configuration missing:', { storageName: !!storageName, apiKey: !!apiKey, pullZone: !!pullZone });

@@ -26,6 +26,9 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_BUNNY_STORAGE_ZONE: ${{ secrets.VITE_BUNNY_STORAGE_ZONE }}
+          VITE_BUNNY_ACCESS_KEY: ${{ secrets.VITE_BUNNY_ACCESS_KEY }}
+          VITE_BUNNY_PULL_ZONE_URL: ${{ secrets.VITE_BUNNY_PULL_ZONE_URL }}
 
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
