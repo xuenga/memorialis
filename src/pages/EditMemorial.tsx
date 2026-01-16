@@ -510,12 +510,58 @@ export default function EditMemorial() {
                   />
                 </div>
 
-                <div className="bg-background rounded-[3rem] p-12 h-[400px] flex items-center justify-center border border-dashed border-primary/10 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-                  <div className="text-center relative z-10">
-                    <BarChart3 className="w-20 h-20 mx-auto mb-6 text-primary/5" />
-                    <h4 className="font-serif text-2xl text-primary/40 mb-2">Analyses détaillées</h4>
-                    <p className="text-primary/20 uppercase tracking-widest font-bold text-xs">Bientôt disponible</p>
+                <div className="bg-background rounded-[3rem] p-12 border border-primary/5 relative overflow-hidden">
+                  <div className="flex items-center justify-between mb-10">
+                    <div>
+                      <h4 className="font-serif text-2xl text-primary">Activité récente</h4>
+                      <p className="text-sm text-primary/40">Visites des 7 derniers jours</p>
+                    </div>
+                    <div className="flex items-center gap-2 px-4 py-2 bg-accent/10 rounded-full text-accent text-xs font-bold uppercase tracking-widest">
+                      <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                      Temps réel
+                    </div>
+                  </div>
+
+                  <div className="h-[250px] flex items-end justify-between gap-2 px-2">
+                    {Array.from({ length: 7 }).map((_, i) => {
+                      const date = new Date();
+                      date.setDate(date.getDate() - (6 - i));
+                      const dateStr = date.toISOString().split('T')[0];
+                      const dayName = new Intl.DateTimeFormat('fr-FR', { weekday: 'short' }).format(date);
+
+                      const dayVisits = visits.filter(v => {
+                        const visitDate = v.visited_at || v.created_at;
+                        return visitDate && visitDate.startsWith(dateStr);
+                      }).length;
+
+                      const maxVisits = Math.max(...Array.from({ length: 7 }).map((_, j) => {
+                        const d = new Date();
+                        d.setDate(d.getDate() - (6 - j));
+                        const ds = d.toISOString().split('T')[0];
+                        return visits.filter(v => (v.visited_at || v.created_at || '').startsWith(ds)).length;
+                      }), 1);
+
+                      const height = (dayVisits / maxVisits) * 100;
+
+                      return (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
+                          <div className="flex-1 w-full flex items-end justify-center relative">
+                            {dayVisits > 0 && (
+                              <div className="absolute -top-8 bg-primary text-white text-[10px] py-1 px-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+                                {dayVisits}
+                              </div>
+                            )}
+                            <motion.div
+                              initial={{ height: 0 }}
+                              animate={{ height: `${Math.max(height, 5)}%` }}
+                              transition={{ duration: 1, delay: i * 0.1, ease: "easeOut" }}
+                              className={`w-full max-w-[40px] rounded-t-xl transition-colors duration-300 ${dayVisits > 0 ? 'bg-accent' : 'bg-primary/5'}`}
+                            />
+                          </div>
+                          <span className="text-[10px] text-primary/40 font-bold uppercase tracking-tighter">{dayName}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </TabsContent>
