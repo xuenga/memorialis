@@ -130,7 +130,9 @@ export const api = {
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Bunny upload failed: ${response.statusText}`);
+                    const errorText = await response.text();
+                    console.error('Bunny Error Details:', { status: response.status, statusText: response.statusText, body: errorText });
+                    throw new Error(`Bunny upload failed: ${response.status} ${response.statusText} - ${errorText}`);
                 }
 
                 // Construct public URL
