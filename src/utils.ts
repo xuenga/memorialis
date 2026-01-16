@@ -6,6 +6,7 @@ export const createPageUrl = (pageName: string, params: Record<string, string> =
         Contact: '/contact',
         AdminDashboard: '/admin',
         AdminProducts: '/admin/products',
+        AdminQRCodes: '/admin/qrcodes',
         Cart: '/cart',
         Checkout: '/checkout',
         MyMemorials: '/my-memorials',
@@ -15,7 +16,8 @@ export const createPageUrl = (pageName: string, params: Record<string, string> =
         OrderConfirmation: '/order-confirmation',
         CGV: '/cgv',
         Privacy: '/privacy',
-        Mentions: '/mentions'
+        Mentions: '/mentions',
+        QRRedirect: '/qr/:code'
     };
 
     let url = routes[pageName] || '/';

@@ -119,4 +119,10 @@ create policy "Enable update for all users" on "Tribute" for update using (true)
 
 create policy "Enable read access for all users" on "MemorialVisit" for select using (true);
 
+-- CartItem policies
+create policy "Enable read access for all users" on "CartItem" for select using (true);
+create policy "Enable insert for all users" on "CartItem" for insert with check (true);
+create policy "Enable update for all users" on "CartItem" for update using (true);
+create policy "Enable delete for all users" on "CartItem" for delete using (true);
+
 

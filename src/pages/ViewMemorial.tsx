@@ -26,6 +26,7 @@ interface MemorialData {
   is_public?: boolean;
   allow_comments?: boolean;
   require_moderation?: boolean;
+  access_code?: string;
 }
 
 interface TributeData {
@@ -417,6 +418,20 @@ export default function ViewMemorial() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* QR Code Section - Discret en bas de page */}
+      {memorial.access_code && (
+        <div className="max-w-4xl mx-auto px-6 py-12 text-center">
+          <div className="inline-block p-6 bg-white rounded-3xl shadow-sm border border-primary/5">
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`https://memorialis.shop/qr/${memorial.access_code}`)}`}
+              alt="QR Code mémorial"
+              className="w-24 h-24 mx-auto opacity-60 hover:opacity-100 transition-opacity"
+            />
+            <p className="text-xs text-primary/30 mt-3 font-mono">{memorial.access_code}</p>
+          </div>
+        </div>
+      )}
 
       {/* Fixed Footer for Mobile */}
       <div className="fixed bottom-0 left-0 right-0 p-6 lg:hidden z-50 pointer-events-none">

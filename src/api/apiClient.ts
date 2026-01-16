@@ -72,13 +72,21 @@ export const api = {
                     if (error) throw error;
                     return updated;
                 },
-                delete: async (id: string) => {
+                delete: async (idOrFilters: string | any) => {
                     if (!isSupabaseConfigured) {
                         throw new Error('Supabase is not configured');
                     }
-                    const { error } = await supabase.from(entityName).delete().eq('id', id);
+                    let query = supabase.from(entityName).delete();
+                    if (typeof idOrFilters === 'string') {
+                        query = query.eq('id', idOrFilters);
+                    } else if (idOrFilters && typeof idOrFilters === 'object') {
+                        Object.entries(idOrFilters).forEach(([key, value]) => {
+                            query = query.eq(key, value);
+                        });
+                    }
+                    const { error } = await query;
                     if (error) throw error;
-                    return { id };
+                    return { success: true };
                 }
             };
         }

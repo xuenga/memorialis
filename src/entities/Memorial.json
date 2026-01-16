@@ -4,7 +4,7 @@
   "properties": {
     "name": {
       "type": "string",
-      "description": "Nom de la personne comm\u00e9mor\u00e9e"
+      "description": "Nom de la personne commémorée"
     },
     "birth_date": {
       "type": "string",
@@ -16,7 +16,7 @@
     },
     "biography": {
       "type": "string",
-      "description": "Biographie ou texte comm\u00e9moratif"
+      "description": "Biographie ou texte commémoratif"
     },
     "profile_photo": {
       "type": "string",
@@ -63,11 +63,20 @@
     },
     "access_code": {
       "type": "string",
-      "description": "Code unique pour acc\u00e9der au m\u00e9morial"
+      "description": "Code unique du QR gravé sur la plaque"
     },
     "is_public": {
       "type": "boolean",
       "default": false
+    },
+    "is_activated": {
+      "type": "boolean",
+      "default": false,
+      "description": "True si le client a scanné son QR pour la première fois"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Email du propriétaire du mémorial"
     },
     "theme": {
       "type": "string",
@@ -80,4 +89,12 @@
       ],
       "default": "classic"
     },
- 
+    "created_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

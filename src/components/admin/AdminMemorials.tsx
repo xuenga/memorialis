@@ -10,8 +10,8 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 export default function AdminMemorials() {
-  const [memorials, setMemorials] = useState([]);
-  const [filteredMemorials, setFilteredMemorials] = useState([]);
+  const [memorials, setMemorials] = useState<any[]>([]);
+  const [filteredMemorials, setFilteredMemorials] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -88,7 +88,7 @@ export default function AdminMemorials() {
                     <Heart className="w-12 h-12 text-[#2f4858]/10" />
                   </div>
                 )}
-                
+
                 <div className="absolute -bottom-8 left-4">
                   <div className="w-16 h-16 rounded-xl bg-white border-4 border-white overflow-hidden shadow-lg">
                     {memorial.profile_photo ? (
@@ -111,7 +111,7 @@ export default function AdminMemorials() {
                 <h3 className="font-serif text-lg text-[#2f4858] mb-2 truncate">
                   {memorial.name}
                 </h3>
-                
+
                 <div className="flex items-center gap-2 text-xs text-[#e0bd3e] mb-3">
                   <QrCode className="w-3 h-3" />
                   <span className="font-mono">{memorial.access_code}</span>

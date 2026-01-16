@@ -125,7 +125,7 @@ export default function AdminOrders() {
             <tbody>
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center py-12 text-[#2f4858]/40">
+                  <td colSpan={6} className="text-center py-12 text-[#2f4858]/40">
                     Aucune commande trouvée
                   </td>
                 </tr>

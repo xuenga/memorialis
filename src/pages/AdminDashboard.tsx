@@ -75,6 +75,14 @@ export default function AdminDashboard() {
                 Boutique
               </Button>
             </Link>
+            <Link to={createPageUrl('AdminQRCodes')}>
+              <Button
+                variant="ghost"
+                className="rounded-full px-8 h-12 font-bold text-primary/40 hover:text-primary"
+              >
+                QR Codes
+              </Button>
+            </Link>
           </div>
         </div>
 

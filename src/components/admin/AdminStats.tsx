@@ -4,7 +4,13 @@ import { motion } from 'framer-motion';
 import { TrendingUp, ShoppingCart, Heart, Eye, Euro } from 'lucide-react';
 
 export default function AdminStats() {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<{
+    totalOrders: number;
+    totalRevenue: number;
+    totalMemorials: number;
+    totalVisits: number;
+    recentOrders: any[];
+  }>({
     totalOrders: 0,
     totalRevenue: 0,
     totalMemorials: 0,
@@ -22,8 +28,8 @@ export default function AdminStats() {
       ]);
 
       const totalRevenue = orders
-        .filter(o => o.status === 'paid' || o.status === 'delivered')
-        .reduce((sum, o) => sum + (o.total || 0), 0);
+        .filter((o: any) => o.status === 'paid' || o.status === 'delivered')
+        .reduce((sum: number, o: any) => sum + (o.total || 0), 0);
 
       setStats({
         totalOrders: orders.length,
@@ -122,11 +128,10 @@ export default function AdminStats() {
                 </div>
                 <div className="text-right">
                   <p className="font-medium text-[#2f4858]">{order.total?.toFixed(2)}€</p>
-                  <span className={`text-xs px-2 py-1 rounded-full ${
-                    order.status === 'paid' || order.status === 'delivered' ? 'bg-green-100 text-green-700' :
+                  <span className={`text-xs px-2 py-1 rounded-full ${order.status === 'paid' || order.status === 'delivered' ? 'bg-green-100 text-green-700' :
                     order.status === 'processing' ? 'bg-blue-100 text-blue-700' :
-                    'bg-yellow-100 text-yellow-700'
-                  }`}>
+                      'bg-yellow-100 text-yellow-700'
+                    }`}>
                     {order.status}
                   </span>
                 </div>

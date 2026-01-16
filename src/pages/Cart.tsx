@@ -60,10 +60,7 @@ export default function Cart() {
     const sessionId = localStorage.getItem('memorialis_session');
     if (!sessionId) return;
     try {
-      const cartItems = await api.entities.CartItem.filter({ session_id: sessionId });
-      for (const item of cartItems) {
-        await api.entities.CartItem.delete(item.id);
-      }
+      await api.entities.CartItem.delete({ session_id: sessionId });
       toast.success('Panier vidé');
       loadCart();
       window.dispatchEvent(new Event('cartUpdated'));

@@ -11,11 +11,11 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 export default function AdminProducts() {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [formData, setFormData] = useState({
@@ -59,14 +59,14 @@ export default function AdminProducts() {
     setIsLoading(false);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const productData = {
       ...formData,
       price: parseFloat(formData.price),
-      stock: parseInt(formData.stock),
-      features: formData.features.filter(f => f.trim() !== '')
+      stock: parseInt(formData.stock as any),
+      features: formData.features.filter((f: string) => f.trim() !== '')
     };
 
     if (editingProduct) {
@@ -95,7 +95,7 @@ export default function AdminProducts() {
     loadProducts();
   };
 
-  const handleEdit = (product) => {
+  const handleEdit = (product: any) => {
     setEditingProduct(product);
     setFormData({
       name: product.name || '',
@@ -113,7 +113,7 @@ export default function AdminProducts() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Supprimer ce produit ?')) {
       await api.entities.Product.delete(id);
       toast.success('Produit supprimé');
@@ -121,19 +121,19 @@ export default function AdminProducts() {
     }
   };
 
-  const toggleActive = async (product) => {
+  const toggleActive = async (product: any) => {
     await api.entities.Product.update(product.id, { is_active: !product.is_active });
     loadProducts();
     toast.success(product.is_active ? 'Produit désactivé' : 'Produit activé');
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
-    const { file_url } = await api.integrations.Core.UploadFile({ file });
-    setFormData({ ...formData, image_url: file_url });
-    toast.success('Image téléchargée');
+    // TODO: Implement file upload to a storage service
+    // For now, just show a placeholder message
+    toast.info('Upload d\'image non configuré - utilisez une URL directe');
   };
 
   const categories = [

@@ -1,0 +1,50 @@
+{
+    "name": "QRCode",
+    "type": "object",
+    "properties": {
+        "code": {
+            "type": "string",
+            "description": "Code unique format AAMM-XXXX (ex: 2601-0001)"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "available",
+                "reserved",
+                "activated"
+            ],
+            "default": "available",
+            "description": "available = en stock, reserved = acheté, activated = premier scan effectué"
+        },
+        "memorial_id": {
+            "type": "string",
+            "description": "ID du mémorial lié"
+        },
+        "order_id": {
+            "type": "string",
+            "description": "ID de la commande associée"
+        },
+        "owner_email": {
+            "type": "string",
+            "description": "Email du propriétaire"
+        },
+        "reserved_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date de réservation lors de l'achat"
+        },
+        "activated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date du premier scan par le client"
+        },
+        "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Date de création du code"
+        }
+    },
+    "required": [
+        "code"
+    ]
+}

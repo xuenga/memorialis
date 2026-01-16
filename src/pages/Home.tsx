@@ -139,18 +139,18 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="hidden lg:block"
             >
-              <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-br from-accent/20 to-transparent rounded-3xl blur-2xl" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8">
-                  <div className="aspect-square rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center">
+              <Link to="/memorial/demo-memorial" className="relative block group cursor-pointer">
+                <div className="absolute -inset-4 bg-gradient-to-br from-accent/20 to-transparent rounded-3xl blur-2xl group-hover:bg-accent/30 transition-all duration-500" />
+                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 group-hover:border-accent/40 transition-colors duration-500">
+                  <div className="aspect-square rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
                     <QrCode className="w-32 h-32 text-accent" />
                   </div>
                   <div className="mt-6 text-center">
-                    <p className="text-white/50 text-sm">Scannez pour découvrir</p>
-                    <p className="font-serif text-xl text-white mt-2">Un mémorial d'exemple</p>
+                    <p className="text-white/50 text-sm group-hover:text-accent/80 transition-colors">Cliquez pour découvrir</p>
+                    <p className="font-serif text-xl text-white mt-2 group-hover:text-accent transition-colors">Un mémorial d'exemple</p>
                   </div>
                 </div>
-              </div>
+              </Link>
             </motion.div>
           </div>
         </div>

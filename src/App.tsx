@@ -31,6 +31,8 @@ import OrderConfirmation from './pages/OrderConfirmation';
 import CGV from './pages/CGV';
 import Privacy from './pages/Privacy';
 import Mentions from './pages/Mentions';
+import QRRedirect from './pages/QRRedirect';
+import AdminQRCodes from './pages/AdminQRCodes';
 
 export default function App() {
     return (
@@ -54,6 +56,8 @@ export default function App() {
                 <Route path="/cgv" element={<Layout currentPageName="CGV"><CGV /></Layout>} />
                 <Route path="/privacy" element={<Layout currentPageName="Privacy"><Privacy /></Layout>} />
                 <Route path="/mentions" element={<Layout currentPageName="Mentions"><Mentions /></Layout>} />
+                <Route path="/qr/:code" element={<QRRedirect />} />
+                <Route path="/admin/qrcodes" element={<Layout currentPageName="AdminQRCodes"><AdminQRCodes /></Layout>} />
             </Routes>
         </Router>
     );
