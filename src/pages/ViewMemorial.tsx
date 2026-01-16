@@ -83,16 +83,22 @@ export default function ViewMemorial() {
           });
           setTributes(Array.isArray(tributesList) ? tributesList : []);
 
-          // Track visit (only for public memorials or non-owners)
-          if (memorials.length > 0 && memorials[0].is_public) {
-            await api.entities.MemorialVisit.create({
-              memorial_id: memorialId,
-              device: /mobile/i.test(navigator.userAgent) ? 'mobile' :
-                /tablet/i.test(navigator.userAgent) ? 'tablet' : 'desktop'
-            });
+          // Track visit
+          // We track the visit if the memorial exists and the visitor is NOT the owner
+          if (memorials.length > 0) {
+            const mem = memorials[0];
+            const isOwner = currentUser && mem.owner_email === currentUser.email;
+
+            if (!isOwner) {
+              await api.entities.MemorialVisit.create({
+                memorial_id: memorialId,
+                device: /mobile/i.test(navigator.userAgent) ? 'mobile' :
+                  /tablet/i.test(navigator.userAgent) ? 'tablet' : 'desktop'
+              });
+            }
           }
         } catch (error) {
-          console.error(error);
+          console.error('Visit tracking error:', error);
         }
       }
       setIsLoading(false);
