@@ -33,9 +33,9 @@ export default function MediaUploader({ onUpload, currentVideos, onRemove }: Med
 
       toast.dismiss(loadingToast);
       toast.success('Vidéo téléchargée !');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      toast.error('Erreur lors du téléchargement de la vidéo.');
+      toast.error(`Erreur: ${error.message || 'Problème de configuration'}`);
     }
 
     // Reset input
@@ -60,16 +60,20 @@ export default function MediaUploader({ onUpload, currentVideos, onRemove }: Med
       <div className="grid md:grid-cols-2 gap-6 p-8 bg-background rounded-3xl border border-primary/5">
         <div className="space-y-4">
           <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Télécharger une vidéo</Label>
-          <div className="relative group aspect-video rounded-2xl overflow-hidden bg-white border-2 border-dashed border-primary/10 flex flex-col items-center justify-center hover:border-accent/50 transition-colors cursor-pointer">
+          <input
+            type="file"
+            accept="video/*"
+            className="hidden"
+            id="video-upload"
+            onChange={handleFileUpload}
+          />
+          <Label
+            htmlFor="video-upload"
+            className="relative group aspect-video rounded-2xl overflow-hidden bg-white border-2 border-dashed border-primary/10 flex flex-col items-center justify-center hover:border-accent/50 transition-colors cursor-pointer"
+          >
             <Video className="w-8 h-8 text-primary/20 mb-2 group-hover:text-accent transition-colors" />
             <p className="text-[10px] text-primary/40 uppercase tracking-widest font-bold">Choisir un fichier</p>
-            <Input
-              type="file"
-              accept="video/*"
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              onChange={handleFileUpload}
-            />
-          </div>
+          </Label>
           <p className="text-[10px] text-primary/40">Fichiers mp4, mov, webm recommandés. Stocké sur Bunny Storage.</p>
         </div>
 
