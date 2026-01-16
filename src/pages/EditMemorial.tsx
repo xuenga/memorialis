@@ -34,8 +34,8 @@ interface MemorialData {
 
 interface TributeData {
   id: string;
-  author: string;
-  content: string;
+  author_name: string;
+  message: string;
   is_approved: boolean;
   created_at: string;
 }
@@ -442,10 +442,10 @@ export default function EditMemorial() {
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-4">
                             <div className="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-bold">
-                              {tribute.author[0] || 'A'}
+                              {tribute.author_name?.[0] || 'A'}
                             </div>
                             <div>
-                              <span className="font-bold text-primary block">{tribute.author}</span>
+                              <span className="font-bold text-primary block">{tribute.author_name}</span>
                               <span className="text-[10px] text-primary/40 uppercase tracking-widest">{tribute.created_at}</span>
                             </div>
                             {!tribute.is_approved && (
@@ -454,7 +454,7 @@ export default function EditMemorial() {
                               </span>
                             )}
                           </div>
-                          <p className="text-primary/70 italic text-lg leading-relaxed">"{tribute.content}"</p>
+                          <p className="text-primary/70 italic text-lg leading-relaxed">"{tribute.message}"</p>
                         </div>
                         <div className="flex gap-2 self-end sm:self-start opacity-0 group-hover:opacity-100 transition-opacity">
                           {!tribute.is_approved && (
