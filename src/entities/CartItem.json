@@ -38,6 +38,9 @@
           "type": "string"
         }
       }
+    },
+    "stripe_price_id": {
+      "type": "string"
     }
   },
   "required": [

@@ -91,17 +91,27 @@ export const api = {
             };
         }
     }) as any,
-    functions: new Proxy({}, {
-        get: (target, funcName: string) => {
-            return async (args: any) => {
-                console.log(`Executing function: ${funcName}`, args);
-                if (funcName === 'createStripeCheckout') {
-                    return { url: 'https://checkout.stripe.com/mock' };
+    functions: {
+        createStripeCheckout: async (params: any) => {
+            console.log('Invoking create-checkout with params:', params);
+
+            const { data, error } = await supabase.functions.invoke('create-checkout', {
+                body: params,
+                headers: {
+                    Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+                    apikey: import.meta.env.VITE_SUPABASE_ANON_KEY
                 }
-                return { success: true };
-            };
+            });
+
+            if (error) {
+                console.error('Edge Function invocation error:', error);
+                throw error;
+            }
+
+            console.log('Edge Function response:', data);
+            return data;
         }
-    }) as any,
+    },
     storage: {
         upload: async (file: File, folder: string = 'memorials') => {
             const storageName = import.meta.env.VITE_BUNNY_STORAGE_ZONE;

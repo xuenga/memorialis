@@ -113,8 +113,8 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                     key={link.page}
                     to={createPageUrl(link.page)}
                     className={`font-sans text-sm font-semibold tracking-widest uppercase transition-all duration-300 relative py-2 group ${isActive
-                        ? (isLightText ? 'text-accent' : 'text-[#b48c00]')
-                        : (isLightText ? 'text-white/80 hover:text-white' : 'text-primary hover:text-[#b48c00]')
+                      ? (isLightText ? 'text-accent' : 'text-[#b48c00]')
+                      : (isLightText ? 'text-white/80 hover:text-white' : 'text-primary hover:text-[#b48c00]')
                       }`}
                   >
                     {link.name}
@@ -281,14 +281,14 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
               <div className="space-y-4 text-white/60">
                 <p>contact@memorialis.shop</p>
                 <p>+33 1 23 45 67 89</p>
-                <p>Paris, France</p>
+                <p>France</p>
               </div>
             </div>
           </div>
 
           <div className="border-t border-white/5 mt-20 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-sm text-white/30">
-              © 2024 Memorialis. "Un scan, une vie, mille souvenirs"
+              © 2026 Memorialis. "Un scan, une vie, mille souvenirs"
             </p>
             <div className="flex items-center gap-8">
               {/* Payment icons placeholder */}
