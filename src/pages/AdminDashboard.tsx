@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '@/api/apiClient';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
-import { Search, Eye, Edit, Heart, QrCode } from 'lucide-react';
+import { Search, Eye, Edit, Heart, QrCode, LogOut } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { useAdminAuth } from '@/contexts/AdminAuthContext';
 
 export default function AdminDashboard() {
   const [memorials, setMemorials] = useState<any[]>([]);
   const [filteredMemorials, setFilteredMemorials] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const { logout } = useAdminAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/admin/login');
+  };
 
   useEffect(() => {
     const loadMemorials = async () => {
@@ -55,9 +63,20 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background py-12">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
-          <div>
-            <h1 className="font-serif text-4xl lg:text-5xl text-primary mb-2">Administration</h1>
-            <p className="text-primary/60 text-lg">Gérer les contenus de la plateforme Memorialis</p>
+          <div className="flex items-start gap-4">
+            <div>
+              <h1 className="font-serif text-4xl lg:text-5xl text-primary mb-2">Administration</h1>
+              <p className="text-primary/60 text-lg">Gérer les contenus de la plateforme Memorialis</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              className="rounded-full text-primary/60 hover:text-red-600 hover:border-red-200 hover:bg-red-50"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Déconnexion
+            </Button>
           </div>
 
           <div className="flex bg-white p-1.5 rounded-full shadow-sm border border-primary/5">
