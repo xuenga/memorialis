@@ -14,28 +14,47 @@ export default function OrderConfirmation() {
   const [copied, setCopied] = useState(false);
 
   const urlParams = new URLSearchParams(window.location.search);
+  const sessionId = urlParams.get('session_id');
   const orderId = urlParams.get('order');
   const memorialId = urlParams.get('memorial');
   const accessCodeFromUrl = urlParams.get('code');
 
   useEffect(() => {
     const loadData = async () => {
+      // 1. Try to load directly if IDs are present
       if (orderId) {
         try {
           const orders = await api.entities.Order.filter({ id: orderId });
           if (orders.length > 0) setOrder(orders[0]);
-        } catch (e) { }
+        } catch (e) { console.error(e) }
       }
       if (memorialId) {
         try {
           const memorials = await api.entities.Memorial.filter({ id: memorialId });
           if (memorials.length > 0) setMemorial(memorials[0]);
-        } catch (e) { }
+        } catch (e) { console.error(e) }
       }
+
+      // 2. If we have session_id but no order yet (or manual confirmation needed)
+      if (sessionId && !orderId) {
+        try {
+          console.log('Confirming order with session:', sessionId);
+          const data = await (api.functions as any).confirmOrder(sessionId);
+          console.log('Confirmation result:', data);
+
+          if (data.order) setOrder(data.order);
+          if (data.memorial) setMemorial(data.memorial);
+
+        } catch (error) {
+          console.error('Manual confirmation failed:', error);
+          toast.error("Erreur lors de la récupération de la commande. Veuillez vérifier vos emails.");
+        }
+      }
+
       setIsLoading(false);
     };
     loadData();
-  }, [orderId, memorialId]);
+  }, [orderId, memorialId, sessionId]);
 
   const accessCode = accessCodeFromUrl || memorial?.access_code || 'MEM-SAMPLE';
 
@@ -115,7 +134,7 @@ export default function OrderConfirmation() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link to={createPageUrl('EditMemorial', { id: memorialId || 'm1' })} className="flex-1">
+              <Link to={createPageUrl('EditMemorial', { id: memorial?.id || memorialId || 'm1' })} className="flex-1">
                 <Button className="btn-accent w-full h-14 rounded-full text-lg font-medium flex items-center gap-3">
                   Personnaliser maintenant
                   <ArrowRight className="w-5 h-5" />

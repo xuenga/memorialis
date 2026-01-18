@@ -44,6 +44,20 @@ export default function QRRedirect() {
 
                 // Redirection automatique si déjà activé
                 if (qr.status === 'activated' && qr.memorial_id) {
+                    // Try to fetch memorial to check if slug exists
+                    try {
+                        const memorials = await api.entities.Memorial.filter({ id: qr.memorial_id });
+                        if (memorials && memorials.length > 0) {
+                            const memorial = memorials[0];
+                            if (memorial.slug) {
+                                window.location.href = `/memorial/${memorial.slug}`;
+                                return;
+                            }
+                        }
+                    } catch (err) {
+                        console.error("Error fetching memorial details for redirect", err);
+                    }
+
                     navigate(createPageUrl('ViewMemorial', { id: qr.memorial_id }), { replace: true });
                     return;
                 }

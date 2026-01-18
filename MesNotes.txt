@@ -1,0 +1,5 @@
+Emails de confirmation - Envoyer un email au client après le paiement ?
+Reste à faire :
+Page de confirmation - Améliorer la page /order-confirmation pour afficher les détails de la commande
+Tableau de bord admin - Gérer les commandes reçues
+Le bouton "Confirmer et payer" est peu lisible car bleu sur bleu. Il faut modifier la couleur du bouton.

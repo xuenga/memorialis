@@ -65,6 +65,10 @@
       "type": "string",
       "description": "Code unique du QR gravé sur la plaque"
     },
+    "slug": {
+      "type": "string",
+      "description": "URL personnalisée du mémorial"
+    },
     "is_public": {
       "type": "boolean",
       "default": false

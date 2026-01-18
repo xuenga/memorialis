@@ -12,7 +12,7 @@ serve(async (req) => {
     }
 
     try {
-        const { items, customer_email, customer_name, success_url, cancel_url } = await req.json()
+        const { items, customer_email, customer_name, customer_phone, shipping_address, success_url, cancel_url } = await req.json()
 
         // Initialize Stripe
         const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY')
@@ -74,6 +74,8 @@ serve(async (req) => {
             customer_email: customer_email,
             metadata: {
                 customer_name: customer_name,
+                customer_phone: customer_phone || '',
+                shipping_address: JSON.stringify(shipping_address || {}),
                 items: JSON.stringify(items.map((i: any) => ({
                     id: i.product_id,
                     name: i.product_name,

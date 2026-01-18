@@ -72,6 +72,13 @@ export default function Checkout() {
         })),
         customer_email: formData.email,
         customer_name: formData.name,
+        customer_phone: formData.phone,
+        shipping_address: {
+          street: formData.street,
+          city: formData.city,
+          postal_code: formData.postal_code,
+          country: formData.country
+        },
         success_url: `${window.location.origin}${createPageUrl('OrderConfirmation')}?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${window.location.origin}${createPageUrl('Checkout')}`
       });

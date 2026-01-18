@@ -30,12 +30,27 @@ interface MemorialData {
   allow_comments?: boolean;
   require_moderation?: boolean;
   access_code?: string;
+  slug?: string;
   custom_colors?: {
     primary?: string;
     accent?: string;
     bg?: string;
   };
 }
+
+// Helper to slugify text
+const slugify = (text: string) => {
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize('NFD') // Split accents
+    .replace(/[\u0300-\u036f]/g, '') // Remove accents
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-') // Replace multiple - with single -
+    .replace(/^-+/, '') // Trim - from start of text
+    .replace(/-+$/, ''); // Trim - from end of text
+};
 
 interface TributeData {
   id: string;
@@ -162,6 +177,29 @@ export default function EditMemorial() {
     toast.success('Témoignage supprimé');
   };
 
+  // Update slug when name changes if slug is empty or matches previous auto-generated slug
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    setMemorial(prev => {
+      if (!prev) return null;
+
+      const updates: Partial<MemorialData> = { name: newName };
+
+      // Auto-generate slug if it's empty or looks like an auto-generated one
+      if (!prev.slug || prev.slug === slugify(prev.name)) {
+        updates.slug = slugify(newName);
+      }
+
+      return { ...prev, ...updates };
+    });
+  };
+
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSlug = slugify(e.target.value);
+    setMemorial(prev => prev ? { ...prev, slug: newSlug } : null);
+  };
+
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -265,11 +303,26 @@ export default function EditMemorial() {
                       <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Identité</Label>
                       <Input
                         value={memorial.name || ''}
-                        onChange={(e) => setMemorial(prev => prev ? { ...prev, name: e.target.value } : null)}
+                        onChange={handleNameChange}
                         placeholder="Prénom et Nom"
                         className="h-14 rounded-2xl border-primary/10 focus:border-accent px-6 text-lg font-serif"
                       />
                     </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Lien personnalisé</Label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-primary/40 select-none">memorialis.shop/memorial/</span>
+                        <Input
+                          value={memorial.slug || ''}
+                          onChange={handleSlugChange}
+                          placeholder="prenom-nom"
+                          className="h-10 rounded-xl border-primary/10 focus:border-accent px-4 font-mono text-sm"
+                        />
+                      </div>
+                      <p className="text-[10px] text-primary/40 italic">Ce lien personnalisé sera utilisable pour partager le mémorial.</p>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Naissance</Label>
@@ -641,8 +694,8 @@ export default function EditMemorial() {
         isOpen={showShareModal}
         onClose={() => setShowShareModal(false)}
         memorial={memorial}
-        url={memorialId ? `${window.location.origin}${createPageUrl('ViewMemorial', { id: memorialId })}` : ''}
-        title={memorial?.name}
+        url={memorial.slug ? `${window.location.origin}/memorial/${memorial.slug}` : `${window.location.origin}${createPageUrl('ViewMemorial', { id: memorialId || '' })}`}
+        title={memorial?.name || ''}
       />
     </div>
   );

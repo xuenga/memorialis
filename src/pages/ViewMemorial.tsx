@@ -69,7 +69,17 @@ export default function ViewMemorial() {
             // Not logged in
           }
 
-          const memorials = await api.entities.Memorial.filter({ id: memorialId });
+          // Determine if we are looking up by ID (UUID) or Slug
+          const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId);
+
+          let memorials = [];
+
+          if (isUUID) {
+            memorials = await api.entities.Memorial.filter({ id: memorialId });
+          } else {
+            memorials = await api.entities.Memorial.filter({ slug: memorialId });
+          }
+
           if (memorials && memorials.length > 0) {
             const mem = memorials[0];
 

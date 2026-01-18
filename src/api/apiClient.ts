@@ -95,21 +95,60 @@ export const api = {
         createStripeCheckout: async (params: any) => {
             console.log('Invoking create-checkout with params:', params);
 
-            const { data, error } = await supabase.functions.invoke('create-checkout', {
-                body: params,
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+            const functionUrl = `${supabaseUrl}/functions/v1/create-checkout`;
+
+            console.log('Calling Edge Function URL:', functionUrl);
+            console.log('Using Anon Key:', anonKey ? 'Present (length: ' + anonKey.length + ')' : 'MISSING');
+
+            const response = await fetch(functionUrl, {
+                method: 'POST',
                 headers: {
-                    Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-                    apikey: import.meta.env.VITE_SUPABASE_ANON_KEY
-                }
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${anonKey}`,
+                    'apikey': anonKey
+                },
+                body: JSON.stringify(params)
             });
 
-            if (error) {
-                console.error('Edge Function invocation error:', error);
-                throw error;
+            console.log('Edge Function response status:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Edge Function error response:', errorText);
+                throw new Error(`Edge Function failed: ${response.status} - ${errorText}`);
             }
 
-            console.log('Edge Function response:', data);
+            const data = await response.json();
+            console.log('Edge Function response data:', data);
             return data;
+        },
+        confirmOrder: async (sessionId: string) => {
+            console.log('Invoking confirm-order with session:', sessionId);
+
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+            const functionUrl = `${supabaseUrl}/functions/v1/confirm-order`;
+
+            const response = await fetch(functionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${anonKey}`,
+                    'apikey': anonKey
+                },
+                body: JSON.stringify({ session_id: sessionId })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Edge Function failed: ${response.status} - ${errorText}`);
+            }
+
+            return await response.json();
         }
     },
     storage: {
