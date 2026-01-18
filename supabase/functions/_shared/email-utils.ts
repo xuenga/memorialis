@@ -1,21 +1,22 @@
-import { Resend } from 'npm:resend@2.0.0';
+import { Resend } from 'https://esm.sh/resend@2.0.0';
 
 export const sendConfirmationEmail = async (order: any, memorial: any) => {
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+  const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
-    if (!resendApiKey) {
-        console.error('RESEND_API_KEY is not set');
-        return;
-    }
+  if (!resendApiKey) {
+    console.error('RESEND_API_KEY is not set');
+    return;
+  }
 
-    const resend = new Resend(resendApiKey);
+  const resend = new Resend(resendApiKey);
 
-    const customerName = order.customer_name || 'Client';
-    const orderNumber = order.order_number;
-    const accessCode = memorial?.access_code || 'N/A';
-    const editUrl = `https://memorialis.shop/edit-memorial/${memorial.id}`; // Adjust domain as needed
+  const customerName = order.customer_name || 'Client';
+  const orderNumber = order.order_number;
+  const accessCode = memorial?.access_code || 'N/A';
+  const memorialId = memorial?.id;
+  const editUrl = memorialId ? `https://memorialis.shop/edit-memorial/${memorialId}` : '#';
 
-    const htmlContent = `
+  const htmlContent = `
     <!DOCTYPE html>
     <html>
     <head>
@@ -64,18 +65,18 @@ export const sendConfirmationEmail = async (order: any, memorial: any) => {
     </html>
   `;
 
-    try {
-        const data = await resend.emails.send({
-            from: 'Memorialis <commandes@memorialis.shop>', // Update this to your verified domain
-            to: [order.customer_email],
-            subject: `Confirmation de votre commande ${orderNumber} - Memorialis`,
-            html: htmlContent,
-        });
+  try {
+    const data = await resend.emails.send({
+      from: 'Memorialis <commandes@memorialis.shop>', // Update this to your verified domain
+      to: [order.customer_email],
+      subject: `Confirmation de votre commande ${orderNumber} - Memorialis`,
+      html: htmlContent,
+    });
 
-        console.log('Confirmation email sent successfully:', data);
-        return data;
-    } catch (error) {
-        console.error('Error sending confirmation email:', error);
-        return null;
-    }
+    console.log('Confirmation email sent successfully:', data);
+    return data;
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+    return null; // Return null so we don't crash the calling function
+  }
 };
