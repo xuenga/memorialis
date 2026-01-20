@@ -35,19 +35,59 @@ export default function OrderConfirmation() {
         } catch (e) { console.error(e) }
       }
 
-      // 2. If we have session_id but no order yet (or manual confirmation needed)
-      if (sessionId && !orderId) {
+      // 2. Check/Repair with session_id if we have it
+      // Always verify with session_id if we don't have a confirmed memorial yet
+      // This allows the auto-repair logic in the backend to run if the order exists but has no memorial
+      if (sessionId && (!memorialId || !orderId)) {
         try {
-          console.log('Confirming order with session:', sessionId);
+          console.log('Verifying order with session:', sessionId);
           const data = await (api.functions as any).confirmOrder(sessionId);
-          console.log('Confirmation result:', data);
+          console.log('Verification result:', data);
 
           if (data.order) setOrder(data.order);
-          if (data.memorial) setMemorial(data.memorial);
+          if (data.memorial) {
+            setMemorial(data.memorial);
+            // Update URL silently to include the repaired IDs if possible, or just rely on state
+          } else if (data.order && !data.memorial) {
+            // EMERGENCY SERVER REPAIR CALL
+            // Bypasses RLS issues by using a dedicated Edge Function with Service Role
+            console.log('Backend returned no memorial. Attempting SERVER-SIDE repair calling dedicated function...');
+
+            try {
+              const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+              const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+              const repairRes = await fetch(`${supabaseUrl}/functions/v1/repair-order`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${anonKey}`
+                },
+                body: JSON.stringify({ order_id: data.order.id })
+              });
+
+              const repairData = await repairRes.json();
+              console.log('Repair result:', repairData);
+
+              if (repairRes.ok && repairData.memorial) {
+                setMemorial(repairData.memorial);
+                setOrder({ ...data.order, memorial_id: repairData.memorial.id });
+                toast.success("Mémorial réparé avec succès !");
+              } else {
+                throw new Error(repairData.error || 'Unknown error');
+              }
+            } catch (repairError) {
+              console.error('Server-side repair failed:', repairError);
+              toast.error("Impossible de réparer le mémorial automatiquement (" + (repairError as any).message + ")");
+            }
+          }
 
         } catch (error) {
-          console.error('Manual confirmation failed:', error);
-          toast.error("Erreur lors de la récupération de la commande. Veuillez vérifier vos emails.");
+          console.error('Verification failed:', error);
+          // Don't show error toast if we managed to load something from IDs above
+          if (!orderId && !memorialId) {
+            toast.error("Erreur lors de la vérification. Veuillez contacter le support.");
+          }
         }
       }
 
@@ -164,6 +204,17 @@ export default function OrderConfirmation() {
             Vous recevrez un notification dès qu'elle sera expédiée.
           </p>
         </motion.div>
+
+        {/* DEBUG BLOCK - TO REMOVE */}
+        <div className="mt-8 p-4 bg-red-100 border border-red-300 rounded text-xs font-mono text-red-800 break-all">
+          <p><strong>DEBUG INFO:</strong></p>
+          <p>Session ID: {sessionId || 'null'}</p>
+          <p>Order ID (URL): {orderId || 'null'}</p>
+          <p>Memorial ID (URL): {memorialId || 'null'}</p>
+          <p>Order State: {order ? 'Loaded' : 'Null'}</p>
+          <p>Memorial State: {memorial ? 'Loaded' : 'Null'}</p>
+          <p>Access Code: {accessCode}</p>
+        </div>
       </div>
     </div>
   );

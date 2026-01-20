@@ -1,7 +1,8 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import Stripe from 'https://esm.sh/stripe@13.10.0?target=deno'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
-import { sendConfirmationEmail } from '../_shared/email-utils.ts'
+import { sendOrderConfirmationEmail } from '../_shared/email.ts'
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -69,13 +70,13 @@ serve(async (req) => {
             let qrCode = null
             let accessCode = ''
             let memorialId = null
-            let memorial: any = null
+            let memorial = null;
 
             // Check if we need a QR code (for memorial products)
-            const needsQRCode = items.some((item: any) =>
-                item.product_name?.toLowerCase().includes('plaque') ||
-                item.product_name?.toLowerCase().includes('mémorial')
-            )
+            // Relaxed check: If there are items, we assume it's a memorial product
+            const needsQRCode = items.length > 0;
+
+            console.log('Webhook: Checking needsQRCode', needsQRCode);
 
             if (needsQRCode) {
                 const { data: qrCodes, error: qrError } = await supabase
@@ -99,6 +100,7 @@ serve(async (req) => {
                 const { data: createdMemorial, error: memError } = await supabase
                     .from('Memorial')
                     .insert({
+                        id: crypto.randomUUID(),
                         name: deceasedName,
                         access_code: accessCode,
                         owner_email: customerEmail,
@@ -110,13 +112,12 @@ serve(async (req) => {
                     .select()
                     .single()
 
-                memorial = createdMemorial
-
                 if (memError) {
                     console.error('Error creating memorial:', memError)
                 } else {
-                    memorialId = memorial.id
-                    console.log('Memorial created:', memorial.id)
+                    memorial = createdMemorial;
+                    memorialId = createdMemorial.id
+                    console.log('Memorial created:', createdMemorial.id)
                 }
             }
 
@@ -170,8 +171,22 @@ serve(async (req) => {
 
             console.log(`✅ Order ${orderNumber} processed successfully`)
 
-            // 5. Send confirmation email
-            await sendConfirmationEmail(order, memorial || { id: memorialId, access_code: accessCode })
+            // Send Confirmation Email
+            try {
+                // Construct logic url (assumes frontend is at origin of valid domain or localhost)
+                const frontendUrl = Deno.env.get('FRONTEND_URL') || 'https://memorialis.shop';
+                const memorialLink = memorial ? `${frontendUrl}/memorial/${memorial.slug || memorial.id}` : `${frontendUrl}/edit-memorial/${memorialId || ''}`;
+
+                await sendOrderConfirmationEmail(
+                    customerEmail,
+                    customerName,
+                    orderNumber,
+                    accessCode,
+                    memorialLink
+                );
+            } catch (emailError) {
+                console.error('Failed to send confirmation email:', emailError);
+            }
         }
 
         return new Response(

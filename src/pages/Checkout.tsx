@@ -249,7 +249,7 @@ export default function Checkout() {
               <Button
                 type="submit"
                 disabled={isProcessing}
-                className="btn-primary w-full py-8 rounded-full text-xl font-bold flex items-center justify-center gap-3 shadow-xl hover:shadow-2xl"
+                className="bg-primary hover:bg-primary/90 text-white w-full py-8 rounded-full text-xl font-bold flex items-center justify-center gap-3 shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all duration-300"
               >
                 {isProcessing ? (
                   <div className="w-6 h-6 border-3 border-primary border-t-transparent rounded-full animate-spin" />
