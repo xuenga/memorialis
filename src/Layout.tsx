@@ -129,21 +129,25 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
             <div className="flex items-center gap-3">
               <Link
                 to={createPageUrl('Cart')}
-                className={`relative p-2.5 rounded-full transition-all duration-300 group ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-primary/5' : 'hover:bg-white/10'
+                title="Mon Panier"
+                className={`group flex items-center justify-center w-11 h-11 lg:w-12 lg:h-12 rounded-full transition-all duration-500 relative ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-accent/10' : 'hover:bg-white/10'
                   }`}
               >
-                <ShoppingBag className={`w-5 h-5 lg:w-6 lg:h-6 transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
-                  } group-hover:text-accent`} />
-                {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 w-5 h-5 bg-accent text-primary text-[10px] font-bold rounded-full flex items-center justify-center shadow-md animate-in zoom-in duration-300">
-                    {cartCount}
-                  </span>
-                )}
+                <div className="relative">
+                  <ShoppingBag className={`w-5 h-5 lg:w-6 lg:h-6 transition-colors duration-500 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
+                    } group-hover:text-accent`} />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 w-5 h-5 bg-accent text-primary text-[10px] font-bold rounded-full flex items-center justify-center shadow-md animate-in zoom-in duration-300 border-2 border-white">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
               </Link>
 
               <Link
                 to={createPageUrl('MyMemorials')}
-                className={`hidden sm:flex p-2.5 rounded-full transition-all duration-300 group ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-primary/5' : 'hover:bg-white/10'
+                title="Mon Compte"
+                className={`hidden sm:flex items-center justify-center w-11 h-11 lg:w-12 lg:h-12 rounded-full transition-all duration-500 group ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-accent/10' : 'hover:bg-white/10'
                   }`}
               >
                 <User className={`w-5 h-5 lg:w-6 lg:h-6 transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'

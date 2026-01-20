@@ -32,7 +32,6 @@ export default function AdminProducts() {
     material: 'autocollant',
     category: 'plaques',
     dimensions: '',
-    features: [],
     is_active: true
   });
 
@@ -62,7 +61,6 @@ export default function AdminProducts() {
       material: product.material || 'autocollant',
       category: product.category || 'plaques',
       dimensions: product.dimensions || '',
-      features: product.features || [],
       is_active: product.is_active ?? true
     });
     setShowForm(true);
@@ -79,7 +77,6 @@ export default function AdminProducts() {
       material: 'autocollant',
       category: 'plaques',
       dimensions: '',
-      features: [],
       is_active: true
     });
     setShowForm(true);
@@ -179,20 +176,7 @@ export default function AdminProducts() {
     }
   };
 
-  const addFeature = () => {
-    setFormData({ ...formData, features: [...formData.features, ''] });
-  };
 
-  const updateFeature = (index: number, value: string) => {
-    const newFeatures = [...formData.features];
-    newFeatures[index] = value;
-    setFormData({ ...formData, features: newFeatures });
-  };
-
-  const removeFeature = (index: number) => {
-    const newFeatures = formData.features.filter((_: any, i: number) => i !== index);
-    setFormData({ ...formData, features: newFeatures });
-  };
 
   return (
     <div className="min-h-screen bg-background py-12">
@@ -375,7 +359,7 @@ export default function AdminProducts() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white">
                         <SelectItem value="plaques">Plaques</SelectItem>
                         <SelectItem value="accessoires">Accessoires</SelectItem>
                         <SelectItem value="personnalisation">Personnalisation</SelectItem>
@@ -392,7 +376,7 @@ export default function AdminProducts() {
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white">
                         <SelectItem value="autocollant">Autocollant</SelectItem>
                         <SelectItem value="plexiglass">Plexiglass</SelectItem>
                         <SelectItem value="metal">Métal</SelectItem>
@@ -442,35 +426,7 @@ export default function AdminProducts() {
                   />
                 </div>
 
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <Label>Caractéristiques</Label>
-                    <Button type="button" onClick={addFeature} size="sm" variant="outline" className="rounded-full px-4 border-primary/20">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Ajouter
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    {formData.features.map((feature: string, index: number) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          value={feature}
-                          onChange={(e) => updateFeature(index, e.target.value)}
-                          placeholder="Ex: Garantie 2 ans"
-                        />
-                        <Button
-                          type="button"
-                          onClick={() => removeFeature(index)}
-                          size="icon"
-                          variant="ghost"
-                          className="h-14 w-14 rounded-2xl text-red-400 hover:text-red-500 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+
 
                 <div className="flex items-center justify-between p-4 bg-background/50 rounded-xl">
                   <div>

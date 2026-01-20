@@ -65,8 +65,7 @@ export default function AdminProducts() {
     const productData = {
       ...formData,
       price: parseFloat(formData.price),
-      stock: parseInt(formData.stock as any),
-      features: formData.features.filter((f: string) => f.trim() !== '')
+      stock: parseInt(formData.stock as any)
     };
 
     if (editingProduct) {

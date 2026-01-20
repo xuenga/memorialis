@@ -57,13 +57,6 @@
       "type": "string",
       "description": "Dimensions du produit"
     },
-    "features": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "Caract\u00e9ristiques du produit"
-    },
     "stock": {
       "type": "number",
       "default": 0,

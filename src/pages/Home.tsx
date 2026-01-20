@@ -118,7 +118,7 @@ export default function Home() {
                 Accessible par QR code, partageable avec vos proches.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-6">
+              <div className="flex flex-col sm:flex-row gap-6 mb-12">
                 <Link to={createPageUrl('Products')}>
                   <Button variant="secondary" size="lg" className="px-10 py-7 text-lg rounded-full flex items-center gap-3 w-full sm:w-auto">
                     Découvrir nos plaques
@@ -131,8 +131,28 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
+
+              {/* Mobile Demo Link */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="lg:hidden"
+              >
+                <Link to="/memorial/demo-memorial" className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-accent/40 hover:bg-white/10 transition-all duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
+                    <QrCode className="w-6 h-6 text-accent" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white/50 text-[10px] uppercase tracking-widest font-bold">Exemple interactif</p>
+                    <p className="font-serif text-white group-hover:text-accent transition-colors">Découvrir un mémorial démo</p>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-white/30" />
+                </Link>
+              </motion.div>
             </motion.div>
 
+            {/* Desktop Preview Card */}
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
