@@ -14,11 +14,7 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [personalization, setPersonalization] = useState({
-    deceased_name: '',
-    dates: '',
-    custom_text: ''
-  });
+
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
@@ -62,7 +58,7 @@ export default function ProductDetail() {
         material: productData.material,
         price: productData.price,
         quantity: quantity,
-        personalization: personalization,
+        personalization: {},
         stripe_price_id: productData.stripe_price_id
       });
 
@@ -151,27 +147,7 @@ export default function ProductDetail() {
               </ul>
             </div>
 
-            <div className="space-y-6 mb-10 pb-10 border-b border-primary/10">
-              <h3 className="font-serif text-xl text-primary">Personnalisation (optionnel)</h3>
-              <div className="grid gap-4">
-                <div className="space-y-2">
-                  <Label>Nom de l'être cher</Label>
-                  <Input
-                    placeholder="Ex: Marie Dupont"
-                    value={personalization.deceased_name}
-                    onChange={(e) => setPersonalization({ ...personalization, deceased_name: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Dates</Label>
-                  <Input
-                    placeholder="Ex: 1945 - 2024"
-                    value={personalization.dates}
-                    onChange={(e) => setPersonalization({ ...personalization, dates: e.target.value })}
-                  />
-                </div>
-              </div>
-            </div>
+
 
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex items-center bg-white rounded-full p-1 border border-primary/10">

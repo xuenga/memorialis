@@ -72,6 +72,14 @@
     "is_active": {
       "type": "boolean",
       "default": true
+    },
+    "stripe_product_id": {
+      "type": "string",
+      "description": "ID du produit dans Stripe (prod_xxx)"
+    },
+    "stripe_price_id": {
+      "type": "string",
+      "description": "ID du prix dans Stripe (price_xxx)"
     }
   },
   "required": [

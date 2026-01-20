@@ -174,11 +174,7 @@ export default function Cart() {
                           <p className="text-sm text-primary/50 capitalize">
                             Support {item.material}
                           </p>
-                          {item.personalization?.deceased_name && (
-                            <p className="text-sm text-accent mt-2 font-medium">
-                              Pour : {item.personalization.deceased_name}
-                            </p>
-                          )}
+
                         </div>
                         <button
                           onClick={() => removeItem(item)}

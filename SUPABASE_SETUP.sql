@@ -17,6 +17,8 @@ create table if not exists "Product" (
   features text[],
   stock integer default 0,
   is_active boolean default true,
+  stripe_product_id text,
+  stripe_price_id text,
   created_at timestamp with time zone default now()
 );
 

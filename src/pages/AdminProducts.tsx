@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, Eye, EyeOff, Save, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, RefreshCw, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -95,12 +95,55 @@ export default function AdminProducts() {
     };
 
     try {
+      let savedProduct;
       if (editingProduct) {
-        await api.entities.Product.update(editingProduct.id, productData);
+        savedProduct = await api.entities.Product.update(editingProduct.id, productData);
         toast.success('Produit mis à jour !');
+
+        // Sync with Stripe if price changed and no stripe_price_id or if it's a new sync
+        if (!editingProduct.stripe_price_id || parseFloat(formData.price) !== editingProduct.price) {
+          try {
+            toast.loading('Synchronisation avec Stripe...', { id: 'stripe-sync' });
+            const stripeResult = await (api.functions as any).syncStripeProduct({
+              product_id: savedProduct.id,
+              name: productData.name,
+              description: productData.description,
+              price: productData.price,
+              image_url: productData.image_url
+            });
+            await api.entities.Product.update(savedProduct.id, {
+              stripe_product_id: stripeResult.stripe_product_id,
+              stripe_price_id: stripeResult.stripe_price_id
+            });
+            toast.success('Synchronisé avec Stripe !', { id: 'stripe-sync' });
+          } catch (stripeError) {
+            console.error('Stripe sync error:', stripeError);
+            toast.error('Erreur de synchronisation Stripe', { id: 'stripe-sync' });
+          }
+        }
       } else {
-        await api.entities.Product.create(productData);
+        savedProduct = await api.entities.Product.create(productData);
         toast.success('Produit créé !');
+
+        // Auto-sync new product with Stripe
+        try {
+          toast.loading('Synchronisation avec Stripe...', { id: 'stripe-sync' });
+          const stripeResult = await (api.functions as any).syncStripeProduct({
+            product_id: savedProduct.id,
+            name: productData.name,
+            description: productData.description,
+            price: productData.price,
+            image_url: productData.image_url
+          });
+          await api.entities.Product.update(savedProduct.id, {
+            stripe_product_id: stripeResult.stripe_product_id,
+            stripe_price_id: stripeResult.stripe_price_id
+          });
+          toast.success('Synchronisé avec Stripe !', { id: 'stripe-sync' });
+        } catch (stripeError) {
+          console.error('Stripe sync error:', stripeError);
+          toast.error('Erreur de synchronisation Stripe', { id: 'stripe-sync' });
+        }
       }
       setShowForm(false);
       loadProducts();
@@ -251,7 +294,20 @@ export default function AdminProducts() {
                 </p>
 
                 <div className="flex items-center justify-between pt-4 border-t border-primary/10">
-                  <span className="text-xs text-primary/50">{product.dimensions}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-primary/50">{product.dimensions}</span>
+                    {product.stripe_price_id ? (
+                      <span className="flex items-center gap-1 text-xs bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">
+                        <CheckCircle className="w-3 h-3" />
+                        Stripe
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1 text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">
+                        <RefreshCw className="w-3 h-3" />
+                        Non sync
+                      </span>
+                    )}
+                  </div>
                   <span className="font-serif text-xl text-accent">{product.price}€</span>
                 </div>
               </motion.div>

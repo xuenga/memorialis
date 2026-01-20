@@ -68,7 +68,8 @@ export default function Checkout() {
           product_name: item.product_name,
           quantity: item.quantity || 1,
           price: item.price,
-          personalization: item.personalization
+          personalization: item.personalization,
+          stripe_price_id: item.stripe_price_id
         })),
         customer_email: formData.email,
         customer_name: formData.name,

@@ -149,6 +149,31 @@ export const api = {
             }
 
             return await response.json();
+        },
+        syncStripeProduct: async (params: { product_id: string; name: string; description?: string; price: number; image_url?: string }) => {
+            console.log('Invoking sync-stripe-product with params:', params);
+
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+            const functionUrl = `${supabaseUrl}/functions/v1/sync-stripe-product`;
+
+            const response = await fetch(functionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${anonKey}`,
+                    'apikey': anonKey
+                },
+                body: JSON.stringify(params)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Edge Function failed: ${response.status} - ${errorText}`);
+            }
+
+            return await response.json();
         }
     },
     storage: {
