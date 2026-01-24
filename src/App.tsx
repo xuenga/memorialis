@@ -36,6 +36,7 @@ import Privacy from './pages/Privacy';
 import Mentions from './pages/Mentions';
 import QRRedirect from './pages/QRRedirect';
 import AdminQRCodes from './pages/AdminQRCodes';
+import AdminOrders from './pages/AdminOrders';
 
 export default function App() {
     return (
@@ -54,6 +55,7 @@ export default function App() {
                     <Route path="/admin" element={<ProtectedRoute><Layout currentPageName="AdminDashboard"><AdminDashboard /></Layout></ProtectedRoute>} />
                     <Route path="/admin/products" element={<ProtectedRoute><Layout currentPageName="AdminProducts"><AdminProducts /></Layout></ProtectedRoute>} />
                     <Route path="/admin/qrcodes" element={<ProtectedRoute><Layout currentPageName="AdminQRCodes"><AdminQRCodes /></Layout></ProtectedRoute>} />
+                    <Route path="/admin/orders" element={<ProtectedRoute><Layout currentPageName="AdminOrders"><AdminOrders /></Layout></ProtectedRoute>} />
 
                     <Route path="/cart" element={<Layout currentPageName="Cart"><Cart /></Layout>} />
                     <Route path="/checkout" element={<Layout currentPageName="Checkout"><Checkout /></Layout>} />

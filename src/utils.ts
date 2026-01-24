@@ -7,6 +7,7 @@ export const createPageUrl = (pageName: string, params: Record<string, string> =
         AdminDashboard: '/admin',
         AdminProducts: '/admin/products',
         AdminQRCodes: '/admin/qrcodes',
+        AdminOrders: '/admin/orders',
         AdminLogin: '/admin/login',
         Cart: '/cart',
         Checkout: '/checkout',

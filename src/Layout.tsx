@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { api } from '@/api/apiClient';
-import { Menu, X, ShoppingBag, User, Heart } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, QrCode } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface LayoutProps {
@@ -88,7 +88,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
             <Link to={createPageUrl('Home')} className="flex items-center gap-3 group">
               <div className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full flex items-center justify-center transition-all duration-500 shadow-sm ${isScrolled || currentPageName !== 'Home' ? 'bg-primary text-accent' : 'bg-accent text-primary'
                 } group-hover:scale-110 group-hover:shadow-accent/20 group-hover:shadow-lg`}>
-                <Heart className="w-5 h-5 lg:w-6 lg:h-6 fill-current transition-transform duration-500 group-hover:scale-110" />
+                <QrCode className="w-5 h-5 lg:w-6 lg:h-6 transition-transform duration-500 group-hover:scale-110" />
               </div>
               <div className="hidden sm:block">
                 <h1 className={`font-serif text-xl lg:text-2xl font-semibold tracking-wide transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
@@ -242,7 +242,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
             <div className="space-y-6">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-full bg-accent flex items-center justify-center">
-                  <Heart className="w-6 h-6 text-primary" />
+                  <QrCode className="w-6 h-6 text-primary" />
                 </div>
                 <span className="font-serif text-2xl text-white">Memorialis</span>
               </div>
