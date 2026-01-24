@@ -1,4 +1,13 @@
 Emails de confirmation - Envoyer un email au client après le paiement ?
 Reste à faire :
+Le panier ne se vide pas après commande
+ajouter un message d'erreur au moment de l'enregistrement du mémorial quand le slug personnalisé est déjà utilisé
 Page de confirmation - Améliorer la page /order-confirmation pour afficher les détails de la commande
 Tableau de bord admin - Gérer les commandes reçues
+Pour utiliser votre propre domaine (recommandé)
+Vous devez :
+
+Ajouter votre domaine dans Resend (ex: memorialis.shop)
+Configurer les DNS (SPF, DKIM, DMARC)
+Changer l'adresse dans le code
+Voulez-vous que je mette à jour le code pour utiliser une adresse comme commandes@memorialis.shop ou noreply@memorialis.shop ?

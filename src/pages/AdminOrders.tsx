@@ -28,6 +28,12 @@ interface Order {
         is_activated: boolean;
         name: string;
     };
+    personalization?: {
+        deceased_name?: string;
+        dates?: string;
+        birth_date?: string;
+        death_date?: string;
+    };
 }
 
 export default function AdminOrders() {
@@ -244,9 +250,9 @@ export default function AdminOrders() {
                                 <tr>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Commande</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Client</th>
-                                    <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Date</th>
+                                    <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Gravure (Défunt)</th>
+                                    <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Date Commande</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Montant</th>
-                                    <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Code Mémorial</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Mémorial</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Statut</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Actions</th>
@@ -277,6 +283,10 @@ export default function AdminOrders() {
                                                 <p className="text-xs text-primary/50">{order.customer_email}</p>
                                             </td>
                                             <td className="p-4">
+                                                <p className="text-sm font-bold text-primary">{order.personalization?.deceased_name || '-'}</p>
+                                                <p className="text-xs text-primary/60">{order.personalization?.dates || '-'}</p>
+                                            </td>
+                                            <td className="p-4">
                                                 <p className="text-sm text-primary">
                                                     {order.created_at
                                                         ? format(new Date(order.created_at), 'dd MMM yyyy', { locale: fr })
@@ -292,28 +302,21 @@ export default function AdminOrders() {
                                                 <p className="font-serif text-lg text-accent">{order.total?.toFixed(2)}€</p>
                                             </td>
                                             <td className="p-4">
-                                                {order.memorial?.access_code ? (
-                                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-mono font-medium">
-                                                        <QrCode className="w-3 h-3" />
-                                                        {order.memorial.access_code}
-                                                    </span>
-                                                ) : (
-                                                    <span className="text-primary/30 text-sm">-</span>
-                                                )}
-                                            </td>
-                                            <td className="p-4">
                                                 {order.memorial ? (
-                                                    <div>
-                                                        <p className="text-sm text-primary truncate max-w-[120px]">{order.memorial.name || 'Sans nom'}</p>
+                                                    <div className="space-y-1">
+                                                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-accent/10 text-accent text-[10px] font-mono font-medium">
+                                                            {order.memorial.access_code}
+                                                        </span>
+                                                        <p className="text-xs text-primary/60 truncate max-w-[100px]">{order.memorial.name}</p>
                                                         <Badge className={order.memorial.is_activated
-                                                            ? 'bg-green-100 text-green-700 text-xs mt-1'
-                                                            : 'bg-gray-100 text-gray-500 text-xs mt-1'
+                                                            ? 'bg-green-100 text-green-700 text-[10px] py-0 h-4'
+                                                            : 'bg-gray-100 text-gray-500 text-[10px] py-0 h-4'
                                                         }>
                                                             {order.memorial.is_activated ? 'Activé' : 'Non activé'}
                                                         </Badge>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-primary/30 text-sm">Non lié</span>
+                                                    <span className="text-primary/30 text-sm">-</span>
                                                 )}
                                             </td>
                                             <td className="p-4">

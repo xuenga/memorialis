@@ -47,16 +47,12 @@ export default function OrderConfirmation() {
           if (data.order) setOrder(data.order);
           if (data.memorial) {
             setMemorial(data.memorial);
-            // Update URL silently to include the repaired IDs if possible, or just rely on state
           } else if (data.order && !data.memorial) {
             // EMERGENCY SERVER REPAIR CALL
-            // Bypasses RLS issues by using a dedicated Edge Function with Service Role
-            console.log('Backend returned no memorial. Attempting SERVER-SIDE repair calling dedicated function...');
-
+            console.log('Backend returned no memorial. Attempting SERVER-SIDE repair...');
             try {
               const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
               const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
               const repairRes = await fetch(`${supabaseUrl}/functions/v1/repair-order`, {
                 method: 'POST',
                 headers: {
@@ -65,20 +61,26 @@ export default function OrderConfirmation() {
                 },
                 body: JSON.stringify({ order_id: data.order.id })
               });
-
               const repairData = await repairRes.json();
-              console.log('Repair result:', repairData);
-
               if (repairRes.ok && repairData.memorial) {
                 setMemorial(repairData.memorial);
                 setOrder({ ...data.order, memorial_id: repairData.memorial.id });
                 toast.success("Mémorial réparé avec succès !");
-              } else {
-                throw new Error(repairData.error || 'Unknown error');
               }
             } catch (repairError) {
               console.error('Server-side repair failed:', repairError);
-              toast.error("Impossible de réparer le mémorial automatiquement (" + (repairError as any).message + ")");
+            }
+          }
+
+          // CLEAR CART after successful verification
+          const cartSessionId = localStorage.getItem('memorialis_session');
+          if (cartSessionId && data.order) {
+            try {
+              console.log('Clearing cart for session:', cartSessionId);
+              await api.entities.CartItem.delete({ session_id: cartSessionId });
+              window.dispatchEvent(new Event('cartUpdated'));
+            } catch (cartError) {
+              console.error('Failed to clear cart:', cartError);
             }
           }
 

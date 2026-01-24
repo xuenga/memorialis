@@ -97,6 +97,18 @@ export default function EditMemorial() {
     if (!memorialId || !memorial) return;
     setIsSaving(true);
     try {
+      // 1. Check if slug is unique (if it changed)
+      if (memorial.slug) {
+        const existingWithSlug = await api.entities.Memorial.filter({ slug: memorial.slug });
+        const isTakenByOther = existingWithSlug.some((m: MemorialData) => m.id !== memorialId);
+
+        if (isTakenByOther) {
+          toast.error("Cette adresse (URL) est déjà utilisée par un autre mémorial. Veuillez en choisir une autre.");
+          setIsSaving(false);
+          return;
+        }
+      }
+
       await api.entities.Memorial.update(memorialId, memorial);
       toast.success('Mémorial sauvegardé !');
     } catch (e) {
