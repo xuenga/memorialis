@@ -175,14 +175,19 @@ serve(async (req) => {
             try {
                 // Construct logic url (assumes frontend is at origin of valid domain or localhost)
                 const frontendUrl = Deno.env.get('FRONTEND_URL') || 'https://memorialis.shop';
-                const memorialLink = memorial ? `${frontendUrl}/memorial/${memorial.slug || memorial.id}` : `${frontendUrl}/edit-memorial/${memorialId || ''}`;
+                const memorialLink = memorial ? `${frontendUrl}/edit-memorial/${accessCode}` : `${frontendUrl}/edit-memorial/${accessCode}`;
 
                 await sendOrderConfirmationEmail(
                     customerEmail,
                     customerName,
                     orderNumber,
                     accessCode,
-                    memorialLink
+                    memorialLink,
+                    items,
+                    session.amount_subtotal ? session.amount_subtotal / 100 : 0,
+                    9.90,
+                    session.amount_total ? session.amount_total / 100 : 0,
+                    shippingAddress
                 );
             } catch (emailError) {
                 console.error('Failed to send confirmation email:', emailError);

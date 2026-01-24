@@ -129,15 +129,20 @@ serve(async (req: Request) => {
                         // Send confirmation email on repair
                         try {
                             const frontendUrl = Deno.env.get('FRONTEND_URL') || 'https://memorialis.shop';
-                            const memorialLink = newMemorial ? `${frontendUrl}/memorial/${newMemorial.slug || newMemorial.id}` : `${frontendUrl}/edit-memorial/${newMemorial.id}`;
-                            const orderNumber = order.order_number || 'UNKNOWN';
+                            const memorialLink = `${frontendUrl}/edit-memorial/${accessCode}`;
+                            const repairOrderNumber = order.order_number || 'UNKNOWN';
 
                             await sendOrderConfirmationEmail(
                                 customerEmail,
                                 session.customer_details?.name || 'Client',
-                                orderNumber,
+                                repairOrderNumber,
                                 accessCode,
-                                memorialLink
+                                memorialLink,
+                                items,
+                                order.subtotal || 0,
+                                order.shipping_cost || 9.90,
+                                order.total || 0,
+                                order.shipping_address
                             );
                         } catch (emailError) {
                             console.error('Failed to send repair email:', emailError);
@@ -263,14 +268,19 @@ serve(async (req: Request) => {
             // Send Confirmation Email
             try {
                 const frontendUrl = Deno.env.get('FRONTEND_URL') || 'https://memorialis.shop';
-                const memorialLink = finalMemorial ? `${frontendUrl}/memorial/${finalMemorial.slug || finalMemorial.id}` : `${frontendUrl}/edit-memorial/${memorialId}`;
+                const memorialLink = `${frontendUrl}/edit-memorial/${accessCode}`;
 
                 await sendOrderConfirmationEmail(
                     customerEmail,
                     customerName,
                     orderNumber,
                     accessCode,
-                    memorialLink
+                    memorialLink,
+                    items,
+                    session.amount_subtotal ? session.amount_subtotal / 100 : 0,
+                    9.90,
+                    session.amount_total ? session.amount_total / 100 : 0,
+                    shippingAddress
                 );
             } catch (emailError) {
                 console.error('Failed to send confirmation email:', emailError);

@@ -165,9 +165,10 @@ export default function Home() {
                   <div className="aspect-square rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
                     <QrCode className="w-32 h-32 text-accent" />
                   </div>
-                  <div className="mt-6 text-center">
-                    <p className="text-white/50 text-sm group-hover:text-accent/80 transition-colors">Cliquez pour découvrir</p>
-                    <p className="font-serif text-xl text-white mt-2 group-hover:text-accent transition-colors">Un mémorial d'exemple</p>
+                  <div className="mt-8 text-center">
+                    <span className="inline-block px-4 py-2 bg-accent/20 border border-accent/40 rounded-full text-accent text-sm font-medium tracking-wide group-hover:bg-accent/30 transition-all duration-300">
+                      ✦ Mémorial Numérique Premium
+                    </span>
                   </div>
                 </div>
               </Link>
