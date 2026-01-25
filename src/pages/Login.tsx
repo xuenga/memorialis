@@ -3,6 +3,12 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
 import { Mail, Lock, LogIn, Loader2 } from 'lucide-react';
+import { PasswordInput } from '@/components/ui/password-input';
+import { translateAuthError } from '@/lib/authErrors';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function Login() {
     const navigate = useNavigate();
@@ -26,7 +32,7 @@ export default function Login() {
             const { user, error } = await signIn(email, password);
 
             if (error) {
-                toast.error(error.message || 'Erreur de connexion');
+                toast.error(translateAuthError(error));
                 setIsLoading(false);
                 return;
             }
@@ -44,102 +50,92 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
-            <div className="max-w-md w-full space-y-8">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                        Connexion
-                    </h2>
-                    <p className="text-gray-600">
-                        Connectez-vous à votre compte Memorialis
-                    </p>
+        <div className="min-h-[80vh] flex items-center justify-center px-6 py-12">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="max-w-md w-full bg-white rounded-3xl p-8 shadow-xl shadow-primary/5 border border-primary/5"
+            >
+                <div className="text-center mb-10">
+                    <div className="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <LogIn className="w-6 h-6 text-accent" />
+                    </div>
+                    <h1 className="font-serif text-3xl text-primary mb-2">Connexion</h1>
+                    <p className="text-primary/60">Connectez-vous à votre compte Memorialis</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-                    <div className="space-y-4">
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                Email
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                                    placeholder="votre@email.com"
-                                    disabled={isLoading}
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                                Mot de passe
-                            </label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-gray-400" />
-                                </div>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                                    placeholder="••••••••"
-                                    disabled={isLoading}
-                                />
-                            </div>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <div className="relative">
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30" />
+                            <Input
+                                id="email"
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="votre@email.com"
+                                className="h-14 pl-12 rounded-2xl border-primary/10 focus:border-accent"
+                                disabled={isLoading}
+                            />
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between">
-                        <div className="text-sm">
-                            <Link
-                                to="/forgot-password"
-                                className="font-medium text-blue-600 hover:text-blue-500 transition"
-                            >
-                                Mot de passe oublié ?
-                            </Link>
+                    <div className="space-y-2">
+                        <Label htmlFor="password">Mot de passe</Label>
+                        <div className="relative">
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 z-10" />
+                            <PasswordInput
+                                id="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                className="h-14 pl-12 pr-12 rounded-2xl border-primary/10 focus:border-accent"
+                                disabled={isLoading}
+                            />
                         </div>
                     </div>
 
-                    <button
+                    <div className="flex items-center justify-end">
+                        <Link
+                            to="/forgot-password"
+                            className="text-sm font-medium text-accent hover:text-accent/80 transition"
+                        >
+                            Mot de passe oublié ?
+                        </Link>
+                    </div>
+
+                    <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                        className="w-full h-14 rounded-full font-bold shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
                         {isLoading ? (
                             <>
-                                <Loader2 className="animate-spin h-5 w-5" />
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                                 Connexion en cours...
                             </>
                         ) : (
                             <>
-                                <LogIn className="h-5 w-5" />
+                                <LogIn className="mr-2 h-5 w-5" />
                                 Se connecter
                             </>
                         )}
-                    </button>
+                    </Button>
 
-                    <div className="text-center text-sm">
-                        <span className="text-gray-600">Pas encore de compte ?</span>{' '}
+                    <div className="text-center text-sm pt-4">
+                        <span className="text-primary/60">Pas encore de compte ?</span>{' '}
                         <Link
                             to="/signup"
-                            className="font-medium text-blue-600 hover:text-blue-500 transition"
+                            className="font-medium text-accent hover:text-accent/80 transition"
                         >
                             Créer un compte
                         </Link>
                     </div>
                 </form>
-            </div>
+            </motion.div>
         </div>
     );
 }

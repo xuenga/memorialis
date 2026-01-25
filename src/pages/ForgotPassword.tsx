@@ -2,7 +2,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Mail, ArrowLeft, CheckCircle, Loader2, KeyRound } from 'lucide-react';
+import { translateAuthError } from '@/lib/authErrors';
+import { motion } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export default function ForgotPassword() {
     const { resetPassword } = useAuth();
@@ -24,7 +29,7 @@ export default function ForgotPassword() {
             const { error } = await resetPassword(email);
 
             if (error) {
-                toast.error(error.message || 'Erreur lors de l\'envoi de l\'email');
+                toast.error(translateAuthError(error));
                 setIsLoading(false);
                 return;
             }
@@ -40,83 +45,90 @@ export default function ForgotPassword() {
 
     if (emailSent) {
         return (
-            <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
-                <div className="max-w-md w-full text-center space-y-6">
-                    <div className="flex justify-center">
-                        <CheckCircle className="h-16 w-16 text-green-500" />
+            <div className="min-h-[80vh] flex items-center justify-center px-6 py-12">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="max-w-md w-full bg-white rounded-3xl p-8 shadow-xl shadow-primary/5 text-center border border-primary/5"
+                >
+                    <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-8 h-8 text-green-500" />
                     </div>
-                    <h2 className="text-3xl font-bold text-gray-900">
-                        Email envoyé !
-                    </h2>
-                    <p className="text-gray-600">
-                        Nous avons envoyé un lien de réinitialisation à <strong>{email}</strong>.
+                    <h2 className="font-serif text-3xl text-primary mb-4">Email envoyé !</h2>
+                    <p className="text-primary/60 mb-8">
+                        Nous avons envoyé un lien de réinitialisation à <strong className="text-primary">{email}</strong>.
                         Vérifiez votre boîte de réception et suivez les instructions.
                     </p>
-                    <Link
-                        to="/login"
-                        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-500 transition"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        Retour à la connexion
+                    <Link to="/login">
+                        <Button variant="outline" className="w-full h-14 rounded-full font-bold gap-2">
+                            <ArrowLeft className="w-5 h-5" />
+                            Retour à la connexion
+                        </Button>
                     </Link>
-                </div>
+                </motion.div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
-            <div className="max-w-md w-full space-y-8">
-                <div className="text-center">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                        Mot de passe oublié ?
-                    </h2>
-                    <p className="text-gray-600">
-                        Entrez votre email pour recevoir un lien de réinitialisation
-                    </p>
+        <div className="min-h-[80vh] flex items-center justify-center px-6 py-12">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="max-w-md w-full bg-white rounded-3xl p-8 shadow-xl shadow-primary/5 border border-primary/5"
+            >
+                <div className="text-center mb-10">
+                    <div className="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <KeyRound className="w-6 h-6 text-accent" />
+                    </div>
+                    <h1 className="font-serif text-3xl text-primary mb-2">Mot de passe oublié ?</h1>
+                    <p className="text-primary/60">Entrez votre email pour recevoir un lien de réinitialisation</p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="mt-8 space-y-6 bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                            Email
-                        </label>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
                         <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Mail className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <input
+                            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30" />
+                            <Input
                                 id="email"
                                 type="email"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="appearance-none block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                                 placeholder="votre@email.com"
+                                className="h-14 pl-12 rounded-2xl border-primary/10 focus:border-accent"
                                 disabled={isLoading}
                             />
                         </div>
                     </div>
 
-                    <button
+                    <Button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                        className="w-full h-14 rounded-full font-bold shadow-lg shadow-primary/10 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
-                        {isLoading ? 'Envoi en cours...' : 'Envoyer le lien de réinitialisation'}
-                    </button>
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                Envoi en cours...
+                            </>
+                        ) : (
+                            'Envoyer le lien de réinitialisation'
+                        )}
+                    </Button>
 
-                    <div className="text-center">
+                    <div className="text-center pt-4">
                         <Link
                             to="/login"
-                            className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-500 transition"
+                            className="inline-flex items-center gap-2 text-sm text-primary/60 hover:text-accent transition font-medium"
                         >
-                            <ArrowLeft className="h-4 w-4" />
+                            <ArrowLeft className="w-4 h-4" />
                             Retour à la connexion
                         </Link>
                     </div>
                 </form>
-            </div>
+            </motion.div>
         </div>
     );
 }

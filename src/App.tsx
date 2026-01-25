@@ -29,6 +29,7 @@ import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import ResetPassword from './pages/ResetPassword';
 import MyMemorials from './pages/MyMemorials';
 import EditMemorial from './pages/EditMemorial';
 import ViewMemorial from './pages/ViewMemorial';
@@ -57,6 +58,7 @@ export default function App() {
                     <Route path="/login" element={<Layout currentPageName="Login"><Login /></Layout>} />
                     <Route path="/signup" element={<Layout currentPageName="Signup"><Signup /></Layout>} />
                     <Route path="/forgot-password" element={<Layout currentPageName="ForgotPassword"><ForgotPassword /></Layout>} />
+                    <Route path="/reset-password" element={<Layout currentPageName="ResetPassword"><ResetPassword /></Layout>} />
 
                     {/* Admin routes - protected with role check */}
                     <Route path="/admin/login" element={<Navigate to="/login" replace />} />

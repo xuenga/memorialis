@@ -4,9 +4,10 @@ import { supabase } from '@/lib/supabaseClient';
 import { motion } from 'framer-motion';
 import { Lock, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { PasswordInput } from '@/components/ui/password-input';
+import { translateAuthError } from '@/lib/authErrors';
 
 export default function ResetPassword() {
     const [password, setPassword] = useState('');
@@ -50,7 +51,7 @@ export default function ResetPassword() {
             });
 
             if (error) {
-                toast.error(error.message);
+                toast.error(translateAuthError(error));
             } else {
                 setIsSuccess(true);
                 toast.success("Mot de passe mis à jour avec succès !");
@@ -108,14 +109,13 @@ export default function ResetPassword() {
                     <div className="space-y-2">
                         <Label htmlFor="password">Nouveau mot de passe</Label>
                         <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30" />
-                            <Input
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 z-10" />
+                            <PasswordInput
                                 id="password"
-                                type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="h-14 pl-12 rounded-2xl border-primary/10 focus:border-accent"
+                                className="h-14 pl-12 pr-12 rounded-2xl border-primary/10 focus:border-accent"
                                 required
                             />
                         </div>
@@ -124,14 +124,13 @@ export default function ResetPassword() {
                     <div className="space-y-2">
                         <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
                         <div className="relative">
-                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30" />
-                            <Input
+                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30 z-10" />
+                            <PasswordInput
                                 id="confirmPassword"
-                                type="password"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 placeholder="••••••••"
-                                className="h-14 pl-12 rounded-2xl border-primary/10 focus:border-accent"
+                                className="h-14 pl-12 pr-12 rounded-2xl border-primary/10 focus:border-accent"
                                 required
                             />
                         </div>
