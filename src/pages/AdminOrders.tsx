@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { useAdminAuth } from '@/contexts/AdminAuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Order {
     id: string;
@@ -44,12 +44,12 @@ export default function AdminOrders() {
     const [statusFilter, setStatusFilter] = useState('all');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-    const { logout } = useAdminAuth();
+    const { signOut } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        logout();
-        navigate('/admin/login');
+    const handleLogout = async () => {
+        await signOut();
+        navigate('/login');
     };
 
     useEffect(() => {

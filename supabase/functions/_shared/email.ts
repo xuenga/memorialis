@@ -46,7 +46,8 @@ export const sendOrderConfirmationEmail = async (
   subtotal: number = 0,
   shippingCost: number = 9.90,
   total: number = 0,
-  shippingAddress?: ShippingAddress | null
+  shippingAddress?: ShippingAddress | null,
+  invitationLink?: string
 ) => {
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
@@ -133,6 +134,25 @@ export const sendOrderConfirmationEmail = async (
               </a>
             </p>
           </div>
+
+          ${invitationLink ? `
+          <!-- Account Setup Section -->
+          <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 2px solid #60a5fa; padding: 25px; border-radius: 12px; margin: 25px 0;">
+            <h3 style="margin: 0 0 15px 0; color: #1e40af; font-size: 18px;">🔐 Créez votre Espace Personnel</h3>
+            <p style="color: #1e3a8a; font-size: 15px; line-height: 1.6; margin: 0 0 15px 0;">
+              Pour que vous puissiez gérer votre mémorial en toute sérénité, nous avons créé un compte sécurisé à votre nom.
+              Cela vous permettra de modifier votre mémorial à tout moment, d'ajouter des photos et souvenirs, et de le personnaliser selon vos souhaits.
+            </p>
+            <p style="margin: 20px 0 0 0; text-align: center;">
+              <a href="${invitationLink}" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 15px; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);">
+                🔑 Créer mon mot de passe
+              </a>
+            </p>
+            <p style="color: #475569; font-size: 13px; margin: 15px 0 0 0; text-align: center;">
+              Ce lien est personnel et sécurisé. Il vous permettra de définir votre mot de passe en toute sécurité.
+            </p>
+          </div>
+          ` : ''}
 
           <!-- Order Summary -->
           <h3 style="color: #1e3a5f; margin: 30px 0 15px 0; font-size: 18px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px;">

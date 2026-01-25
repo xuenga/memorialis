@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { api } from '@/api/apiClient';
-import { Menu, X, ShoppingBag, User, QrCode } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, QrCode, LogOut, LogIn } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from './contexts/AuthContext';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, currentPageName }: LayoutProps) {
+  const { user: authUser, signOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -144,15 +146,62 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                 </div>
               </Link>
 
-              <Link
-                to={createPageUrl('MyMemorials')}
-                title="Mon Compte"
-                className={`hidden sm:flex items-center justify-center w-11 h-11 lg:w-12 lg:h-12 rounded-full transition-all duration-500 group ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-accent/10' : 'hover:bg-white/10'
-                  }`}
-              >
-                <User className={`w-5 h-5 lg:w-6 lg:h-6 transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
-                  } group-hover:text-accent`} />
-              </Link>
+              {/* User Account - Conditional rendering based on auth state */}
+              {authUser ? (
+                <div className="hidden sm:flex items-center gap-2">
+                  <Link
+                    to={createPageUrl('MyMemorials')}
+                    title="Mes Mémoriaux"
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-500 group ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-accent/10' : 'hover:bg-white/10'
+                      }`}
+                  >
+                    <User className={`w-5 h-5 transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
+                      } group-hover:text-accent`} />
+                    <span className={`text-sm font-medium ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
+                      } group-hover:text-accent`}>
+                      {authUser.user_metadata?.full_name || authUser.email}
+                    </span>
+                  </Link>
+                  <button
+                    onClick={() => signOut()}
+                    title="Déconnexion"
+                    className={`flex items-center justify-center w-11 h-11 lg:w-12 lg:h-12 rounded-full transition-all duration-500 group ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-red-50' : 'hover:bg-white/10'
+                      }`}
+                  >
+                    <LogOut className={`w-5 h-5 transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
+                      } group-hover:text-red-600`} />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className={`hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all duration-500 ${isScrolled || currentPageName !== 'Home'
+                    ? 'bg-accent text-primary hover:bg-accent/90 shadow-md'
+                    : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+                    }`}
+                >
+                  <LogIn className="w-4 h-4" />
+                  Connexion
+                </Link>
+              )}
+
+              {/* Admin link - only for admins */}
+              {authUser && authUser.user_metadata?.role === 'admin' && (
+                <Link
+                  to="/admin"
+                  title="Administration"
+                  className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-500 ${isScrolled || currentPageName !== 'Home' ? 'bg-purple-50 hover:bg-purple-100' : 'bg-white/20 hover:bg-white/30'
+                    }`}
+                >
+                  <svg className="w-5 h-5 text-purple-600" fill="none" strokeWidth={2} stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                  </svg>
+                  <span className={`text-sm font-medium ${isScrolled || currentPageName !== 'Home' ? 'text-purple-700' : 'text-white'
+                    }`}>
+                    Admin
+                  </span>
+                </Link>
+              )}
 
               <button
                 onClick={() => setIsMenuOpen(true)}
@@ -202,23 +251,60 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                       {link.name}
                     </Link>
                   </motion.div>
-                ))}
-                <motion.div
+                ))}\r\n                <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <Link
-                    to={createPageUrl('MyMemorials')}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="font-serif text-4xl text-white hover:text-accent transition-colors"
-                  >
-                    Mes Mémoriaux
-                  </Link>
+                  {authUser ? (
+                    <>
+                      <Link
+                        to={createPageUrl('MyMemorials')}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="font-serif text-4xl text-white hover:text-accent transition-colors"
+                      >
+                        Mes Mémoriaux
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/login"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="font-serif text-4xl text-white hover:text-accent transition-colors"
+                      >
+                        Connexion
+                      </Link>
+                    </>
+                  )}
                 </motion.div>
+                {authUser && (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setIsMenuOpen(false);
+                      }}
+                      className="font-serif text-4xl text-white hover:text-red-400 transition-colors flex items-center gap-4"
+                    >
+                      <LogOut className="w-8 h-8" />
+                      Déconnexion
+                    </button>
+                  </motion.div>
+                )}
               </nav>
 
               <div className="mt-auto pt-10 border-t border-white/10">
+                {authUser && (
+                  <div className="mb-6">
+                    <p className="text-white/40 text-sm mb-2 tracking-widest uppercase">Connecté en tant que</p>
+                    <p className="text-white text-lg">{authUser.user_metadata?.full_name || authUser.email}</p>
+                  </div>
+                )}
                 <p className="text-white/40 text-sm mb-4 tracking-widest uppercase">Suivez-nous</p>
                 <div className="flex gap-6">
                   {/* Social icons placeholder */}

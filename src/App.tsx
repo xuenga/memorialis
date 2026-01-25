@@ -1,9 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Layout from './Layout';
 import { Toaster } from 'sonner';
-import { AdminAuthProvider } from './contexts/AdminAuthContext';
+import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import UserProtectedRoute from './components/UserProtectedRoute';
 
 // ScrollToTop component to fix React Router scroll issue
 function ScrollToTop() {
@@ -23,7 +24,9 @@ import HowItWorks from './pages/HowItWorks';
 import Contact from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminProducts from './pages/AdminProducts';
-import AdminLogin from './pages/AdminLogin';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import MyMemorials from './pages/MyMemorials';
@@ -40,7 +43,7 @@ import AdminOrders from './pages/AdminOrders';
 
 export default function App() {
     return (
-        <AdminAuthProvider>
+        <AuthProvider>
             <Router>
                 <ScrollToTop />
                 <Toaster position="top-center" richColors />
@@ -50,8 +53,13 @@ export default function App() {
                     <Route path="/how-it-works" element={<Layout currentPageName="HowItWorks"><HowItWorks /></Layout>} />
                     <Route path="/contact" element={<Layout currentPageName="Contact"><Contact /></Layout>} />
 
-                    {/* Admin routes - protected */}
-                    <Route path="/admin/login" element={<AdminLogin />} />
+                    {/* User authentication routes */}
+                    <Route path="/login" element={<Layout currentPageName="Login"><Login /></Layout>} />
+                    <Route path="/signup" element={<Layout currentPageName="Signup"><Signup /></Layout>} />
+                    <Route path="/forgot-password" element={<Layout currentPageName="ForgotPassword"><ForgotPassword /></Layout>} />
+
+                    {/* Admin routes - protected with role check */}
+                    <Route path="/admin/login" element={<Navigate to="/login" replace />} />
                     <Route path="/admin" element={<ProtectedRoute><Layout currentPageName="AdminDashboard"><AdminDashboard /></Layout></ProtectedRoute>} />
                     <Route path="/admin/products" element={<ProtectedRoute><Layout currentPageName="AdminProducts"><AdminProducts /></Layout></ProtectedRoute>} />
                     <Route path="/admin/qrcodes" element={<ProtectedRoute><Layout currentPageName="AdminQRCodes"><AdminQRCodes /></Layout></ProtectedRoute>} />
@@ -59,8 +67,11 @@ export default function App() {
 
                     <Route path="/cart" element={<Layout currentPageName="Cart"><Cart /></Layout>} />
                     <Route path="/checkout" element={<Layout currentPageName="Checkout"><Checkout /></Layout>} />
-                    <Route path="/my-memorials" element={<Layout currentPageName="MyMemorials"><MyMemorials /></Layout>} />
-                    <Route path="/edit-memorial/:id" element={<Layout currentPageName="EditMemorial"><EditMemorial /></Layout>} />
+
+                    {/* User-protected routes */}
+                    <Route path="/my-memorials" element={<UserProtectedRoute><Layout currentPageName="MyMemorials"><MyMemorials /></Layout></UserProtectedRoute>} />
+                    <Route path="/edit-memorial/:id" element={<UserProtectedRoute><Layout currentPageName="EditMemorial"><EditMemorial /></Layout></UserProtectedRoute>} />
+
                     <Route path="/memorial/:id" element={<Layout currentPageName="ViewMemorial"><ViewMemorial /></Layout>} />
                     <Route path="/product/:id" element={<Layout currentPageName="ProductDetail"><ProductDetail /></Layout>} />
                     <Route path="/order-confirmation" element={<Layout currentPageName="OrderConfirmation"><OrderConfirmation /></Layout>} />
@@ -70,7 +81,6 @@ export default function App() {
                     <Route path="/qr/:code" element={<QRRedirect />} />
                 </Routes>
             </Router>
-        </AdminAuthProvider>
+        </AuthProvider>
     );
 }
-

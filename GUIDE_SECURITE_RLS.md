@@ -80,10 +80,10 @@ USING (auth.jwt() ->> 'role' = 'admin');
 
 ### Étape 1 : Implémenter l'Authentification
 
-- [ ] Configurer Supabase Auth dans votre application
-- [ ] Créer les pages de login/signup
-- [ ] Implémenter la gestion de session
-- [ ] Tester le flux d'authentification
+- [x] Configurer Supabase Auth dans votre application
+- [x] Créer les pages de login/signup
+- [x] Implémenter la gestion de session
+- [x] Tester le flux d'authentification
 
 ### Étape 2 : Configurer les Rôles
 

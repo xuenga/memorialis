@@ -78,6 +78,55 @@ serve(async (req) => {
 
             console.log('Webhook: Checking needsQRCode', needsQRCode);
 
+            // 1. Create or get user account
+            let userId = null;
+            let invitationLink = '';
+
+            try {
+                // Check if user already exists
+                const { data: existingUsers, error: listError } = await supabase.auth.admin.listUsers();
+
+                const existingUser = existingUsers?.users?.find((u: any) => u.email === customerEmail);
+
+                if (existingUser) {
+                    // User already exists, use their ID
+                    userId = existingUser.id;
+                    console.log('User already exists:', customerEmail);
+                } else {
+                    // Create new user account
+                    const { data: newUser, error: createUserError } = await supabase.auth.admin.createUser({
+                        email: customerEmail,
+                        email_confirm: true, // Auto-confirm email
+                        user_metadata: {
+                            full_name: customerName,
+                            role: 'customer'
+                        }
+                    });
+
+                    if (createUserError) {
+                        console.error('Error creating user:', createUserError);
+                    } else if (newUser?.user) {
+                        userId = newUser.user.id;
+                        console.log('New user created:', userId);
+
+                        // Generate invitation link for password setup
+                        const { data: inviteData, error: inviteError } = await supabase.auth.admin.generateLink({
+                            type: 'invite',
+                            email: customerEmail,
+                        });
+
+                        if (inviteError) {
+                            console.error('Error generating invitation link:', inviteError);
+                        } else if (inviteData?.properties?.action_link) {
+                            invitationLink = inviteData.properties.action_link;
+                            console.log('Invitation link generated');
+                        }
+                    }
+                }
+            } catch (userError) {
+                console.error('Error in user creation process:', userError);
+            }
+
             if (needsQRCode) {
                 const { data: qrCodes, error: qrError } = await supabase
                     .from('QRCode')
@@ -92,7 +141,7 @@ serve(async (req) => {
                 qrCode = qrCodes && qrCodes.length > 0 ? qrCodes[0] : null
                 accessCode = qrCode?.code || Math.random().toString(36).substring(2, 8).toUpperCase()
 
-                // 2. Create the memorial
+                // 2. Create the memorial with user_id
                 const deceasedName = items[0]?.personalization?.deceased_name ||
                     items[0]?.personalization?.defunt_name ||
                     'Mémorial'
@@ -104,6 +153,7 @@ serve(async (req) => {
                         name: deceasedName,
                         access_code: accessCode,
                         owner_email: customerEmail,
+                        user_id: userId, // Link to the created user
                         is_activated: false,
                         theme: 'classic',
                         birth_date: items[0]?.personalization?.birth_date || null,
@@ -187,7 +237,8 @@ serve(async (req) => {
                     session.amount_subtotal ? session.amount_subtotal / 100 : 0,
                     9.90,
                     session.amount_total ? session.amount_total / 100 : 0,
-                    shippingAddress
+                    shippingAddress,
+                    invitationLink // Pass the invitation link for password setup
                 );
             } catch (emailError) {
                 console.error('Failed to send confirmation email:', emailError);
