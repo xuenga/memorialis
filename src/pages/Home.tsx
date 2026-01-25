@@ -103,9 +103,6 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <span className="inline-block px-4 py-2 bg-accent/20 border border-accent/40 rounded-full text-accent text-sm font-medium tracking-wide mb-8">
-                ✦ Mémorial Numérique Premium
-              </span>
 
               <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-white leading-[1.1] mb-6">
                 Un scan,<br />
@@ -157,16 +154,16 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="hidden lg:block"
+              className="hidden lg:flex items-center justify-center"
             >
-              <Link to="/memorial/demo-memorial" className="relative block group cursor-pointer">
+              <Link to="/memorial/demo-memorial" className="relative block group cursor-pointer max-w-[320px] w-full">
                 <div className="absolute -inset-4 bg-gradient-to-br from-accent/20 to-transparent rounded-3xl blur-2xl group-hover:bg-accent/30 transition-all duration-500" />
-                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-8 group-hover:border-accent/40 transition-colors duration-500">
+                <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 group-hover:border-accent/40 transition-colors duration-500">
                   <div className="aspect-square rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
-                    <QrCode className="w-32 h-32 text-accent" />
+                    <QrCode className="w-24 h-24 text-accent" />
                   </div>
-                  <div className="mt-8 text-center">
-                    <span className="inline-block px-4 py-2 bg-accent/20 border border-accent/40 rounded-full text-accent text-sm font-medium tracking-wide group-hover:bg-accent/30 transition-all duration-300">
+                  <div className="mt-6 text-center">
+                    <span className="inline-block px-3 py-1.5 bg-accent/20 border border-accent/40 rounded-full text-accent text-[10px] font-medium tracking-wide group-hover:bg-accent/30 transition-all duration-300 uppercase">
                       ✦ Mémorial Numérique Premium
                     </span>
                   </div>
