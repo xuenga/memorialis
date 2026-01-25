@@ -93,14 +93,10 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                 <QrCode className="w-7 h-7 lg:w-8 lg:h-8 transition-transform duration-500 group-hover:scale-110" />
               </div>
               <div className="hidden sm:block">
-                <h1 className={`font-serif text-xl lg:text-2xl font-semibold tracking-wide transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
+                <h1 className={`font-serif text-2xl lg:text-3xl font-semibold tracking-wide transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
                   }`}>
                   Memorialis
                 </h1>
-                <p className={`text-[10px] lg:text-xs tracking-[0.2em] uppercase transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary/60' : 'text-white/60'
-                  }`}>
-                  Un scan, une vie, mille souvenirs
-                </p>
               </div>
             </Link>
 
