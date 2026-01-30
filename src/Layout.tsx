@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { api } from '@/api/apiClient';
-import { Menu, X, ShoppingBag, User, QrCode, LogOut, LogIn } from 'lucide-react';
+import { Menu, X, ShoppingBag, User, QrCode, LogOut, LogIn, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './contexts/AuthContext';
 
@@ -66,8 +66,8 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
 
   const navLinks = [
     { name: 'Accueil', page: 'Home' },
-    { name: 'Nos Produits', page: 'Products' },
-    { name: 'Comment ça marche', page: 'HowItWorks' },
+    { name: 'Produits', page: 'Products' },
+    { name: 'Fonctionnement', page: 'HowItWorks' },
     { name: 'Contact', page: 'Contact' },
   ];
 
@@ -101,7 +101,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
             </Link>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-10">
+            <nav className="hidden lg:flex items-center gap-6">
               {navLinks.map((link) => {
                 const isActive = currentPageName === link.page;
                 const isLightText = !isScrolled && currentPageName === 'Home';
@@ -144,27 +144,25 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
 
               {/* User Account - Conditional rendering based on auth state */}
               {authUser ? (
-                <div className="hidden sm:flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-1">
                   <Link
                     to={createPageUrl('MyMemorials')}
                     title="Mes Mémoriaux"
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-500 group ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-accent/10' : 'hover:bg-white/10'
+                    className={`flex items-center justify-center w-11 h-11 lg:w-12 lg:h-12 rounded-full transition-all duration-500 group relative ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-accent/10' : 'hover:bg-white/10'
                       }`}
                   >
-                    <User className={`w-5 h-5 transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
+                    <User className={`w-5 h-5 lg:w-6 lg:h-6 transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
                       } group-hover:text-accent`} />
-                    <span className={`text-sm font-medium ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
-                      } group-hover:text-accent`}>
-                      {authUser.user_metadata?.full_name || authUser.email}
-                    </span>
+                    {/* Green indicator for connected user */}
+                    <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white shadow-md animate-pulse" />
                   </Link>
                   <button
                     onClick={() => signOut()}
                     title="Déconnexion"
-                    className={`flex items-center justify-center w-11 h-11 lg:w-12 lg:h-12 rounded-full transition-all duration-500 group ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-red-50' : 'hover:bg-white/10'
+                    className={`flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full transition-all duration-500 group ${isScrolled || currentPageName !== 'Home' ? 'hover:bg-red-50' : 'hover:bg-white/10'
                       }`}
                   >
-                    <LogOut className={`w-5 h-5 transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
+                    <LogOut className={`w-4 h-4 lg:w-5 lg:h-5 transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
                       } group-hover:text-red-600`} />
                   </button>
                 </div>
@@ -186,16 +184,12 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                 <Link
                   to="/admin"
                   title="Administration"
-                  className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-500 ${isScrolled || currentPageName !== 'Home' ? 'bg-purple-50 hover:bg-purple-100' : 'bg-white/20 hover:bg-white/30'
+                  className={`hidden sm:flex items-center justify-center w-10 h-10 lg:w-11 lg:h-11 rounded-full transition-all duration-500 ${isScrolled || currentPageName !== 'Home' ? 'bg-purple-50 hover:bg-purple-100' : 'bg-white/20 hover:bg-white/30'
                     }`}
                 >
                   <svg className="w-5 h-5 text-purple-600" fill="none" strokeWidth={2} stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                   </svg>
-                  <span className={`text-sm font-medium ${isScrolled || currentPageName !== 'Home' ? 'text-purple-700' : 'text-white'
-                    }`}>
-                    Admin
-                  </span>
                 </Link>
               )}
 

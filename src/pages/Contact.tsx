@@ -28,24 +28,12 @@ export default function Contact() {
     setIsSending(true);
 
     try {
-      if ((api as any).integrations?.Core?.SendEmail) {
-        await (api as any).integrations.Core.SendEmail({
-          to: 'contact@memorialis.shop',
-          subject: `[Contact] ${formData.subject || 'Nouveau message'} - ${formData.name}`,
-          body: `
-    Nom: ${formData.name}
-    Email: ${formData.email}
-    Sujet: ${formData.subject || 'Non spécifié'}
-    
-    Message:
-    ${formData.message}
-            `
-        });
-      } else {
-        // Mock send if not available
-        console.log('Email sending skipped (API not available)');
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
+      await api.functions.sendContactEmail({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message
+      });
 
       toast.success('Message envoyé avec succès !');
       setFormData({ name: '', email: '', subject: '', message: '' });

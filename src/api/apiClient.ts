@@ -174,6 +174,31 @@ export const api = {
             }
 
             return await response.json();
+        },
+        sendContactEmail: async (params: { name: string; email: string; subject?: string; message: string }) => {
+            console.log('Invoking send-contact-email with params:', params);
+
+            const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+            const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+            const functionUrl = `${supabaseUrl}/functions/v1/send-contact-email`;
+
+            const response = await fetch(functionUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${anonKey}`,
+                    'apikey': anonKey
+                },
+                body: JSON.stringify(params)
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Edge Function failed: ${response.status} - ${errorText}`);
+            }
+
+            return await response.json();
         }
     },
     storage: {
