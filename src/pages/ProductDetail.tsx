@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Plus, Minus, ShoppingBag, Check, QrCode, Shield, Truck } from 'lucide-react';
+import { ChevronLeft, Plus, Minus, ShoppingBag, Check, QrCode, Shield, Truck, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,6 +13,7 @@ export default function ProductDetail() {
   const { id: productId } = useParams<{ id: string }>();
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
 
   const [isAdding, setIsAdding] = useState(false);
@@ -20,14 +21,18 @@ export default function ProductDetail() {
   useEffect(() => {
     const loadProduct = async () => {
       setIsLoading(true);
+      setError(null);
       if (productId) {
         try {
           const products = await api.entities.Product.filter({ id: productId });
           if (products.length > 0) {
             setProduct(products[0]);
+          } else {
+            setError('Produit non trouvé');
           }
         } catch (e) {
           console.error(e);
+          setError('Erreur lors du chargement du produit');
         }
       }
       setIsLoading(false);
@@ -36,30 +41,27 @@ export default function ProductDetail() {
   }, [productId]);
 
   const handleAddToCart = async () => {
+    if (!product) {
+      toast.error('Produit non disponible');
+      return;
+    }
+
     setIsAdding(true);
 
     const sessionId = localStorage.getItem('memorialis_session') || crypto.randomUUID();
     localStorage.setItem('memorialis_session', sessionId);
 
-    const productData = product || {
-      id: productId,
-      name: 'Plaque Mémorielle',
-      price: 89,
-      material: 'plexiglass',
-      image_url: 'https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png'
-    };
-
     try {
       await api.entities.CartItem.create({
         session_id: sessionId,
-        product_id: productData.id,
-        product_name: productData.name,
-        product_image: productData.image_url,
-        material: productData.material,
-        price: productData.price,
+        product_id: product.id,
+        product_name: product.name,
+        product_image: product.image_url,
+        material: product.material,
+        price: product.price,
         quantity: quantity,
         personalization: {},
-        stripe_price_id: productData.stripe_price_id
+        stripe_price_id: product.stripe_price_id
       });
 
       window.dispatchEvent(new Event('cartUpdated'));
@@ -78,15 +80,32 @@ export default function ProductDetail() {
     );
   }
 
-  const displayProduct = product || {
-    id: productId,
-    name: "Gravure Plexiglass Élégance",
-    price: 89,
-    material: 'plexiglass',
-    image_url: 'https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png',
-    description: "Une plaque en plexiglass de haute qualité, gravée pour une durabilité éternelle. Résistante aux UV et aux intempéries, elle offre un rendu moderne et élégant.",
-    dimensions: "10 x 10 cm"
-  };
+  // Handle error or product not found
+  if (error || !product) {
+    return (
+      <div className="min-h-screen bg-background py-12">
+        <div className="max-w-7xl mx-auto px-6 lg:px-12">
+          <Link
+            to={createPageUrl('Products')}
+            className="inline-flex items-center gap-2 text-primary/60 hover:text-primary transition-colors mb-8"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Retour aux produits
+          </Link>
+          <div className="text-center py-20 bg-white rounded-3xl shadow-sm">
+            <AlertCircle className="w-16 h-16 text-primary/20 mx-auto mb-4" />
+            <h2 className="font-serif text-2xl text-primary mb-2">{error || 'Produit non trouvé'}</h2>
+            <p className="text-primary/60 mb-6">Ce produit n'existe pas ou n'est plus disponible.</p>
+            <Link to={createPageUrl('Products')}>
+              <Button variant="secondary" className="rounded-full px-8">
+                Voir nos produits
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background py-8 lg:py-12">
@@ -108,8 +127,8 @@ export default function ProductDetail() {
           >
             <div className="aspect-square rounded-3xl overflow-hidden bg-white shadow-sm">
               <img
-                src={displayProduct.image_url || 'https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png'}
-                alt={displayProduct.name}
+                src={product.image_url || 'https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png'}
+                alt={product.name}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -131,17 +150,24 @@ export default function ProductDetail() {
             className="flex flex-col"
           >
             <div className="mb-8">
-              <span className="text-sm text-accent font-bold uppercase tracking-widest">Support {displayProduct.material}</span>
-              <h1 className="font-serif text-4xl lg:text-5xl text-primary mt-2 mb-4">{displayProduct.name}</h1>
-              <p className="text-3xl text-primary font-medium">{displayProduct.price}€</p>
+              <span className="text-sm text-accent font-bold uppercase tracking-widest">Support {product.material}</span>
+              <h1 className="font-serif text-4xl lg:text-5xl text-primary mt-2 mb-4">{product.name}</h1>
+              <p className="text-3xl text-primary font-medium">{product.price}€</p>
             </div>
 
             <div className="prose prose-stone mb-8">
               <p className="text-primary/70 text-lg leading-relaxed">
-                {displayProduct.description}
+                {product.description}
               </p>
+              {product.long_description && (
+                <div className="mt-4 text-primary/60 text-base leading-relaxed whitespace-pre-line">
+                  {product.long_description}
+                </div>
+              )}
               <ul className="mt-4 space-y-2 text-sm text-primary/60">
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-accent" /> Dimensions : {displayProduct.dimensions}</li>
+                {product.dimensions && (
+                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-accent" /> Dimensions : {product.dimensions}</li>
+                )}
                 <li className="flex items-center gap-2"><Check className="w-4 h-4 text-accent" /> Résistant aux intempéries et UV</li>
                 <li className="flex items-center gap-2"><Check className="w-4 h-4 text-accent" /> QR Code gravé haute définition</li>
               </ul>
