@@ -31,7 +31,7 @@ export default function AdminProducts() {
     price: '',
     material: 'autocollant',
     category: 'plaques',
-    dimensions: '',
+    features: [],
     is_active: true
   });
 
@@ -60,7 +60,7 @@ export default function AdminProducts() {
       price: product.price || '',
       material: product.material || 'autocollant',
       category: product.category || 'plaques',
-      dimensions: product.dimensions || '',
+      features: product.features || [],
       is_active: product.is_active ?? true
     });
     setShowForm(true);
@@ -76,7 +76,7 @@ export default function AdminProducts() {
       price: '',
       material: 'autocollant',
       category: 'plaques',
-      dimensions: '',
+      features: [],
       is_active: true
     });
     setShowForm(true);
@@ -287,7 +287,7 @@ export default function AdminProducts() {
 
                 <div className="flex items-center justify-between pt-4 border-t border-primary/10">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-primary/50">{product.dimensions}</span>
+                    <span className="text-xs text-primary/50 capitalize">{product.material}</span>
                     {product.stripe_price_id ? (
                       <span className="flex items-center gap-1 text-xs bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">
                         <CheckCircle className="w-3 h-3" />
@@ -393,25 +393,15 @@ export default function AdminProducts() {
                   </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Prix (€) *</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Dimensions</Label>
-                    <Input
-                      value={formData.dimensions}
-                      onChange={(e) => setFormData({ ...formData, dimensions: e.target.value })}
-                      placeholder="Ex: 10 x 10 cm"
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label>Prix (€) *</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    required
+                  />
                 </div>
 
 
@@ -434,7 +424,19 @@ export default function AdminProducts() {
                   />
                 </div>
 
-
+                <div className="space-y-2">
+                  <Label>Caractéristiques</Label>
+                  <p className="text-xs text-primary/50">Une caractéristique par ligne (ex: Dimensions : 10 x 10 cm)</p>
+                  <Textarea
+                    value={Array.isArray(formData.features) ? formData.features.join('\n') : ''}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      features: e.target.value.split('\n').filter((f: string) => f.trim())
+                    })}
+                    rows={4}
+                    placeholder="Dimensions : 18 x 12 cm&#10;Résistant aux intempéries et UV&#10;QR Code gravé haute définition"
+                  />
+                </div>
 
                 <div className="flex items-center justify-between p-4 bg-background/50 rounded-xl">
                   <div>

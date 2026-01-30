@@ -164,13 +164,16 @@ export default function ProductDetail() {
                   {product.long_description}
                 </div>
               )}
-              <ul className="mt-4 space-y-2 text-sm text-primary/60">
-                {product.dimensions && (
-                  <li className="flex items-center gap-2"><Check className="w-4 h-4 text-accent" /> Dimensions : {product.dimensions}</li>
-                )}
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-accent" /> Résistant aux intempéries et UV</li>
-                <li className="flex items-center gap-2"><Check className="w-4 h-4 text-accent" /> QR Code gravé haute définition</li>
-              </ul>
+              {/* Display features from database if available */}
+              {product.features && product.features.length > 0 && product.features.some((f: string) => f && f.trim()) && (
+                <ul className="mt-4 space-y-2 text-sm text-primary/60">
+                  {product.features.filter((f: string) => f && f.trim()).map((feature: string, index: number) => (
+                    <li key={index} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-accent" /> {feature}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
 

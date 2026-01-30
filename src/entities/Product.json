@@ -53,10 +53,6 @@
       ],
       "description": "Type de mat\u00e9riau"
     },
-    "dimensions": {
-      "type": "string",
-      "description": "Dimensions du produit"
-    },
     "stock": {
       "type": "number",
       "default": 0,
@@ -73,6 +69,13 @@
     "stripe_price_id": {
       "type": "string",
       "description": "ID du prix dans Stripe (price_xxx)"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Liste des caractéristiques du produit"
     }
   },
   "required": [
