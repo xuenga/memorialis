@@ -92,8 +92,8 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                 } group-hover:scale-110 group-hover:shadow-accent/20 group-hover:shadow-lg`}>
                 <QrCode className="w-7 h-7 lg:w-8 lg:h-8 transition-transform duration-500 group-hover:scale-110" />
               </div>
-              <div className="hidden sm:block">
-                <h1 className={`font-serif text-2xl lg:text-3xl font-semibold tracking-wide transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
+              <div className="block">
+                <h1 className={`font-serif text-xl sm:text-2xl lg:text-3xl font-semibold tracking-wide transition-colors duration-300 ${isScrolled || currentPageName !== 'Home' ? 'text-primary' : 'text-white'
                   }`}>
                   Memorialis
                 </h1>

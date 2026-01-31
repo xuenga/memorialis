@@ -127,7 +127,7 @@ export default function ProductDetail() {
           >
             <div className="aspect-square rounded-3xl overflow-hidden bg-white shadow-sm">
               <img
-                src={product.image_url || 'https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png'}
+                src={product.image_url || '/images/hero-memorialis.jpg'}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />

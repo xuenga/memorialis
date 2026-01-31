@@ -67,19 +67,19 @@ export default function Home() {
       name: "QRcode sur Plaque Autocollante Premium",
       price: 49,
       desc: "Facile à installer sur toute surface lisse",
-      image: "https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png"
+      image: "/images/hero-memorialis.jpg"
     },
     {
       name: "QRcode sur Plaque Autocollante Classique",
       price: 39,
       desc: "Solution économique et élégante",
-      image: "https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png"
+      image: "/images/hero-memorialis.jpg"
     },
     {
       name: "QRcode sur Gravure Plexiglass Élégance",
       price: 89,
       desc: "Élégance et transparence pour un rendu moderne",
-      image: "https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png"
+      image: "/images/hero-memorialis.jpg"
     }
   ];
 
@@ -88,9 +88,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center">
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/80 to-primary/90 z-10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/70 to-primary/85 z-10" />
           <img
-            src="https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png"
+            src="/images/hero-memorialis.jpg"
             alt="Memorial"
             className="w-full h-full object-cover"
           />

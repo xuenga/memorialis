@@ -252,7 +252,7 @@ export default function ViewMemorial() {
         {memorial.cover_photo ? (
           <img src={memorial.cover_photo} className="w-full h-full object-cover" alt="Couverture" />
         ) : (
-          <img src="https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png" className="w-full h-full object-cover opacity-50" alt="Couverture" />
+          <img src="/images/hero-memorialis.jpg" className="w-full h-full object-cover opacity-50" alt="Couverture" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/30" />
       </div>
@@ -265,7 +265,7 @@ export default function ViewMemorial() {
               {memorial.profile_photo ? (
                 <img src={memorial.profile_photo} className="w-full h-full object-cover" alt={memorial.name} />
               ) : (
-                <img src="https://qrmemorial-nfvnhvdn.manus.space/images/hero-qr-memorial.png" className="w-full h-full object-cover" alt={memorial.name} />
+                <img src="/images/hero-memorialis.jpg" className="w-full h-full object-cover" alt={memorial.name} />
               )}
             </div>
             <div className="absolute bottom-4 right-4 bg-accent w-12 h-12 rounded-full flex items-center justify-center text-primary shadow-lg">
