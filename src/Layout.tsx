@@ -360,7 +360,6 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
               <h4 className="font-serif text-xl text-white mb-8">Contact</h4>
               <div className="space-y-4 text-white/60">
                 <p>contact@memorialis.shop</p>
-                <p>+33 1 23 45 67 89</p>
                 <p>France</p>
               </div>
             </div>
