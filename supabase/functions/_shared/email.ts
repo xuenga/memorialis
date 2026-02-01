@@ -232,7 +232,7 @@ export const sendOrderConfirmationEmail = async (
         'Authorization': `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: 'Memorialis <onboarding@resend.dev>', // À remplacer par votre domaine vérifié
+        from: 'Memorialis <contact@memorialis.shop>',
         to: email,
         subject: `✅ Confirmation de commande #${orderNumber} - Memorialis`,
         html: html,
