@@ -3,20 +3,26 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
-import { ChevronLeft, Lock, CreditCard, Truck, Check } from 'lucide-react';
+import { ChevronLeft, Lock, CreditCard, Truck, Check, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Checkout() {
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     name: '',
     phone: '',
+    password: '',
+    confirmPassword: '',
     street: '',
     city: '',
     postal_code: '',
@@ -58,9 +64,53 @@ export default function Checkout() {
       return;
     }
 
+    // Validate password only if user is not logged in
+    if (!user) {
+      if (!formData.password) {
+        toast.error('Veuillez créer un mot de passe pour votre compte');
+        return;
+      }
+      if (formData.password.length < 6) {
+        toast.error('Le mot de passe doit contenir au moins 6 caractères');
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        toast.error('Les mots de passe ne correspondent pas');
+        return;
+      }
+    }
+
     setIsProcessing(true);
 
     try {
+      // Create user account if not logged in
+      let userId = user?.id;
+      if (!user) {
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: {
+              full_name: formData.name,
+              role: 'customer'
+            }
+          }
+        });
+
+        if (signUpError) {
+          // Check if user already exists
+          if (signUpError.message.includes('already registered')) {
+            toast.error('Cet email est déjà utilisé. Veuillez vous connecter ou utiliser un autre email.');
+            setIsProcessing(false);
+            return;
+          }
+          throw signUpError;
+        }
+
+        userId = signUpData.user?.id;
+        toast.success('Compte créé avec succès !');
+      }
+
       // Créer une session Stripe Checkout
       const result = await (api.functions as any).createStripeCheckout({
         items: items.map(item => ({
@@ -74,6 +124,7 @@ export default function Checkout() {
         customer_email: formData.email,
         customer_name: formData.name,
         customer_phone: formData.phone,
+        user_id: userId, // Pass the user ID to associate with the order
         shipping_address: {
           street: formData.street,
           city: formData.city,
@@ -99,8 +150,9 @@ export default function Checkout() {
       } else {
         throw new Error('No URL returned from checkout function');
       }
-    } catch (error) {
-      toast.error('Erreur lors de la création du paiement');
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      toast.error(error.message || 'Erreur lors de la création du paiement');
       setIsProcessing(false);
     }
   };
@@ -174,11 +226,70 @@ export default function Checkout() {
                 </div>
               </div>
 
+              {/* Account Creation - Only show if not logged in */}
+              {!user && (
+                <div className="bg-white rounded-[2.5rem] p-8 shadow-sm">
+                  <h2 className="font-serif text-2xl text-primary mb-8 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-accent text-primary flex items-center justify-center text-lg font-bold">
+                      2
+                    </div>
+                    Créer votre compte
+                  </h2>
+
+                  <div className="mb-6 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+                    <p className="text-sm text-blue-800">
+                      <UserPlus className="w-4 h-4 inline mr-2" />
+                      Un compte vous sera créé pour gérer votre mémorial. Vous pourrez y accéder à tout moment.
+                    </p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Mot de passe *</Label>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          value={formData.password}
+                          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                          placeholder="••••••••"
+                          required
+                          minLength={6}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/40 hover:text-primary/60"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Confirmer le mot de passe *</Label>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          value={formData.confirmPassword}
+                          onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                          placeholder="••••••••"
+                          required
+                          minLength={6}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-primary/50 mt-4">
+                    Le mot de passe doit contenir au moins 6 caractères.
+                  </p>
+                </div>
+              )}
+
               {/* Shipping */}
               <div className="bg-white rounded-[2.5rem] p-8 shadow-sm">
                 <h2 className="font-serif text-2xl text-primary mb-8 flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-accent text-primary flex items-center justify-center text-lg font-bold">
-                    2
+                    {user ? 2 : 3}
                   </div>
                   Adresse de livraison
                 </h2>
@@ -225,7 +336,7 @@ export default function Checkout() {
               <div className="bg-white rounded-[2.5rem] p-8 shadow-sm">
                 <h2 className="font-serif text-2xl text-primary mb-8 flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-accent text-primary flex items-center justify-center text-lg font-bold">
-                    3
+                    {user ? 3 : 4}
                   </div>
                   Paiement
                 </h2>
