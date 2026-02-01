@@ -44,7 +44,7 @@ export const sendOrderConfirmationEmail = async (
   memorialLink: string,
   items: OrderItem[] = [],
   subtotal: number = 0,
-  shippingCost: number = 9.90,
+  shippingCost: number = 0,
   total: number = 0,
   shippingAddress?: ShippingAddress | null,
   invitationLink?: string
@@ -57,7 +57,11 @@ export const sendOrderConfirmationEmail = async (
   }
 
   // Format currency
-  const formatPrice = (price: number) => `${price.toFixed(2)} €`;
+  const formatPrice = (price: any) => {
+    const num = parseFloat(price);
+    if (isNaN(num)) return '0.00 €';
+    return `${num.toFixed(2)} €`;
+  };
 
   // Generate items table rows
   const itemsRows = items.length > 0

@@ -24,6 +24,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
             setUser(session?.user ?? null);
+
+            // Sync with localStorage for legacy api.auth.me() calls
+            if (session?.user) {
+                localStorage.setItem('memorialis_user', JSON.stringify({
+                    id: session.user.id,
+                    email: session.user.email,
+                    name: session.user.user_metadata?.full_name || session.user.email,
+                    role: session.user.user_metadata?.role || 'user'
+                }));
+            } else {
+                localStorage.removeItem('memorialis_user');
+            }
+
             setIsLoading(false);
         });
 
@@ -33,6 +46,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
             setUser(session?.user ?? null);
+
+            // Sync with localStorage for legacy api.auth.me() calls
+            if (session?.user) {
+                localStorage.setItem('memorialis_user', JSON.stringify({
+                    id: session.user.id,
+                    email: session.user.email,
+                    name: session.user.user_metadata?.full_name || session.user.email,
+                    role: session.user.user_metadata?.role || 'user'
+                }));
+            } else {
+                localStorage.removeItem('memorialis_user');
+            }
+
             setIsLoading(false);
         });
 
@@ -85,7 +111,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signOut = async () => {
-        await supabase.auth.signOut();
+        console.log('SignOut called - starting logout process...');
+        try {
+            // Force clean localStorage first
+            localStorage.removeItem('memorialis_user');
+            console.log('localStorage cleaned');
+
+            // Sign out from Supabase
+            const { error } = await supabase.auth.signOut();
+
+            if (error) {
+                console.error('Supabase signOut error:', error);
+            } else {
+                console.log('Supabase signOut successful');
+            }
+
+            // Force state reset
+            setUser(null);
+            setSession(null);
+
+            // Force page reload to ensure clean state
+            window.location.href = '/';
+        } catch (error) {
+            console.error('SignOut error:', error);
+            // Force reload anyway
+            localStorage.removeItem('memorialis_user');
+            window.location.href = '/';
+        }
     };
 
     const resetPassword = async (email: string) => {

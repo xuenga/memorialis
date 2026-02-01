@@ -140,7 +140,7 @@ serve(async (req: Request) => {
                                 memorialLink,
                                 items,
                                 order.subtotal || 0,
-                                order.shipping_cost || 9.90,
+                                0, // Free shipping
                                 order.total || 0,
                                 order.shipping_address
                             );
@@ -180,7 +180,7 @@ serve(async (req: Request) => {
                         memorialLink,
                         items,
                         order.subtotal || 0,
-                        order.shipping_cost || 9.90,
+                        0, // Free shipping
                         order.total || 0,
                         order.shipping_address
                     );
@@ -399,7 +399,7 @@ serve(async (req: Request) => {
                     shipping_address: shippingAddress,
                     items: items,
                     subtotal: session.amount_subtotal ? session.amount_subtotal / 100 : 0,
-                    shipping_cost: 9.90,
+                    shipping_cost: 0, // Free shipping
                     total: session.amount_total ? session.amount_total / 100 : 0,
                     status: 'paid',
                     memorial_id: memorialId,
@@ -445,7 +445,7 @@ serve(async (req: Request) => {
                     memorialLink,
                     items,
                     session.amount_subtotal ? session.amount_subtotal / 100 : 0,
-                    9.90,
+                    0, // Free shipping
                     session.amount_total ? session.amount_total / 100 : 0,
                     shippingAddress,
                     invitationLink // Pass the invitation link for password setup

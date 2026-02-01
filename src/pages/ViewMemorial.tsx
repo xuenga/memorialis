@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
+import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Calendar, MessageSquare, X, ChevronLeft, ChevronRight, Send, Camera, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -44,6 +45,7 @@ interface TributeData {
 
 export default function ViewMemorial() {
   const { id: memorialId } = useParams<{ id: string }>();
+  const { user: authUser } = useAuth();
   const [memorial, setMemorial] = useState<MemorialData | null>(null);
   const [tributes, setTributes] = useState<TributeData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,13 +63,8 @@ export default function ViewMemorial() {
     const loadData = async () => {
       if (memorialId) {
         try {
-          // Get current user if logged in (for owner preview)
-          let currentUser = null;
-          try {
-            currentUser = await api.auth.me();
-          } catch (e) {
-            // Not logged in
-          }
+          // Get current user from auth context (for owner preview)
+          const currentUserEmail = authUser?.email || null;
 
           // Determine if we are looking up by ID (UUID) or Slug
           const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId);
@@ -84,7 +81,19 @@ export default function ViewMemorial() {
             const mem = memorials[0];
 
             // SECURITY CHECK: If not public and user is not owner
-            const isOwner = currentUser && mem.owner_email === currentUser.email;
+            // Allow access if:
+            // 1. The memorial is public (is_public === true or undefined/null which defaults to public behavior)
+            // 2. OR the current user is the owner (owner_email matches)
+            const isOwner = currentUserEmail && mem.owner_email &&
+              mem.owner_email.toLowerCase() === currentUserEmail.toLowerCase();
+
+            console.log('Memorial access check:', {
+              is_public: mem.is_public,
+              owner_email: mem.owner_email,
+              current_user_email: currentUserEmail,
+              isOwner
+            });
+
             if (mem.is_public === false && !isOwner) {
               setMemorial(null); // Will trigger the "Not found" view
             } else {
@@ -102,7 +111,8 @@ export default function ViewMemorial() {
           // We track the visit if the memorial exists and the visitor is NOT the owner
           if (memorials.length > 0) {
             const mem = memorials[0];
-            const isOwner = currentUser && mem.owner_email === currentUser.email;
+            const isOwner = currentUserEmail && mem.owner_email &&
+              mem.owner_email.toLowerCase() === currentUserEmail.toLowerCase();
 
             if (!isOwner) {
               await api.entities.MemorialVisit.create({
@@ -119,7 +129,7 @@ export default function ViewMemorial() {
       setIsLoading(false);
     };
     loadData();
-  }, [memorialId]);
+  }, [memorialId, authUser]);
 
   const handleSubmitTribute = async (e: React.FormEvent) => {
     e.preventDefault();
