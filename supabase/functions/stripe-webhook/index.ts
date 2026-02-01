@@ -110,9 +110,13 @@ serve(async (req) => {
                         console.log('New user created:', userId);
 
                         // Generate invitation link for password setup
+                        const frontendUrl = Deno.env.get('FRONTEND_URL') || 'https://memorialis.shop';
                         const { data: inviteData, error: inviteError } = await supabase.auth.admin.generateLink({
                             type: 'invite',
                             email: customerEmail,
+                            options: {
+                                redirectTo: `${frontendUrl}/set-password`
+                            }
                         });
 
                         if (inviteError) {

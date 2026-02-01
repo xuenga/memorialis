@@ -41,6 +41,7 @@ import Mentions from './pages/Mentions';
 import QRRedirect from './pages/QRRedirect';
 import AdminQRCodes from './pages/AdminQRCodes';
 import AdminOrders from './pages/AdminOrders';
+import SetPassword from './pages/SetPassword';
 
 export default function App() {
     return (
@@ -59,6 +60,7 @@ export default function App() {
                     <Route path="/signup" element={<Layout currentPageName="Signup"><Signup /></Layout>} />
                     <Route path="/forgot-password" element={<Layout currentPageName="ForgotPassword"><ForgotPassword /></Layout>} />
                     <Route path="/reset-password" element={<Layout currentPageName="ResetPassword"><ResetPassword /></Layout>} />
+                    <Route path="/set-password" element={<Layout currentPageName="SetPassword"><SetPassword /></Layout>} />
 
                     {/* Admin routes - protected with role check */}
                     <Route path="/admin/login" element={<Navigate to="/login" replace />} />
