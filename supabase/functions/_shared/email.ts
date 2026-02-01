@@ -63,6 +63,13 @@ export const sendOrderConfirmationEmail = async (
     return `${num.toFixed(2)} €`;
   };
 
+  // Safe calculation for item total
+  const getItemTotal = (item: OrderItem) => {
+    const price = parseFloat(String(item.price)) || 0;
+    const qty = parseInt(String(item.quantity)) || 1;
+    return price * qty;
+  };
+
   // Generate items table rows
   const itemsRows = items.length > 0
     ? items.map(item => `
@@ -71,8 +78,8 @@ export const sendOrderConfirmationEmail = async (
             ${item.product_name || item.name || 'Produit Memorialis'}
             ${item.personalization?.deceased_name ? `<br><small style="color: #6b7280;">Pour : ${item.personalization.deceased_name}</small>` : ''}
           </td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">${formatPrice(item.price * item.quantity)}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${item.quantity || 1}</td>
+          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: right;">${formatPrice(getItemTotal(item))}</td>
         </tr>
       `).join('')
     : `
@@ -181,11 +188,11 @@ export const sendOrderConfirmationEmail = async (
             <table style="width: 100%; border-collapse: collapse;">
               <tr>
                 <td style="padding: 8px 0; color: #6b7280;">Sous-total</td>
-                <td style="padding: 8px 0; text-align: right; color: #374151;">${formatPrice(subtotal || total - shippingCost)}</td>
+                <td style="padding: 8px 0; text-align: right; color: #374151;">${formatPrice(subtotal || total)}</td>
               </tr>
               <tr>
                 <td style="padding: 8px 0; color: #6b7280;">Livraison</td>
-                <td style="padding: 8px 0; text-align: right; color: #374151;">${formatPrice(shippingCost)}</td>
+                <td style="padding: 8px 0; text-align: right; color: ${shippingCost === 0 ? '#16a34a' : '#374151'};">${shippingCost === 0 ? 'Offerte' : formatPrice(shippingCost)}</td>
               </tr>
               <tr style="border-top: 2px solid #e5e7eb;">
                 <td style="padding: 12px 0 0 0; color: #1e3a5f; font-weight: bold; font-size: 18px;">Total</td>
