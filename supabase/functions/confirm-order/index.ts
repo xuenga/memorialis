@@ -163,6 +163,40 @@ serve(async (req: Request) => {
                 .eq('id', order.memorial_id)
                 .single()
 
+            // Send confirmation email if not already sent
+            if (!order.email_sent && memorial) {
+                console.log('Sending confirmation email for existing order...')
+                try {
+                    const frontendUrl = Deno.env.get('FRONTEND_URL') || 'https://memorialis.shop';
+                    const memorialLink = `${frontendUrl}/edit-memorial/${memorial.access_code}`;
+                    const metadata = session.metadata || {};
+                    const items = JSON.parse(metadata.items || '[]');
+
+                    await sendOrderConfirmationEmail(
+                        order.customer_email,
+                        order.customer_name || 'Client',
+                        order.order_number,
+                        memorial.access_code,
+                        memorialLink,
+                        items,
+                        order.subtotal || 0,
+                        order.shipping_cost || 9.90,
+                        order.total || 0,
+                        order.shipping_address
+                    );
+
+                    // Mark email as sent
+                    await supabase
+                        .from('Order')
+                        .update({ email_sent: true })
+                        .eq('id', order.id);
+
+                    console.log('Confirmation email sent successfully for existing order');
+                } catch (emailError) {
+                    console.error('Failed to send confirmation email for existing order:', emailError);
+                }
+            }
+
             return new Response(JSON.stringify({ order, memorial }), {
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 status: 200
@@ -416,6 +450,14 @@ serve(async (req: Request) => {
                     shippingAddress,
                     invitationLink // Pass the invitation link for password setup
                 );
+
+                // Mark email as sent
+                await supabase
+                    .from('Order')
+                    .update({ email_sent: true })
+                    .eq('id', order.id);
+
+                console.log('Confirmation email sent successfully');
             } catch (emailError) {
                 console.error('Failed to send confirmation email:', emailError);
             }
