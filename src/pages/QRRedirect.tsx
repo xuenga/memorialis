@@ -44,9 +44,8 @@ export default function QRRedirect() {
 
                 // Redirection automatique si déjà activé
                 if (qr.status === 'activated' && qr.memorial_id) {
-                    // Try to fetch memorial to check if slug exists
                     try {
-                        const memorials = await api.entities.Memorial.filter({ id: qr.memorial_id });
+                        const memorials = await api.entities.memorials.filter({ id: qr.memorial_id });
                         if (memorials && memorials.length > 0) {
                             const memorial = memorials[0];
                             if (memorial.slug) {
@@ -85,7 +84,7 @@ export default function QRRedirect() {
             });
 
             // Activer le mémorial
-            await api.entities.Memorial.update(qrCode.memorial_id, {
+            await api.entities.memorials.update(qrCode.memorial_id, {
                 is_activated: true
             });
 

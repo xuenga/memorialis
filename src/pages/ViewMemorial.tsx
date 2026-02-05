@@ -72,9 +72,9 @@ export default function ViewMemorial() {
           let memorials = [];
 
           if (isUUID) {
-            memorials = await api.entities.Memorial.filter({ id: memorialId });
+            memorials = await api.entities.memorials.filter({ id: memorialId });
           } else {
-            memorials = await api.entities.Memorial.filter({ slug: memorialId });
+            memorials = await api.entities.memorials.filter({ slug: memorialId });
           }
 
           if (memorials && memorials.length > 0) {

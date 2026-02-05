@@ -133,6 +133,19 @@ export const sendOrderConfirmationEmail = async (
           <!-- Memorial Code Box -->
           <div style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); border: 2px solid #f9a8d4; padding: 25px; border-radius: 12px; margin: 25px 0; text-align: center;">
             <h3 style="margin: 0 0 15px 0; color: #be185d; font-size: 18px;">🌹 Votre Mémorial est Prêt</h3>
+            
+            <!-- QR Code Image -->
+            <div style="margin: 20px 0;">
+              <img 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&format=png&data=${encodeURIComponent(`https://memorialis.shop/qr/${accessCode}`)}" 
+                alt="QR Code du mémorial" 
+                style="width: 180px; height: 180px; border-radius: 12px; border: 4px solid #ffffff; box-shadow: 0 4px 15px rgba(190, 24, 93, 0.2);"
+              />
+              <p style="color: #831843; font-size: 12px; margin: 10px 0 0 0;">
+                Scannez ce QR code pour accéder au mémorial
+              </p>
+            </div>
+            
             <p style="color: #831843; font-size: 14px; margin: 0 0 15px 0;">
               Conservez précieusement ce code d'accès :
             </p>

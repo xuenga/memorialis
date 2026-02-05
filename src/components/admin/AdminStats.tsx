@@ -22,8 +22,8 @@ export default function AdminStats() {
   useEffect(() => {
     const loadStats = async () => {
       const [orders, memorials, visits] = await Promise.all([
-        api.entities.Order.list(),
-        api.entities.Memorial.list(),
+        api.entities.orders.list(),
+        api.entities.memorials.list(),
         api.entities.MemorialVisit.list()
       ]);
 

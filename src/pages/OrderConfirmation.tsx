@@ -24,13 +24,13 @@ export default function OrderConfirmation() {
       // 1. Try to load directly if IDs are present
       if (orderId) {
         try {
-          const orders = await api.entities.Order.filter({ id: orderId });
+          const orders = await api.entities.orders.filter({ id: orderId });
           if (orders.length > 0) setOrder(orders[0]);
         } catch (e) { console.error(e) }
       }
       if (memorialId) {
         try {
-          const memorials = await api.entities.Memorial.filter({ id: memorialId });
+          const memorials = await api.entities.memorials.filter({ id: memorialId });
           if (memorials.length > 0) setMemorial(memorials[0]);
         } catch (e) { console.error(e) }
       }
@@ -205,18 +205,8 @@ export default function OrderConfirmation() {
             Nous préparons votre plaque avec le plus grand soin.
             Vous recevrez un notification dès qu'elle sera expédiée.
           </p>
-        </motion.div>
 
-        {/* DEBUG BLOCK - TO REMOVE */}
-        <div className="mt-8 p-4 bg-red-100 border border-red-300 rounded text-xs font-mono text-red-800 break-all">
-          <p><strong>DEBUG INFO:</strong></p>
-          <p>Session ID: {sessionId || 'null'}</p>
-          <p>Order ID (URL): {orderId || 'null'}</p>
-          <p>Memorial ID (URL): {memorialId || 'null'}</p>
-          <p>Order State: {order ? 'Loaded' : 'Null'}</p>
-          <p>Memorial State: {memorial ? 'Loaded' : 'Null'}</p>
-          <p>Access Code: {accessCode}</p>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

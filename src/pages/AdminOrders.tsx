@@ -56,10 +56,10 @@ export default function AdminOrders() {
         const loadOrders = async () => {
             try {
                 // Charger les commandes
-                const allOrders = await api.entities.Order.list('-created_at');
+                const allOrders = await api.entities.orders.list('-created_at');
 
                 // Charger tous les mémoriaux pour faire la jointure
-                const allMemorials = await api.entities.Memorial.list();
+                const allMemorials = await api.entities.memorials.list();
                 const memorialsMap = new Map(allMemorials.map((m: any) => [m.id, m]));
 
                 // Enrichir les commandes avec les infos des mémoriaux
@@ -107,7 +107,7 @@ export default function AdminOrders() {
 
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
         try {
-            await api.entities.Order.update(orderId, { status: newStatus });
+            await api.entities.orders.update(orderId, { status: newStatus });
             setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
             toast.success('Statut mis à jour');
         } catch (e) {

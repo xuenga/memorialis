@@ -17,7 +17,7 @@ export default function AdminMemorials() {
 
   useEffect(() => {
     const loadMemorials = async () => {
-      const allMemorials = await api.entities.Memorial.list('-created_date');
+      const allMemorials = await api.entities.memorials.list('-created_date');
       setMemorials(allMemorials);
       setFilteredMemorials(allMemorials);
       setIsLoading(false);

@@ -22,7 +22,7 @@ export default function MyMemorials() {
         const currentUser = await api.auth.me();
         if (currentUser) {
           // Load user's memorials
-          const userMemorials = await api.entities.Memorial.filter({
+          const userMemorials = await api.entities.memorials.filter({
             owner_email: currentUser.email
           });
           setMemorials(userMemorials);
@@ -40,7 +40,7 @@ export default function MyMemorials() {
     if (!searchCode.trim()) return;
 
     try {
-      const found = await api.entities.Memorial.filter({
+      const found = await api.entities.memorials.filter({
         access_code: searchCode.toUpperCase()
       });
 
