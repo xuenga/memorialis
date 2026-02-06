@@ -30,7 +30,7 @@ export default function OrderConfirmation() {
       }
       if (memorialId) {
         try {
-          const memorials = await api.entities.memorials.filter({ id: memorialId });
+          const memorials = await api.entities.Memorial.filter({ id: memorialId });
           if (memorials.length > 0) setMemorial(memorials[0]);
         } catch (e) { console.error(e) }
       }

@@ -23,7 +23,7 @@ export default function AdminStats() {
     const loadStats = async () => {
       const [orders, memorials, visits] = await Promise.all([
         api.entities.orders.list(),
-        api.entities.memorials.list(),
+        api.entities.Memorial.list(),
         api.entities.MemorialVisit.list()
       ]);
 

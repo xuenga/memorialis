@@ -5,14 +5,14 @@ import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
 import {
   ChevronLeft, Save, Eye, User, FileText, MessageSquare, Settings,
-  Trash2, Check, Eye as EyeIcon, Share2, BarChart3, Palette,
+  Trash2, Check, Eye as EyeIcon, Share2, BarChart3,
   Image as ImageIcon, Plus, Video
 } from 'lucide-react';
 import { Button, Input, Textarea, Label, Switch, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
 import { toast } from 'sonner';
 import MediaUploader from '@/components/memorial/MediaUploader';
 import StatsCard from '@/components/memorial/StatsCard';
-import ThemeSelector from '@/components/memorial/ThemeSelector';
+
 import ShareModal from '@/components/memorial/ShareModal';
 
 interface MemorialData {
@@ -31,11 +31,6 @@ interface MemorialData {
   require_moderation?: boolean;
   access_code?: string;
   slug?: string;
-  custom_colors?: {
-    primary?: string;
-    accent?: string;
-    bg?: string;
-  };
 }
 
 // Helper to slugify text
@@ -69,14 +64,36 @@ export default function EditMemorial() {
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('info');
   const [showShareModal, setShowShareModal] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
       if (memorialId) {
         try {
-          const memorials = await api.entities.memorials.filter({ id: memorialId });
+          // First, get current user
+          let userEmail: string | null = null;
+          try {
+            const currentUser = await api.auth.me();
+            userEmail = currentUser?.email || null;
+            setCurrentUserEmail(userEmail);
+          } catch {
+            // Not authenticated - will be handled below
+          }
+
+          const memorials = await api.entities.Memorial.filter({ id: memorialId });
           if (memorials && memorials.length > 0) {
-            setMemorial(memorials[0]);
+            const loadedMemorial = memorials[0];
+
+            // SECURITY CHECK: Verify ownership
+            if (!userEmail || loadedMemorial.owner_email !== userEmail) {
+              console.warn('Access denied: User does not own this memorial');
+              setAccessDenied(true);
+              setIsLoading(false);
+              return;
+            }
+
+            setMemorial(loadedMemorial);
           }
 
           const tributesList = await api.entities.Tribute.filter({ memorial_id: memorialId });
@@ -99,7 +116,7 @@ export default function EditMemorial() {
     try {
       // 1. Check if slug is unique (if it changed)
       if (memorial.slug) {
-        const existingWithSlug = await api.entities.memorials.filter({ slug: memorial.slug });
+        const existingWithSlug = await api.entities.Memorial.filter({ slug: memorial.slug });
         const isTakenByOther = existingWithSlug.some((m: MemorialData) => m.id !== memorialId);
 
         if (isTakenByOther) {
@@ -109,7 +126,7 @@ export default function EditMemorial() {
         }
       }
 
-      await api.entities.memorials.update(memorialId, memorial);
+      await api.entities.Memorial.update(memorialId, memorial);
       toast.success('Mémorial sauvegardé !');
     } catch (e) {
       toast.error('Erreur lors de la sauvegarde');
@@ -216,6 +233,28 @@ export default function EditMemorial() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (accessDenied) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-6">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m0 0v2m0-2h2m-2 0H10m5-6a3 3 0 11-6 0 3 3 0 016 0zm-3 7a7 7 0 100-14 7 7 0 000 14z" />
+            </svg>
+          </div>
+          <h1 className="font-serif text-2xl text-primary mb-4">Accès refusé</h1>
+          <p className="text-primary/60 mb-8">
+            Vous n'êtes pas autorisé à modifier ce mémorial.
+            Seul le propriétaire peut y accéder.
+          </p>
+          <Link to={createPageUrl('MyMemorials')}>
+            <Button className="btn-accent rounded-full text-primary">Retour à mes mémoriaux</Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -639,21 +678,6 @@ export default function EditMemorial() {
               {/* Settings Tab */}
               <TabsContent value="settings" className="mt-0 space-y-12">
                 <div className="space-y-8">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-accent flex items-center justify-center">
-                      <Palette className="w-6 h-6 text-primary" />
-                    </div>
-                    <h3 className="font-serif text-3xl text-primary">Signature visuelle</h3>
-                  </div>
-                  <ThemeSelector
-                    currentTheme={memorial.theme || 'classic'}
-                    onSelect={(theme: string) => setMemorial(prev => prev ? { ...prev, theme } : null)}
-                    customColors={memorial.custom_colors}
-                    onCustomColorsChange={(colors: any) => setMemorial(prev => prev ? { ...prev, custom_colors: colors } : null)}
-                  />
-                </div>
-
-                <div className="space-y-8 pt-12 border-t border-primary/5">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
                       <Settings className="w-6 h-6 text-accent" />

@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const loadMemorials = async () => {
       try {
-        const allMemorials = await api.entities.memorials.list('-created_date');
+        const allMemorials = await api.entities.Memorial.list('-created_date');
         setMemorials(allMemorials);
         setFilteredMemorials(allMemorials);
       } catch (e) {

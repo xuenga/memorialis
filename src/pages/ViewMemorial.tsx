@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,11 +28,6 @@ interface MemorialData {
   allow_comments?: boolean;
   require_moderation?: boolean;
   access_code?: string;
-  custom_colors?: {
-    primary?: string;
-    accent?: string;
-    bg?: string;
-  };
 }
 
 interface TributeData {
@@ -46,6 +41,7 @@ interface TributeData {
 export default function ViewMemorial() {
   const { id: memorialId } = useParams<{ id: string }>();
   const { user: authUser } = useAuth();
+  const navigate = useNavigate();
   const [memorial, setMemorial] = useState<MemorialData | null>(null);
   const [tributes, setTributes] = useState<TributeData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,13 +65,17 @@ export default function ViewMemorial() {
           // Determine if we are looking up by ID (UUID) or Slug
           const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memorialId);
 
+          console.log('Loading memorial:', { memorialId, isUUID });
+
           let memorials = [];
 
           if (isUUID) {
-            memorials = await api.entities.memorials.filter({ id: memorialId });
+            memorials = await api.entities.Memorial.filter({ id: memorialId });
           } else {
-            memorials = await api.entities.memorials.filter({ slug: memorialId });
+            memorials = await api.entities.Memorial.filter({ slug: memorialId });
           }
+
+          console.log('Memorials found:', memorials);
 
           if (memorials && memorials.length > 0) {
             const mem = memorials[0];
@@ -162,74 +162,7 @@ export default function ViewMemorial() {
     setIsSending(false);
   };
 
-  // Apply theme colors
-  useEffect(() => {
-    if (!memorial) return;
-
-    const themeColors: Record<string, any> = {
-      classic: { primary: '#2f4858', accent: '#e0bd3e', bg: '#e6e6da' },
-      modern: { primary: '#1a1a1a', accent: '#3b82f6', bg: '#f5f5f5' },
-      nature: { primary: '#1e4620', accent: '#86aa7b', bg: '#f0f4f0' },
-      elegant: { primary: '#4a3347', accent: '#c7a2c3', bg: '#faf8f9' },
-    };
-
-    const selectedTheme = memorial.theme || 'classic';
-    const baseColors = themeColors[selectedTheme] || themeColors.classic;
-
-    // Merge with custom colors if theme is custom
-    const colors = selectedTheme === 'custom'
-      ? { ...themeColors.classic, ...(memorial.custom_colors || {}) }
-      : baseColors;
-
-    if (colors) {
-      if (colors.primary) {
-        const hsl = hexToHSL(colors.primary);
-        document.documentElement.style.setProperty('--primary', hsl);
-        document.documentElement.style.setProperty('--foreground', hsl);
-      }
-      if (colors.accent) {
-        document.documentElement.style.setProperty('--accent', hexToHSL(colors.accent));
-      }
-      if (colors.bg) {
-        document.documentElement.style.setProperty('--background', hexToHSL(colors.bg));
-      }
-    }
-
-    return () => {
-      document.documentElement.style.removeProperty('--primary');
-      document.documentElement.style.removeProperty('--accent');
-      document.documentElement.style.removeProperty('--background');
-      document.documentElement.style.removeProperty('--foreground');
-    };
-  }, [memorial]);
-
-  // Helper to convert Hex to HSL for Tailwind variables
-  function hexToHSL(hex: string) {
-    let r = 0, g = 0, b = 0;
-    if (hex.length === 4) {
-      r = parseInt(hex[1] + hex[1], 16);
-      g = parseInt(hex[2] + hex[2], 16);
-      b = parseInt(hex[3] + hex[3], 16);
-    } else if (hex.length === 7) {
-      r = parseInt(hex.substring(1, 3), 16);
-      g = parseInt(hex.substring(3, 5), 16);
-      b = parseInt(hex.substring(5, 7), 16);
-    }
-    r /= 255; g /= 255; b /= 255;
-    let max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h = 0, s = 0, l = (max + min) / 2;
-    if (max !== min) {
-      let d = max - min;
-      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-      switch (max) {
-        case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-        case g: h = (b - r) / d + 2; break;
-        case b: h = (r - g) / d + 4; break;
-      }
-      h /= 6;
-    }
-    return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
-  }
+  // Theme classique utilisé par défaut - pas de changement de couleurs dynamiques
 
   if (isLoading) {
     return (
@@ -265,6 +198,15 @@ export default function ViewMemorial() {
           <img src="/images/hero-memorialis.jpg" className="w-full h-full object-cover opacity-50" alt="Couverture" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/30" />
+
+        {/* Bouton fermer */}
+        <button
+          onClick={() => navigate(-1)}
+          className="absolute top-6 right-6 z-20 p-3 bg-white/20 backdrop-blur-md rounded-full hover:bg-white/40 transition-colors group"
+          title="Fermer"
+        >
+          <X className="w-5 h-5 text-white group-hover:text-primary transition-colors" />
+        </button>
       </div>
 
       {/* Profile Section */}

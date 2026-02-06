@@ -59,7 +59,7 @@ export default function AdminOrders() {
                 const allOrders = await api.entities.orders.list('-created_at');
 
                 // Charger tous les mémoriaux pour faire la jointure
-                const allMemorials = await api.entities.memorials.list();
+                const allMemorials = await api.entities.Memorial.list();
                 const memorialsMap = new Map(allMemorials.map((m: any) => [m.id, m]));
 
                 // Enrichir les commandes avec les infos des mémoriaux

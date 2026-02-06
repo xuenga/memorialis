@@ -22,7 +22,7 @@ export default function MyMemorials() {
         const currentUser = await api.auth.me();
         if (currentUser) {
           // Load user's memorials
-          const userMemorials = await api.entities.memorials.filter({
+          const userMemorials = await api.entities.Memorial.filter({
             owner_email: currentUser.email
           });
           setMemorials(userMemorials);
@@ -40,12 +40,30 @@ export default function MyMemorials() {
     if (!searchCode.trim()) return;
 
     try {
-      const found = await api.entities.memorials.filter({
+      // Get current user email
+      let currentUserEmail: string | null = null;
+      try {
+        const currentUser = await api.auth.me();
+        currentUserEmail = currentUser?.email || null;
+      } catch {
+        toast.error('Veuillez vous connecter pour accéder à un mémorial');
+        return;
+      }
+
+      const found = await api.entities.Memorial.filter({
         access_code: searchCode.toUpperCase()
       });
 
       if (found.length > 0) {
-        navigate(createPageUrl('EditMemorial', { id: found[0].id }));
+        const memorial = found[0];
+
+        // SECURITY CHECK: Verify ownership
+        if (memorial.owner_email !== currentUserEmail) {
+          toast.error('Ce code ne correspond pas à l\'un de vos mémoriaux');
+          return;
+        }
+
+        navigate(createPageUrl('EditMemorial', { id: memorial.id }));
       } else {
         toast.error('Code d\'accès invalide');
       }
