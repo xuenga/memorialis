@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { supabase } from '@/lib/supabaseClient';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     QrCode, Plus, Search, Trash2, Eye, Download,
-    CheckCircle2, Clock, AlertCircle, Package
+    CheckCircle2, Clock, AlertCircle, Package, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,6 +32,7 @@ export default function AdminQRCodes() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [selectedQR, setSelectedQR] = useState<QRCodeData | null>(null);
 
     // Génération en lot
     const [prefix, setPrefix] = useState('');
@@ -308,7 +309,8 @@ export default function AdminQRCodes() {
                 {/* Liste des codes */}
                 <div className="bg-white rounded-2xl border border-primary/5 overflow-hidden">
                     <div className="grid grid-cols-12 gap-4 p-4 bg-background/50 text-xs text-primary/60 uppercase tracking-widest font-bold">
-                        <div className="col-span-3">Code</div>
+                        <div className="col-span-1">QR</div>
+                        <div className="col-span-2">Code</div>
                         <div className="col-span-2">Statut</div>
                         <div className="col-span-3">Client</div>
                         <div className="col-span-2">Date</div>
@@ -329,7 +331,21 @@ export default function AdminQRCodes() {
                                     animate={{ opacity: 1 }}
                                     className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-background/30 transition-colors"
                                 >
-                                    <div className="col-span-3">
+                                    <div className="col-span-1">
+                                        {qr.qr_image_url ? (
+                                            <div
+                                                className="w-8 h-8 rounded bg-white p-0.5 border border-primary/10 cursor-zoom-in hover:scale-110 transition-transform"
+                                                onClick={() => setSelectedQR(qr)}
+                                            >
+                                                <img src={qr.qr_image_url} alt="QR Preview" className="w-full h-full" />
+                                            </div>
+                                        ) : (
+                                            <div className="w-8 h-8 rounded bg-gray-50 flex items-center justify-center border border-dashed border-primary/10">
+                                                <QrCode className="w-4 h-4 text-primary/20" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="col-span-2">
                                         <span className="font-mono text-primary font-medium">{qr.code}</span>
                                     </div>
                                     <div className="col-span-2">
@@ -352,6 +368,7 @@ export default function AdminQRCodes() {
                                                 download={`QR-${qr.code}.png`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
+                                                title="Télécharger le QR Code (Lien Direct)"
                                             >
                                                 <Button variant="ghost" size="icon" className="rounded-lg text-accent hover:text-accent hover:bg-accent/10">
                                                     <Download className="w-4 h-4" />
@@ -388,6 +405,69 @@ export default function AdminQRCodes() {
                     )}
                 </div>
             </div>
+
+            {/* Modal de prévisualisation QR */}
+            <AnimatePresence>
+                {selectedQR && (
+                    <div className="fixed inset-0 z-[110] flex items-center justify-center p-6">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSelectedQR(null)}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                        />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="relative w-full max-w-sm bg-white rounded-[3rem] p-10 shadow-2xl text-center"
+                        >
+                            <button
+                                onClick={() => setSelectedQR(null)}
+                                className="absolute top-6 right-6 p-2 hover:bg-background rounded-full transition-colors"
+                            >
+                                <X className="w-6 h-6 text-primary" />
+                            </button>
+
+                            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-accent/20 flex items-center justify-center">
+                                <QrCode className="w-10 h-10 text-accent" />
+                            </div>
+
+                            <h3 className="font-serif text-2xl text-primary mb-2">Code {selectedQR.code}</h3>
+                            <p className="text-sm text-primary/60 mb-8">Format haute résolution (1000x1000px)</p>
+
+                            <div className="bg-white p-6 rounded-3xl border border-primary/5 shadow-inner mb-8 transition-all hover:scale-[1.02]">
+                                <img
+                                    src={selectedQR.qr_image_url}
+                                    className="w-full h-auto"
+                                    alt={`QR Code ${selectedQR.code}`}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <a
+                                    href={selectedQR.qr_image_url}
+                                    download={`QR-${selectedQR.code}.png`}
+                                    className="col-span-2"
+                                >
+                                    <Button className="btn-accent w-full h-14 rounded-full gap-2 font-bold text-lg">
+                                        <Download className="w-5 h-5" />
+                                        Télécharger
+                                    </Button>
+                                </a>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setSelectedQR(null)}
+                                    className="col-span-2 h-12 rounded-full border-primary/10 text-primary font-medium"
+                                >
+                                    Fermer
+                                </Button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
