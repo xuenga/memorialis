@@ -32,6 +32,8 @@ export default function AdminProducts() {
     material: 'autocollant',
     category: 'plaques',
     features: [],
+    image_url: '',
+    gallery: [],
     is_active: true
   });
 
@@ -61,6 +63,8 @@ export default function AdminProducts() {
       material: product.material || 'autocollant',
       category: product.category || 'plaques',
       features: product.features || [],
+      image_url: product.image_url || '',
+      gallery: product.gallery || [],
       is_active: product.is_active ?? true
     });
     setShowForm(true);
@@ -77,6 +81,8 @@ export default function AdminProducts() {
       material: 'autocollant',
       category: 'plaques',
       features: [],
+      image_url: '',
+      gallery: [],
       is_active: true
     });
     setShowForm(true);
@@ -402,6 +408,102 @@ export default function AdminProducts() {
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     required
                   />
+                </div>
+
+                {/* Image Section */}
+                <div className="space-y-4 p-6 bg-background/50 rounded-2xl border border-primary/10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Label className="text-primary/80 font-bold uppercase tracking-widest text-[10px]">Images du produit</Label>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Image principale</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        value={formData.image_url}
+                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                        placeholder="/images/products/mon-produit.jpg"
+                        className="rounded-xl h-12 flex-1"
+                      />
+                      <div className="relative">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          id="image-file-selector"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const imagePath = `/images/products/${file.name}`;
+                              setFormData({ ...formData, image_url: imagePath });
+                              toast.info(`Image sélectionnée : ${file.name}\n\nN'oubliez pas de copier ce fichier dans public/images/products/`);
+                            }
+                            e.target.value = ''; // Reset input
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="rounded-xl h-12 px-6"
+                          onClick={() => document.getElementById('image-file-selector')?.click()}
+                        >
+                          Parcourir
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="text-xs text-primary/50">
+                      Cliquez sur "Parcourir" pour sélectionner une image. Le chemin sera automatiquement rempli.
+                      Ensuite, copiez manuellement votre image dans <code className="bg-primary/5 px-1 rounded">public/images/products/</code>
+                    </p>
+
+                    {/* Image Preview */}
+                    {formData.image_url && (
+                      <div className="mt-3">
+                        <img
+                          src={formData.image_url}
+                          alt="Aperçu"
+                          className="w-32 h-32 object-cover rounded-xl border border-primary/10"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Galerie d'images (optionnel)</Label>
+                    <p className="text-xs text-primary/50 mb-2">
+                      Ajoutez plusieurs images. Une par ligne.
+                    </p>
+                    <Textarea
+                      value={Array.isArray(formData.gallery) ? formData.gallery.join('\n') : ''}
+                      onChange={(e) => setFormData({
+                        ...formData,
+                        gallery: e.target.value.split('\n').filter((url: string) => url.trim())
+                      })}
+                      rows={3}
+                      placeholder="/images/products/vue1.jpg&#10;/images/products/vue2.jpg&#10;/images/products/vue3.jpg"
+                      className="rounded-xl font-mono text-xs"
+                    />
+
+                    {/* Gallery Preview */}
+                    {formData.gallery && formData.gallery.length > 0 && (
+                      <div className="grid grid-cols-4 gap-2 mt-3">
+                        {formData.gallery.map((url: string, index: number) => (
+                          <img
+                            key={index}
+                            src={url}
+                            alt={`Galerie ${index + 1}`}
+                            className="w-full h-20 object-cover rounded-lg border border-primary/10"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
 
