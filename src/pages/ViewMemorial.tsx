@@ -81,30 +81,25 @@ export default function ViewMemorial() {
 
             // SECURITY CHECK: If not public and user is not owner
             // Allow access if:
-            // 1. The memorial is public (is_public === true or undefined/null which defaults to public behavior)
-            // 2. OR the current user is the owner (owner_email matches)
+            // 1. mem.is_public is not explicitly false (it could be true, null, or undefined)
+            // 2. OR the current user is the owner
             const isOwner = currentUserEmail && mem.owner_email &&
               mem.owner_email.toLowerCase() === currentUserEmail.toLowerCase();
 
-            console.log('Memorial access check:', {
-              is_public: mem.is_public,
-              owner_email: mem.owner_email,
-              current_user_email: currentUserEmail,
-              isOwner
-            });
-
             if (mem.is_public === false && !isOwner) {
-              setMemorial(null); // Will trigger the "Not found" view
+              console.log('Access denied: Memorial is private and user is not owner');
+              setMemorial(null);
             } else {
               setMemorial(mem);
+
+              // Now load tributes using the verified memorial UUID
+              const tributesList = await api.entities.Tribute.filter({
+                memorial_id: mem.id,
+                is_approved: true
+              });
+              setTributes(Array.isArray(tributesList) ? tributesList : []);
             }
           }
-
-          const tributesList = await api.entities.Tribute.filter({
-            memorial_id: memorialId,
-            is_approved: true
-          });
-          setTributes(Array.isArray(tributesList) ? tributesList : []);
 
           // Track visit
           // We track the visit if the memorial exists and the visitor is NOT the owner

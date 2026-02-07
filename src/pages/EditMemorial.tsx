@@ -708,7 +708,7 @@ export default function EditMemorial() {
                         <p className="text-sm text-primary/40 leading-relaxed max-w-md">Le mémorial est visible par toute personne utilisant le lien ou le QR code.</p>
                       </div>
                       <Switch
-                        checked={memorial.is_public ?? true}
+                        checked={memorial.is_public !== false}
                         onCheckedChange={(val) => setMemorial(prev => prev ? { ...prev, is_public: val } : null)}
                       />
                     </div>

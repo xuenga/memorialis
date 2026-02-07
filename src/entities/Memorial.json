@@ -71,7 +71,7 @@
     },
     "is_public": {
       "type": "boolean",
-      "default": false
+      "default": true
     },
     "is_activated": {
       "type": "boolean",
