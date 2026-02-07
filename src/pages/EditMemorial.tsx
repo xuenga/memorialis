@@ -320,7 +320,7 @@ export default function EditMemorial() {
             Seul le propriétaire peut y accéder.
           </p>
           <Link to={createPageUrl('MyMemorials')}>
-            <Button className="btn-accent rounded-full text-primary">Retour à mes mémoriaux</Button>
+            <Button variant="secondary" className="rounded-full">Retour à mes mémoriaux</Button>
           </Link>
         </div>
       </div>
@@ -333,7 +333,7 @@ export default function EditMemorial() {
         <div className="text-center">
           <h1 className="font-serif text-2xl text-primary mb-4">Mémorial non trouvé</h1>
           <Link to={createPageUrl('MyMemorials')}>
-            <Button className="btn-accent rounded-full text-primary">Retour à mes mémoriaux</Button>
+            <Button variant="secondary" className="rounded-full">Retour à mes mémoriaux</Button>
           </Link>
         </div>
       </div>
@@ -395,7 +395,7 @@ export default function EditMemorial() {
               <div className="flex overflow-x-auto no-scrollbar gap-1">
                 {[
                   { value: 'info', icon: User, label: 'Général' },
-                  { value: 'media', icon: ImageIcon, label: 'Photos' },
+                  { value: 'media', icon: ImageIcon, label: 'Médias' },
                   { value: 'bio', icon: FileText, label: 'Bio' },
                   { value: 'tributes', icon: MessageSquare, label: 'Messages' },
                   { value: 'stats', icon: BarChart3, label: 'Stats' },

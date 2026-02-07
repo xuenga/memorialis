@@ -122,10 +122,20 @@ export default function AdminQRCodes() {
         if (!confirm(`Supprimer le code ${qr.code} ?`)) return;
 
         try {
-            await api.entities.QRCode.delete(qr.id);
-            toast.success('Code supprimé');
-            await loadQRCodes();
+            // Use RPC function with SECURITY DEFINER to bypass RLS
+            const { error } = await supabase.rpc('admin_delete_qrcode', {
+                qr_id: qr.id
+            });
+
+            if (error) {
+                console.error('Erreur RPC:', error);
+                toast.error(`Erreur: ${error.message}`);
+            } else {
+                toast.success('Code supprimé');
+                await loadQRCodes();
+            }
         } catch (e) {
+            console.error('Erreur lors de la suppression:', e);
             toast.error('Erreur lors de la suppression');
         }
     };
