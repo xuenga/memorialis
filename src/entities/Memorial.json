@@ -50,6 +50,21 @@
         }
       }
     },
+    "audios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Fichiers audio (messages vocaux, musique)"
+    },
     "allow_comments": {
       "type": "boolean",
       "default": true

@@ -286,27 +286,86 @@ export default function ViewMemorial() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {memorial.videos.map((video: any, index: number) => (
+              {memorial.videos.map((video: any, index: number) => {
+                // Determine if it's an embeddable link
+                const isEmbed = video.type === 'link' ||
+                  video.url.includes('youtube.com') ||
+                  video.url.includes('youtu.be');
+
+                let embedUrl = video.url;
+                if (isEmbed) {
+                  // YouTube conversion
+                  if (video.url.includes('youtube.com') || video.url.includes('youtu.be')) {
+                    const id = video.url.includes('watch?v=')
+                      ? video.url.split('watch?v=')[1].split('&')[0]
+                      : video.url.split('/').pop()?.split('?')[0];
+                    embedUrl = `https://www.youtube.com/embed/${id}`;
+                  }
+                }
+
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-primary/5 group"
+                  >
+                    <div className="aspect-video bg-black relative">
+                      {isEmbed ? (
+                        <iframe
+                          src={embedUrl}
+                          className="w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-view"
+                          allowFullScreen
+                        />
+                      ) : (
+                        <video
+                          src={video.url}
+                          className="w-full h-full object-contain"
+                          controls
+                          poster={memorial.cover_photo}
+                        >
+                          Votre navigateur ne supporte pas la lecture de vidéos.
+                        </video>
+                      )}
+                    </div>
+                    <div className="p-6 lg:p-8">
+                      <h3 className="font-serif text-xl text-primary">{video.title || 'Sans titre'}</h3>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* Audio */}
+        {memorial.audios && memorial.audios.length > 0 && (
+          <section className="mt-12">
+            <div className="flex items-center justify-between mb-8 px-4">
+              <h2 className="font-serif text-2xl lg:text-3xl text-primary">Messages audio</h2>
+              <span className="text-sm text-primary/40">{memorial.audios.length} audio{memorial.audios.length > 1 ? 's' : ''}</span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {memorial.audios.map((audio: any, index: number) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="bg-white rounded-[2.5rem] overflow-hidden shadow-sm border border-primary/5 group"
+                  className="bg-white rounded-[2rem] p-6 shadow-sm border border-primary/5"
                 >
-                  <div className="aspect-video bg-black relative">
-                    <video
-                      src={video.url}
-                      className="w-full h-full object-contain"
-                      controls
-                      poster={memorial.cover_photo}
-                    >
-                      Votre navigateur ne supporte pas la lecture de vidéos.
-                    </video>
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center">
+                      <svg className="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                      </svg>
+                    </div>
+                    <h3 className="font-serif text-lg text-primary truncate flex-1">{audio.title || 'Message audio'}</h3>
                   </div>
-                  <div className="p-6 lg:p-8">
-                    <h3 className="font-serif text-xl text-primary">{video.title || 'Sans titre'}</h3>
-                  </div>
+                  <audio src={audio.url} controls className="w-full" />
                 </motion.div>
               ))}
             </div>

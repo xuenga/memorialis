@@ -21,6 +21,14 @@ export default function MediaUploader({ onUpload, currentVideos, onRemove, memor
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const VIDEO_LIMIT_MB = 200;
+
+    if (file.size > VIDEO_LIMIT_MB * 1024 * 1024) {
+      toast.error(`La vidéo est trop volumineuse (${Math.round(file.size / (1024 * 1024))} Mo). La limite est de ${VIDEO_LIMIT_MB} Mo.`);
+      e.target.value = '';
+      return;
+    }
+
     try {
       const loadingToast = toast.loading('Téléchargement de la vidéo...');
 
@@ -76,7 +84,7 @@ export default function MediaUploader({ onUpload, currentVideos, onRemove, memor
             <Video className="w-8 h-8 text-primary/20 mb-2 group-hover:text-accent transition-colors" />
             <p className="text-[10px] text-primary/40 uppercase tracking-widest font-bold">Choisir un fichier</p>
           </Label>
-          <p className="text-[10px] text-primary/40">Fichiers mp4, mov, webm recommandés. Stocké sur Bunny Storage.</p>
+          <p className="text-[10px] text-primary/40">Fichiers mp4, mov, webm recommandés. Limite : 200 Mo. Stocké sur Bunny Storage.</p>
         </div>
 
         <div className="space-y-4">
@@ -86,7 +94,7 @@ export default function MediaUploader({ onUpload, currentVideos, onRemove, memor
               <Input
                 value={videoUrl}
                 onChange={(e) => setVideoUrl(e.target.value)}
-                placeholder="Lien YouTube, Vimeo, etc."
+                placeholder="Lien YouTube, etc."
                 className="rounded-xl h-12"
               />
             </div>

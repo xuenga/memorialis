@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   ChevronLeft, Save, Eye, User, FileText, MessageSquare, Settings,
   Trash2, Check, Eye as EyeIcon, Share2, BarChart3,
-  Image as ImageIcon, Plus, Video
+  Image as ImageIcon, Plus, Video, ExternalLink, Music
 } from 'lucide-react';
 import { Button, Input, Textarea, Label, Switch, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
 import { toast } from 'sonner';
@@ -25,6 +25,7 @@ interface MemorialData {
   cover_photo?: string;
   photos?: string[];
   videos?: any[];
+  audios?: any[];
   is_public?: boolean;
   allow_comments?: boolean;
   require_moderation?: boolean;
@@ -132,10 +133,33 @@ export default function EditMemorial() {
     }
     setIsSaving(false);
   };
+  const PHOTO_LIMIT_MB = 20;
+  const VIDEO_LIMIT_MB = 200;
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
     const file = e.target.files?.[0];
     if (!file || !memorial) return;
+
+    // Check file size (20MB limit)
+    if (file.size > PHOTO_LIMIT_MB * 1024 * 1024) {
+      toast.error(
+        <div className="flex flex-col gap-2">
+          <p className="font-bold">Image trop volumineuse ({Math.round(file.size / (1024 * 1024))} Mo)</p>
+          <p className="text-xs">La limite est de {PHOTO_LIMIT_MB} Mo par photo (soit environ 10 photos standard).</p>
+          <a
+            href="https://tinyjpg.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs underline flex items-center gap-1 text-accent"
+          >
+            Compresser mon image sur TinyJPG <ExternalLink className="w-3 h-3" />
+          </a>
+        </div>,
+        { duration: 6000 }
+      );
+      e.target.value = '';
+      return;
+    }
 
     try {
       const loadingToast = toast.loading('Téléchargement de la photo...');
@@ -179,6 +203,51 @@ export default function EditMemorial() {
       const videos = [...(prev.videos || [])];
       videos.splice(index, 1);
       return { ...prev, videos };
+    });
+  };
+
+  const AUDIO_LIMIT_MB = 50;
+
+  const handleAudioUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !memorial) return;
+
+    // Check file size (50MB limit)
+    if (file.size > AUDIO_LIMIT_MB * 1024 * 1024) {
+      toast.error(`L'audio est trop volumineux (${Math.round(file.size / (1024 * 1024))} Mo). La limite est de ${AUDIO_LIMIT_MB} Mo.`);
+      e.target.value = '';
+      return;
+    }
+
+    try {
+      const loadingToast = toast.loading('Téléchargement de l\'audio...');
+
+      const uploadFolder = memorialId ? `memorials/${memorialId}` : 'memorials';
+      const file_url = await api.storage.upload(file, uploadFolder);
+
+      setMemorial(prev => {
+        if (!prev) return null;
+        const audios = prev.audios || [];
+        return { ...prev, audios: [...audios, { url: file_url, title: file.name }] };
+      });
+
+      toast.dismiss(loadingToast);
+      toast.success('Audio téléchargé !');
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      toast.error(`Erreur: ${error.message || 'Problème de configuration'}`);
+    }
+
+    e.target.value = '';
+  };
+
+  const removeAudio = (index: number) => {
+    if (!confirm('Voulez-vous vraiment supprimer cet audio ?')) return;
+    setMemorial(prev => {
+      if (!prev) return null;
+      const audios = [...(prev.audios || [])];
+      audios.splice(index, 1);
+      return { ...prev, audios };
     });
   };
 
@@ -477,6 +546,7 @@ export default function EditMemorial() {
                     <div>
                       <h3 className="font-serif text-3xl text-primary mb-2">Souvenirs</h3>
                       <p className="text-sm text-primary/40 uppercase tracking-widest font-bold">Partagez les moments de vie</p>
+                      <p className="text-[10px] text-primary/30 mt-1 italic">Limite de 20 Mo par photo (env. 10 photos standard)</p>
                     </div>
                     <div>
                       <Input
@@ -533,6 +603,66 @@ export default function EditMemorial() {
                     onRemove={removeVideo}
                     memorialId={memorialId}
                   />
+                </div>
+
+                {/* Audio Section */}
+                <div className="space-y-8 pt-12 border-t border-primary/5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center">
+                      <Music className="w-6 h-6 text-accent" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-3xl text-primary">Audio</h3>
+                      <p className="text-sm text-primary/40">Messages vocaux ou musique</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Input
+                        type="file"
+                        accept="audio/mp3,audio/wav,audio/ogg,audio/m4a,audio/mpeg"
+                        onChange={handleAudioUpload}
+                        className="hidden"
+                        id="audio-upload"
+                      />
+                      <Label
+                        htmlFor="audio-upload"
+                        className="cursor-pointer inline-flex items-center justify-center gap-3 px-8 h-12 rounded-full bg-accent text-primary font-bold uppercase tracking-widest text-xs shadow-lg shadow-accent/20 hover:bg-accent/90 transition-colors"
+                      >
+                        <Plus className="w-5 h-5" />
+                        Ajouter un audio
+                      </Label>
+                    </div>
+                    <p className="text-[10px] text-primary/40 italic">
+                      Formats accept&eacute;s : MP3, WAV, OGG, M4A. Limite : 50 Mo par fichier.
+                    </p>
+                  </div>
+
+                  {memorial.audios && memorial.audios.length > 0 && (
+                    <div className="space-y-4">
+                      {memorial.audios.map((audio: any, index: number) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-4 p-4 bg-background rounded-2xl border border-primary/5 group"
+                        >
+                          <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+                            <Music className="w-5 h-5 text-accent" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-primary truncate">{audio.title || 'Audio sans titre'}</p>
+                            <audio src={audio.url} controls className="w-full mt-2 h-8" />
+                          </div>
+                          <button
+                            onClick={() => removeAudio(index)}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </TabsContent>
 
