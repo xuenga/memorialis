@@ -23,6 +23,7 @@ interface MemorialData {
   cover_photo?: string;
   photos?: string[];
   videos?: any[];
+  audios?: any[];
   is_public?: boolean;
   allow_comments?: boolean;
   require_moderation?: boolean;
