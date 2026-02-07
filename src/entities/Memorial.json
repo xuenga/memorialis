@@ -82,31 +82,6 @@
       "type": "string",
       "description": "Email du propriétaire du mémorial"
     },
-    "theme": {
-      "type": "string",
-      "enum": [
-        "classic",
-        "modern",
-        "nature",
-        "elegant",
-        "custom"
-      ],
-      "default": "classic"
-    },
-    "custom_colors": {
-      "type": "object",
-      "properties": {
-        "primary": {
-          "type": "string"
-        },
-        "accent": {
-          "type": "string"
-        },
-        "bg": {
-          "type": "string"
-        }
-      }
-    },
     "created_date": {
       "type": "string",
       "format": "date-time"

@@ -25,7 +25,6 @@ interface MemorialData {
   cover_photo?: string;
   photos?: string[];
   videos?: any[];
-  theme?: string;
   is_public?: boolean;
   allow_comments?: boolean;
   require_moderation?: boolean;
@@ -273,7 +272,7 @@ export default function EditMemorial() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8 lg:py-12">
+    <div className="min-h-screen bg-background py-8 lg:py-12 pb-28 lg:pb-12">
       <div className="max-w-5xl mx-auto px-6 lg:px-12">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
@@ -360,41 +359,58 @@ export default function EditMemorial() {
                       />
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Lien personnalisé</Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-primary/40 select-none">memorialis.shop/memorial/</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                        <span className="text-sm text-primary/40 select-none whitespace-nowrap">memorialis.shop/memorial/</span>
                         <Input
                           value={memorial.slug || ''}
                           onChange={handleSlugChange}
                           placeholder="prenom-nom"
-                          className="h-10 rounded-xl border-primary/10 focus:border-accent px-4 font-mono text-sm"
+                          className="h-12 sm:h-10 rounded-xl border-primary/10 focus:border-accent px-4 font-mono text-sm flex-1"
                         />
                       </div>
+                      {memorial.slug && (
+                        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl">
+                          <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
+                          <p className="text-xs text-green-700 truncate">
+                            <span className="font-semibold">URL active :</span>{' '}
+                            <a
+                              href={`${window.location.origin}/memorial/${memorial.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="underline hover:no-underline"
+                            >
+                              memorialis.shop/memorial/{memorial.slug}
+                            </a>
+                          </p>
+                        </div>
+                      )}
                       <p className="text-[10px] text-primary/40 italic">Ce lien personnalisé sera utilisable pour partager le mémorial.</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Naissance</Label>
+                        <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Date de naissance</Label>
                         <Input
                           type="date"
                           value={memorial.birth_date || ''}
                           onChange={(e) => setMemorial(prev => prev ? { ...prev, birth_date: e.target.value } : null)}
-                          className="h-14 rounded-2xl border-primary/10 focus:border-accent px-6"
+                          className="h-14 rounded-2xl border-primary/10 focus:border-accent px-4 sm:px-6 w-full"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Décès</Label>
+                        <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Date de décès</Label>
                         <Input
                           type="date"
                           value={memorial.death_date || ''}
                           onChange={(e) => setMemorial(prev => prev ? { ...prev, death_date: e.target.value } : null)}
-                          className="h-14 rounded-2xl border-primary/10 focus:border-accent px-6"
+                          className="h-14 rounded-2xl border-primary/10 focus:border-accent px-4 sm:px-6 w-full"
                         />
                       </div>
                     </div>
                   </div>
+
 
                   <div className="space-y-4">
                     <Label className="text-primary/60 font-bold uppercase tracking-widest text-[10px]">Photo de couverture</Label>
@@ -724,6 +740,33 @@ export default function EditMemorial() {
             </div>
           </Tabs>
         </motion.div>
+      </div>
+
+      {/* Mobile Sticky Save Bar */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-primary/10 lg:hidden z-50 safe-area-inset-bottom">
+        <div className="flex gap-3 max-w-lg mx-auto">
+          <Button
+            onClick={() => setShowShareModal(true)}
+            variant="outline"
+            className="flex-1 rounded-full h-14 gap-2 border-primary/20"
+          >
+            <Share2 className="w-5 h-5 text-accent" />
+            Partager
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={isSaving}
+            variant="secondary"
+            className="flex-[2] rounded-full h-14 gap-2 shadow-lg shadow-accent/20 font-bold"
+          >
+            {isSaving ? (
+              <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Save className="w-5 h-5" />
+            )}
+            Enregistrer
+          </Button>
+        </div>
       </div>
 
       <ShareModal

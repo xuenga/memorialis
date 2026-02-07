@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Copy, Mail, Share2, QrCode as QrIcon, Check, Download, Send } from 'lucide-react';
+import { X, Copy, Share2, QrCode as QrIcon, Check, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { api } from '@/api/apiClient';
 
 interface ShareModalProps {
   memorial: any;
@@ -16,12 +15,21 @@ interface ShareModalProps {
 
 export default function ShareModal({ memorial, onClose, isOpen, url, title }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
-  const [emailTo, setEmailTo] = useState('');
-  const [isSending, setIsSending] = useState(false);
+  const [showQR, setShowQR] = useState(false);
 
-  // Use props if provided, otherwise compute from memorial
-  const memorialUrl = url || `${window.location.origin}/memorial/${memorial?.id}`;
+  // Build the public URL with memorialis.shop domain
+  const slug = memorial?.slug;
+  const memorialId = memorial?.id;
+  const memorialPath = slug ? `/memorial/${slug}` : `/memorial/${memorialId}`;
+  const memorialUrl = url?.replace(window.location.origin, 'https://memorialis.shop')
+    || `https://memorialis.shop${memorialPath}`;
+  const displayUrl = memorialUrl.replace('https://', '');
   const memorialName = title || memorial?.name || 'Mémorial';
+
+  // QR Code URL
+  const qrCodeUrl = memorial?.access_code
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://memorialis.shop/qr/${memorial.access_code}`)}`
+    : `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(memorialUrl)}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(memorialUrl);
@@ -30,38 +38,28 @@ export default function ShareModal({ memorial, onClose, isOpen, url, title }: Sh
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const shareByEmail = async () => {
-    if (!emailTo) {
-      toast.error('Veuillez entrer une adresse email');
-      return;
+  const handleNativeShare = async () => {
+    const shareData = {
+      title: `Mémorial de ${memorialName}`,
+      text: `Découvrez le mémorial de ${memorialName}`,
+      url: memorialUrl,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+        toast.success('Partage réussi !');
+      } catch (error: any) {
+        // User cancelled or error
+        if (error.name !== 'AbortError') {
+          toast.error('Erreur lors du partage');
+        }
+      }
+    } else {
+      // Fallback: open email client
+      const mailtoUrl = `mailto:?subject=${encodeURIComponent(`Mémorial de ${memorialName}`)}&body=${encodeURIComponent(`Découvrez le mémorial de ${memorialName} : ${memorialUrl}`)}`;
+      window.open(mailtoUrl, '_blank');
     }
-
-    setIsSending(true);
-
-    try {
-      await (api as any).functions.SendEmail?.({
-        to: emailTo,
-        subject: `${memorialName} - Mémorial Memorialis`,
-        body: `
-Bonjour,
-
-Je souhaite partager avec vous le mémorial de ${memorialName}.
-
-Vous pouvez le consulter en ligne à l'adresse suivante :
-${memorialUrl}
-
-Avec mes pensées,
-L'équipe Memorialis
-        `
-      });
-
-      toast.success('Email envoyé avec succès !');
-      setEmailTo('');
-    } catch (error) {
-      toast.error('Erreur lors de l\'envoi');
-    }
-
-    setIsSending(false);
   };
 
   return (
@@ -103,72 +101,95 @@ L'équipe Memorialis
               </button>
             </div>
 
-            <div className="space-y-8">
+            <div className="space-y-6">
               {/* Copy Link */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <label className="text-sm font-bold text-primary/40 uppercase tracking-widest block ml-1">Lien direct</label>
                 <div className="flex gap-3">
                   <Input
-                    value={memorialUrl}
+                    value={displayUrl}
                     readOnly
                     className="flex-1 border-primary/10 bg-background font-mono text-sm h-14 rounded-2xl px-6"
                   />
                   <Button
                     onClick={copyToClipboard}
-                    className="btn-accent px-6 h-14 rounded-2xl shadow-lg shadow-accent/10"
+                    className="bg-primary hover:bg-primary/90 px-6 h-14 rounded-2xl shadow-lg"
                   >
                     {copied ? (
-                      <Check className="w-6 h-6 text-primary" />
+                      <Check className="w-6 h-6 text-white" />
                     ) : (
-                      <Copy className="w-6 h-6 text-primary" />
+                      <Copy className="w-6 h-6 text-white" />
                     )}
                   </Button>
                 </div>
               </div>
 
-              {/* Share by Email */}
-              <div className="space-y-4">
-                <label className="text-sm font-bold text-primary/40 uppercase tracking-widest block ml-1">Envoyer par email</label>
-                <div className="flex gap-3">
-                  <Input
-                    type="email"
-                    value={emailTo}
-                    onChange={(e) => setEmailTo(e.target.value)}
-                    placeholder="destinataire@email.com"
-                    className="flex-1 border-primary/10 h-14 rounded-2xl px-6"
-                  />
-                  <Button
-                    onClick={shareByEmail}
-                    disabled={isSending}
-                    className="btn-primary px-6 h-14 rounded-2xl shadow-lg shadow-primary/10"
-                  >
-                    {isSending ? (
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    ) : (
-                      <Send className="w-6 h-6" />
-                    )}
-                  </Button>
-                </div>
-              </div>
+              {/* Native Share Button */}
+              <Button
+                onClick={handleNativeShare}
+                className="w-full h-16 rounded-2xl bg-accent hover:bg-accent/90 text-primary font-bold text-base gap-3 shadow-lg shadow-accent/20"
+              >
+                <ExternalLink className="w-5 h-5" />
+                Partager via SMS, Email, WhatsApp...
+              </Button>
 
-              <div className="grid grid-cols-2 gap-4 pt-6">
-                <Button
-                  variant="outline"
-                  className="w-full h-20 rounded-3xl border-primary/10 gap-4 hover:bg-primary/5 flex flex-col items-center justify-center p-0"
-                >
-                  <QrIcon className="w-6 h-6 text-accent" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Télécharger QR</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full h-20 rounded-3xl border-primary/10 gap-4 hover:bg-primary/5 flex flex-col items-center justify-center p-0"
-                >
-                  <Download className="w-6 h-6 text-accent" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest">Kit Mémorial</span>
-                </Button>
-              </div>
+              {/* Show QR Button */}
+              <Button
+                onClick={() => setShowQR(true)}
+                variant="outline"
+                className="w-full h-16 rounded-2xl border-primary/10 gap-3 hover:bg-primary/5 font-bold"
+              >
+                <QrIcon className="w-5 h-5 text-accent" />
+                Afficher le QR Code
+              </Button>
             </div>
           </motion.div>
+        </motion.div>
+      )}
+
+      {/* QR Code Fullscreen Modal */}
+      {showQR && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-[60] bg-primary flex flex-col items-center justify-center p-8"
+          onClick={() => setShowQR(false)}
+        >
+          <button
+            onClick={() => setShowQR(false)}
+            className="absolute top-6 right-6 p-3 hover:bg-white/10 rounded-full transition-colors"
+          >
+            <X className="w-8 h-8 text-white" />
+          </button>
+
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white p-6 rounded-3xl shadow-2xl"
+          >
+            <img
+              src={qrCodeUrl}
+              alt="QR Code du mémorial"
+              className="w-64 h-64 sm:w-80 sm:h-80"
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="mt-8 text-center"
+          >
+            <p className="text-white/60 text-sm uppercase tracking-widest font-bold mb-2">Scannez ce code</p>
+            <p className="text-white font-serif text-2xl">{memorialName}</p>
+            {memorial?.access_code && (
+              <p className="text-white/40 font-mono text-sm mt-2">{memorial.access_code}</p>
+            )}
+          </motion.div>
+
+          <p className="absolute bottom-8 text-white/30 text-xs">Appuyez n'importe où pour fermer</p>
         </motion.div>
       )}
     </AnimatePresence>
