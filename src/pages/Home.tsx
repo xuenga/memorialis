@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
-import { ArrowRight, QrCode, Heart, Shield, Users, Star, ChevronRight } from 'lucide-react';
+import { ArrowRight, QrCode, Heart, Shield, Users, Star, ChevronRight, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Home() {
@@ -64,22 +64,34 @@ export default function Home() {
 
   const previewProducts = products.length > 0 ? products : [
     {
+      id: "demo-1",
+      slug: "demo-1",
       name: "QRcode sur Plaque Autocollante Premium",
       price: 49,
-      desc: "Facile à installer sur toute surface lisse",
-      image: "/images/hero-memorialis.jpg"
+      description: "Facile à installer sur toute surface lisse",
+      image_url: "/images/hero-memorialis.jpg",
+      material: "autocollant",
+      is_featured: false
     },
     {
+      id: "demo-2",
+      slug: "demo-2",
       name: "QRcode sur Plaque Autocollante Classique",
       price: 39,
-      desc: "Solution économique et élégante",
-      image: "/images/hero-memorialis.jpg"
+      description: "Solution économique et élégante",
+      image_url: "/images/hero-memorialis.jpg",
+      material: "autocollant",
+      is_featured: false
     },
     {
+      id: "demo-3",
+      slug: "demo-3",
       name: "QRcode sur Gravure Plexiglass Élégance",
       price: 89,
-      desc: "Élégance et transparence pour un rendu moderne",
-      image: "/images/hero-memorialis.jpg"
+      description: "Élégance et transparence pour un rendu moderne",
+      image_url: "/images/hero-memorialis.jpg",
+      material: "plexiglass",
+      is_featured: true
     }
   ];
 
@@ -261,33 +273,62 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {previewProducts.map((product, index) => (
               <motion.div
-                key={index}
+                key={product.id || index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 className="group"
               >
-                <Link to={createPageUrl('Products')}>
-                  <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-background mb-6">
+                <Link to={createPageUrl('ProductDetail', { slug: product.slug || product.id })}>
+                  <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-primary shadow-sm mb-6">
+                    {product.is_featured && (
+                      <div className="absolute top-6 right-6 z-40 flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-4 py-2 rounded-full shadow-lg font-bold text-sm uppercase tracking-wider">
+                        <Star className="w-4 h-4 fill-current" />
+                        Populaire
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/15 to-primary/25 z-10" />
                     <img
-                      src={product.image || product.image_url}
+                      src={product.image_url || product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                      <Button variant="secondary" className="w-full rounded-full py-6 font-bold shadow-xl">
-                        Découvrir
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20" />
+                    <div className="absolute bottom-8 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-30">
+                      <Button variant="secondary" className="w-full py-7 rounded-full text-lg font-bold shadow-2xl">
+                        Découvrir le produit
                       </Button>
                     </div>
                   </div>
-                  <h3 className="font-serif text-xl text-primary mb-2 group-hover:text-accent transition-colors">
-                    {product.name}
-                  </h3>
-                  <p className="text-primary/60 text-sm mb-3 line-clamp-2">{product.desc || product.description}</p>
-                  <p className="font-serif text-2xl text-accent font-bold">{product.price}€</p>
                 </Link>
+
+                <div className="px-4">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex-1">
+                      <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#e0bd3e]">
+                        Support {product.material || "Premium"}
+                      </span>
+                      <h3 className="font-serif text-3xl text-primary mt-1 group-hover:text-primary/70 transition-colors">
+                        {product.name}
+                      </h3>
+                    </div>
+                    <p className="font-serif text-2xl text-primary">{product.price}€</p>
+                  </div>
+                  <p className="text-primary/60 text-sm leading-relaxed mb-6">
+                    {product.description || product.desc}
+                  </p>
+                  <div className="flex items-center gap-6 pt-4 border-t border-primary/5">
+                    <div className="flex items-center gap-2 text-primary/40 text-[10px] uppercase font-bold tracking-wider">
+                      <QrCode className="w-4 h-4" />
+                      Accès à vie
+                    </div>
+                    <div className="flex items-center gap-2 text-primary/40 text-[10px] uppercase font-bold tracking-wider">
+                      <ShoppingBag className="w-4 h-4" />
+                      Livraison offerte
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>

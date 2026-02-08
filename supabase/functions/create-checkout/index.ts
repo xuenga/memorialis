@@ -49,20 +49,9 @@ serve(async (req) => {
 
         // Calculate subtotal for shipping
         const subtotal = items.reduce((sum: number, item: any) => sum + (item.price * (item.quantity || 1)), 0)
-        const shippingCost = subtotal >= 100 ? 0 : 9.90
+        const shippingCost = 0
 
-        if (shippingCost > 0) {
-            lineItems.push({
-                price_data: {
-                    currency: 'eur',
-                    product_data: {
-                        name: 'Frais de livraison',
-                    },
-                    unit_amount: Math.round(shippingCost * 100),
-                },
-                quantity: 1,
-            })
-        }
+        // No shipping costs to add
 
         // Create session
         const session = await stripe.checkout.sessions.create({

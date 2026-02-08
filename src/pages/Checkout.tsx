@@ -53,7 +53,7 @@ export default function Checkout() {
   }, [navigate]);
 
   const subtotal = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-  const shipping = subtotal >= 100 || items.length === 0 ? 0 : 9.90;
+  const shipping = 0;
   const total = subtotal + shipping;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -416,7 +416,7 @@ export default function Checkout() {
                 </div>
                 <div className="flex justify-between text-base text-primary/60">
                   <span>Livraison</span>
-                  <span className="font-medium text-green-600">{shipping === 0 ? 'Offerte' : `${shipping.toFixed(2)}€`}</span>
+                  <span className="font-medium text-green-600">Offerte</span>
                 </div>
                 <div className="flex justify-between items-center pt-6 border-t border-primary/10">
                   <span className="font-serif text-xl text-primary">Total</span>

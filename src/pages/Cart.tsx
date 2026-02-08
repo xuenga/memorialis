@@ -70,7 +70,7 @@ export default function Cart() {
   };
 
   const subtotal = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
-  const shipping = subtotal > 100 || items.length === 0 ? 0 : 5.90;
+  const shipping = 0;
   const total = subtotal + shipping;
 
   if (isLoading) {
@@ -231,15 +231,8 @@ export default function Cart() {
                 </div>
                 <div className="flex justify-between text-primary/70">
                   <span>Livraison</span>
-                  <span className="font-medium text-green-600">{shipping === 0 ? 'Offerte' : `${shipping.toFixed(2)}€`}</span>
+                  <span className="font-medium text-green-600">Offerte</span>
                 </div>
-                {shipping > 0 && (
-                  <div className="p-4 bg-accent/10 rounded-2xl border border-accent/20">
-                    <p className="text-xs text-accent font-medium leading-relaxed">
-                      Plus que <span className="font-bold">{(100 - subtotal).toFixed(2)}€</span> pour la livraison offerte !
-                    </p>
-                  </div>
-                )}
               </div>
 
               <div className="border-t border-primary/5 pt-6 mb-8">
