@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, RefreshCw, CheckCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, RefreshCw, CheckCircle, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -252,38 +252,61 @@ export default function AdminProducts() {
                 className={`bg-white rounded-2xl p-6 shadow-sm ${!product.is_active ? 'opacity-60' : ''
                   }`}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="font-serif text-lg text-primary mb-1">{product.name}</h3>
-                    <p className="text-sm text-primary/60 capitalize">{product.material}</p>
+                <div className="flex gap-4 mb-4">
+                  {/* Product Image Thumbnail */}
+                  <div className="flex-shrink-0">
+                    {product.image_url ? (
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-20 h-20 object-cover rounded-xl border border-primary/10"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                          (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                    ) : null}
+                    <div className={`w-20 h-20 bg-background/50 rounded-xl border border-primary/10 flex items-center justify-center ${product.image_url ? 'hidden' : ''}`}>
+                      <Package className="w-8 h-8 text-primary/20" />
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => toggleActive(product)}
-                      className={`p-2.5 rounded-full transition-all duration-300 ${product.is_active
-                        ? 'bg-green-50 text-green-600 hover:bg-green-100'
-                        : 'bg-primary/5 text-primary/40 hover:bg-primary/10'
-                        }`}
-                      title={product.is_active ? 'Désactiver' : 'Activer'}
-                    >
-                      {product.is_active ? (
-                        <Eye className="w-4 h-4" />
-                      ) : (
-                        <EyeOff className="w-4 h-4" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleEdit(product)}
-                      className="p-2.5 bg-primary/5 text-primary rounded-full hover:bg-primary/10 transition-all duration-300"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(product)}
-                      className="p-2.5 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-all duration-300"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+
+                  {/* Product Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-serif text-lg text-primary mb-1 truncate">{product.name}</h3>
+                        <p className="text-sm text-primary/60 capitalize">{product.material}</p>
+                      </div>
+                      <div className="flex gap-2 ml-2">
+                        <button
+                          onClick={() => toggleActive(product)}
+                          className={`p-2.5 rounded-full transition-all duration-300 ${product.is_active
+                            ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                            : 'bg-primary/5 text-primary/40 hover:bg-primary/10'
+                            }`}
+                          title={product.is_active ? 'Désactiver' : 'Activer'}
+                        >
+                          {product.is_active ? (
+                            <Eye className="w-4 h-4" />
+                          ) : (
+                            <EyeOff className="w-4 h-4" />
+                          )}
+                        </button>
+                        <button
+                          onClick={() => handleEdit(product)}
+                          className="p-2.5 bg-primary/5 text-primary rounded-full hover:bg-primary/10 transition-all duration-300"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product)}
+                          className="p-2.5 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-all duration-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

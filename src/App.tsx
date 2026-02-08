@@ -77,7 +77,7 @@ export default function App() {
                     <Route path="/edit-memorial/:id" element={<UserProtectedRoute><Layout currentPageName="EditMemorial"><EditMemorial /></Layout></UserProtectedRoute>} />
 
                     <Route path="/memorial/:id" element={<Layout currentPageName="ViewMemorial"><ViewMemorial /></Layout>} />
-                    <Route path="/product/:id" element={<Layout currentPageName="ProductDetail"><ProductDetail /></Layout>} />
+                    <Route path="/product/:slug" element={<Layout currentPageName="ProductDetail"><ProductDetail /></Layout>} />
                     <Route path="/order-confirmation" element={<Layout currentPageName="OrderConfirmation"><OrderConfirmation /></Layout>} />
                     <Route path="/cgv" element={<Layout currentPageName="CGV"><CGV /></Layout>} />
                     <Route path="/privacy" element={<Layout currentPageName="Privacy"><Privacy /></Layout>} />

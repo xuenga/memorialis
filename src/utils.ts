@@ -14,7 +14,7 @@ export const createPageUrl = (pageName: string, params: Record<string, string> =
         MyMemorials: '/my-memorials',
         EditMemorial: '/edit-memorial/:id',
         ViewMemorial: '/memorial/:id',
-        ProductDetail: '/product/:id',
+        ProductDetail: '/product/:slug',
         OrderConfirmation: '/order-confirmation',
         CGV: '/cgv',
         Privacy: '/privacy',

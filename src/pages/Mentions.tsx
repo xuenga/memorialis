@@ -17,18 +17,17 @@ export default function Mentions() {
             <section>
               <h2 className="font-serif text-xl text-[#2f4858] mb-4">Éditeur du Site</h2>
               <div className="text-[#2f4858]/70 leading-relaxed space-y-2">
-                <p><strong>Raison sociale :</strong> Memorialis SARL</p>
-                <p><strong>Siège social :</strong> Paris, France</p>
+                <p><strong>Site Web :</strong> Memorialis.shop</p>
+                <p><strong>Siège social :</strong> France</p>
                 <p><strong>Email :</strong> contact@memorialis.shop</p>
-                <p><strong>Téléphone :</strong> +33 1 23 45 67 89</p>
               </div>
             </section>
 
             <section>
               <h2 className="font-serif text-xl text-[#2f4858] mb-4">Hébergement</h2>
               <div className="text-[#2f4858]/70 leading-relaxed space-y-2">
-                <p><strong>Site web :</strong> Memorialis Platform</p>
-                <p><strong>Médias (photos & vidéos) :</strong> Bunny Storage</p>
+                <p><strong>Site web :</strong> Hostinger (Serveur en Europe)</p>
+                <p><strong>Médias (photos & vidéos) :</strong> Bunny Storage (Serveur en Europe)</p>
               </div>
             </section>
 
@@ -36,7 +35,7 @@ export default function Mentions() {
               <h2 className="font-serif text-xl text-[#2f4858] mb-4">Propriété Intellectuelle</h2>
               <p className="text-[#2f4858]/70 leading-relaxed">
                 L'ensemble du contenu du site memorialis.shop (textes, images, design) est la
-                propriété exclusive de Memorialis SARL. Toute reproduction, même partielle,
+                propriété exclusive de Memorialis. Toute reproduction, même partielle,
                 est interdite sans autorisation préalable.
               </p>
             </section>

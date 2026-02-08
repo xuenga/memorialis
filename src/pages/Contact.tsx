@@ -53,15 +53,9 @@ export default function Contact() {
       link: 'mailto:contact@memorialis.shop'
     },
     {
-      icon: Phone,
-      title: 'Téléphone',
-      value: '+33 1 23 45 67 89',
-      link: 'tel:+33123456789'
-    },
-    {
       icon: MapPin,
       title: 'Adresse',
-      value: 'Paris, France',
+      value: 'France',
       link: null as string | null
     },
     {
@@ -111,7 +105,7 @@ export default function Contact() {
                   Nous contacter
                 </h2>
                 <p className="text-primary/60">
-                  N'hésite pas à nous écrire pour toute question
+                  N'hésitez pas à nous écrire pour toute question
                   concernant nos produits ou votre commande.
                 </p>
               </div>

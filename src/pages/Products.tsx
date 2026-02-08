@@ -137,13 +137,13 @@ export default function Products() {
                   transition={{ delay: index * 0.1 }}
                   className="group"
                 >
-                  <Link to={createPageUrl('ProductDetail', { id: product.id })}>
-                    <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-white shadow-sm mb-6">
+                  <Link to={createPageUrl('ProductDetail', { slug: product.slug || product.id })}>
+                    <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-primary shadow-sm mb-6">
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/15 to-primary/25 z-10" />
                       <img
                         src={product.image_url}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-105"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20" />
                       <div className="absolute bottom-8 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 z-30">
@@ -160,7 +160,7 @@ export default function Products() {
                         <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#e0bd3e]">
                           Support {product.material}
                         </span>
-                        <h3 className="font-serif text-2xl text-primary mt-1 group-hover:text-accent transition-colors">
+                        <h3 className="font-serif text-3xl text-primary mt-1 group-hover:text-primary/70 transition-colors">
                           {product.name}
                         </h3>
                       </div>

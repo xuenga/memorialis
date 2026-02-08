@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
 export default function ProductDetail() {
-  const { id: productId } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,9 +22,16 @@ export default function ProductDetail() {
     const loadProduct = async () => {
       setIsLoading(true);
       setError(null);
-      if (productId) {
+      if (slug) {
         try {
-          const products = await api.entities.Product.filter({ id: productId });
+          // Try to find by slug first
+          let products = await api.entities.Product.filter({ slug: slug });
+
+          // Fallback: if slug not found, try by ID (for backwards compatibility)
+          if (products.length === 0) {
+            products = await api.entities.Product.filter({ id: slug });
+          }
+
           if (products.length > 0) {
             setProduct(products[0]);
           } else {
@@ -38,7 +45,7 @@ export default function ProductDetail() {
       setIsLoading(false);
     };
     loadProduct();
-  }, [productId]);
+  }, [slug]);
 
   const handleAddToCart = async () => {
     if (!product) {
