@@ -295,7 +295,6 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                     <p className="text-white text-lg">{authUser.user_metadata?.full_name || authUser.email}</p>
                   </div>
                 )}
-                <p className="text-white/40 text-sm mb-4 tracking-widest uppercase">Suivez-nous</p>
                 <div className="flex gap-6">
                   {/* Social icons placeholder */}
                 </div>

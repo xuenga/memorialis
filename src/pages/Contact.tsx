@@ -81,7 +81,7 @@ export default function Contact() {
             </span>
             <h1 className="font-serif text-4xl lg:text-6xl text-white mb-6">
               Une question ?<br />
-              <span className="text-accent">Parlons-en</span>
+              <span className="text-accent">Parlons-en !</span>
             </h1>
             <p className="text-white/70 text-lg">
               Notre équipe est à votre écoute pour vous accompagner
