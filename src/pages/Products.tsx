@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
-import { Filter, ChevronDown, QrCode, ShoppingBag } from 'lucide-react';
+import { Filter, ChevronDown, QrCode, ShoppingBag, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -33,6 +33,13 @@ export default function Products() {
         } else if (sort === 'price-desc') {
           data.sort((a: any, b: any) => b.price - a.price);
         }
+
+        // Always sort featured products first
+        data.sort((a: any, b: any) => {
+          if (a.is_featured && !b.is_featured) return -1;
+          if (!a.is_featured && b.is_featured) return 1;
+          return 0;
+        });
 
         setProducts(data);
       } catch (error) {
@@ -139,6 +146,12 @@ export default function Products() {
                 >
                   <Link to={createPageUrl('ProductDetail', { slug: product.slug || product.id })}>
                     <div className="relative aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-primary shadow-sm mb-6">
+                      {product.is_featured && (
+                        <div className="absolute top-6 right-6 z-40 flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-4 py-2 rounded-full shadow-lg font-bold text-sm uppercase tracking-wider">
+                          <Star className="w-4 h-4 fill-current" />
+                          Populaire
+                        </div>
+                      )}
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-primary/15 to-primary/25 z-10" />
                       <img
                         src={product.image_url}

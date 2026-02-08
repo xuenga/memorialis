@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, RefreshCw, CheckCircle, Package } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, RefreshCw, CheckCircle, Package, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -182,6 +182,18 @@ export default function AdminProducts() {
     }
   };
 
+  const toggleFeatured = async (product: any) => {
+    try {
+      await api.entities.Product.update(product.id, { is_featured: !product.is_featured });
+      toast.success(product.is_featured ? 'Retiré des populaires' : 'Marqué comme populaire');
+      loadProducts();
+    } catch (e: any) {
+      console.error('Erreur lors du toggle featured:', e);
+      const errorMessage = e?.message || 'Erreur lors de la mise à jour';
+      toast.error(errorMessage);
+    }
+  };
+
 
 
   return (
@@ -275,10 +287,28 @@ export default function AdminProducts() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-serif text-lg text-primary mb-1 truncate">{product.name}</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-serif text-lg text-primary mb-1 truncate">{product.name}</h3>
+                          {product.is_featured && (
+                            <span className="flex items-center gap-1 text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full">
+                              <Star className="w-3 h-3 fill-current" />
+                              Populaire
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm text-primary/60 capitalize">{product.material}</p>
                       </div>
                       <div className="flex gap-2 ml-2">
+                        <button
+                          onClick={() => toggleFeatured(product)}
+                          className={`p-2.5 rounded-full transition-all duration-300 ${product.is_featured
+                              ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
+                              : 'bg-primary/5 text-primary/40 hover:bg-primary/10'
+                            }`}
+                          title={product.is_featured ? 'Retirer des populaires' : 'Marquer comme populaire'}
+                        >
+                          <Star className={`w-4 h-4 ${product.is_featured ? 'fill-current' : ''}`} />
+                        </button>
                         <button
                           onClick={() => toggleActive(product)}
                           className={`p-2.5 rounded-full transition-all duration-300 ${product.is_active
