@@ -42,7 +42,7 @@ export default function AdminEmailPreview() {
         invitationLink?: string
     ) => {
         const frontendUrl = window.location.origin; // Use current origin for preview
-        const memorialLink = `${frontendUrl}/edit-memorial/${accessCode}`;
+        const memorialLink = `${frontendUrl}/my-memorials`;
 
         const formatPrice = (price: any) => {
             const num = parseFloat(price);

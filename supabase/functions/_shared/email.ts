@@ -153,7 +153,7 @@ export const sendOrderConfirmationEmail = async (
               <span style="font-size: 28px; font-weight: bold; letter-spacing: 3px; color: #1e3a5f;">${accessCode}</span>
             </div>
             <p style="margin: 20px 0 0 0;">
-              <a href="${memorialLink}" style="background: linear-gradient(135deg, #be185d 0%, #9d174d 100%); color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 15px; box-shadow: 0 4px 6px rgba(190, 24, 93, 0.3);">
+              <a href="https://memorialis.shop/my-memorials" style="background: linear-gradient(135deg, #be185d 0%, #9d174d 100%); color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 15px; box-shadow: 0 4px 6px rgba(190, 24, 93, 0.3);">
                 ✨ Personnaliser mon mémorial
               </a>
             </p>
