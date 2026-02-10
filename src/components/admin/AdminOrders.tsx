@@ -30,7 +30,7 @@ export default function AdminOrders() {
 
   useEffect(() => {
     const loadOrders = async () => {
-      const allOrders = await api.entities.orders.list('-created_date');
+      const allOrders = await api.entities.Order.list('-created_date');
       setOrders(allOrders);
       setFilteredOrders(allOrders);
       setIsLoading(false);
@@ -57,7 +57,7 @@ export default function AdminOrders() {
   }, [searchQuery, statusFilter, orders]);
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
-    await api.entities.orders.update(orderId, { status: newStatus });
+    await api.entities.Order.update(orderId, { status: newStatus });
     setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
     toast.success('Statut mis à jour');
   };

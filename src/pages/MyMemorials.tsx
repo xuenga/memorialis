@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
-import { Plus, QrCode, Edit, Eye, Heart, Calendar, Key } from 'lucide-react';
+import { Plus, QrCode, Edit, Eye, Heart, Calendar, Key, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { format } from 'date-fns';
@@ -12,9 +12,19 @@ import { toast } from 'sonner';
 
 export default function MyMemorials() {
   const [memorials, setMemorials] = useState<any[]>([]);
+  const [ordersMap, setOrdersMap] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [searchCode, setSearchCode] = useState('');
   const navigate = useNavigate();
+
+  const statusConfig: Record<string, { label: string; color: string }> = {
+    pending: { label: 'En attente', color: 'bg-gray-100 text-gray-600' },
+    paid: { label: 'Payé', color: 'bg-blue-100 text-blue-700' },
+    processing: { label: 'En préparation', color: 'bg-orange-100 text-orange-700' },
+    shipped: { label: 'Expédié', color: 'bg-purple-100 text-purple-700' },
+    delivered: { label: 'Livré', color: 'bg-green-100 text-green-700' },
+    cancelled: { label: 'Annulé', color: 'bg-red-100 text-red-600' },
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -26,6 +36,22 @@ export default function MyMemorials() {
             owner_email: currentUser.email
           });
           setMemorials(userMemorials);
+
+          // Load user's orders to get statuses
+          try {
+            const userOrders = await api.entities.Order.filter({
+              customer_email: currentUser.email
+            });
+            const map: Record<string, any> = {};
+            userOrders.forEach((order: any) => {
+              if (order.memorial_id) {
+                map[order.memorial_id] = order;
+              }
+            });
+            setOrdersMap(map);
+          } catch (e) {
+            console.log('Could not load orders');
+          }
         }
       } catch (error) {
         console.log('Not authenticated');
@@ -186,10 +212,16 @@ export default function MyMemorials() {
                   </div>
 
                   <div className="flex items-center justify-between pt-6 mt-6 border-t border-black/5">
-                    <div className="flex items-center gap-1 text-primary/60 text-xs">
-                      <span className="font-mono bg-background px-2 py-1 rounded text-primary">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono bg-background px-2 py-1 rounded text-primary text-xs">
                         {memorial.access_code}
                       </span>
+                      {ordersMap[memorial.id] && (
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold ${statusConfig[ordersMap[memorial.id].status]?.color || 'bg-gray-100 text-gray-600'}`}>
+                          <Package className="w-3 h-3" />
+                          {statusConfig[ordersMap[memorial.id].status]?.label || ordersMap[memorial.id].status}
+                        </span>
+                      )}
                     </div>
                     <div className="flex gap-2">
                       <Link to={createPageUrl('ViewMemorial', { id: memorial.id })}>

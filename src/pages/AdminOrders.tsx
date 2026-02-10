@@ -59,7 +59,7 @@ export default function AdminOrders() {
         const loadOrders = async () => {
             try {
                 // Charger les commandes
-                const allOrders = await api.entities.orders.list('-created_at');
+                const allOrders = await api.entities.Order.list('-created_at');
 
                 // Charger tous les mémoriaux pour faire la jointure
                 const allMemorials = await api.entities.Memorial.list();
@@ -110,7 +110,7 @@ export default function AdminOrders() {
 
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
         try {
-            await api.entities.orders.update(orderId, { status: newStatus });
+            await api.entities.Order.update(orderId, { status: newStatus });
             setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
             toast.success('Statut mis à jour');
         } catch (e) {
@@ -289,29 +289,25 @@ export default function AdminOrders() {
                                             <td className="p-4">
                                                 <p className="text-sm font-bold text-primary">{order.personalization?.deceased_name || '-'}</p>
                                                 <p className="text-xs text-primary/60">{order.personalization?.dates || '-'}</p>
+                                                {order.personalization?.engraving_message && (
+                                                    <p className="text-xs text-primary/70 italic mt-1 max-w-[150px]" title={order.personalization.engraving_message}>
+                                                        "{order.personalization.engraving_message}"
+                                                    </p>
+                                                )}
                                             </td>
                                             <td className="p-4">
-                                                {order.personalization?.plaque_photo_url || order.personalization?.engraving_message ? (
-                                                    <div className="space-y-2">
-                                                        {order.personalization?.plaque_photo_url && (
-                                                            <a
-                                                                href={order.personalization.plaque_photo_url}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                            >
-                                                                <img
-                                                                    src={order.personalization.plaque_photo_url}
-                                                                    alt="Photo plaque"
-                                                                    className="w-12 h-12 object-cover rounded-lg border border-primary/10 hover:scale-105 transition-transform cursor-pointer"
-                                                                />
-                                                            </a>
-                                                        )}
-                                                        {order.personalization?.engraving_message && (
-                                                            <p className="text-xs text-primary/70 italic max-w-[120px] truncate" title={order.personalization.engraving_message}>
-                                                                "{order.personalization.engraving_message}"
-                                                            </p>
-                                                        )}
-                                                    </div>
+                                                {order.personalization?.plaque_photo_url ? (
+                                                    <a
+                                                        href={order.personalization.plaque_photo_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <img
+                                                            src={order.personalization.plaque_photo_url}
+                                                            alt="Photo plaque"
+                                                            className="w-12 h-12 object-cover rounded-lg border border-primary/10 hover:scale-105 transition-transform cursor-pointer"
+                                                        />
+                                                    </a>
                                                 ) : (
                                                     <span className="text-primary/30 text-sm flex items-center gap-1">
                                                         <ImageIcon className="w-4 h-4" />

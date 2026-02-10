@@ -24,7 +24,7 @@ export default function OrderConfirmation() {
       // 1. Try to load directly if IDs are present
       if (orderId) {
         try {
-          const orders = await api.entities.orders.filter({ id: orderId });
+          const orders = await api.entities.Order.filter({ id: orderId });
           if (orders.length > 0) setOrder(orders[0]);
         } catch (e) { console.error(e) }
       }
