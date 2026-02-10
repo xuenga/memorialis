@@ -68,7 +68,8 @@ export default function ProductDetail() {
         price: product.price,
         quantity: quantity,
         personalization: {},
-        stripe_price_id: product.stripe_price_id
+        stripe_price_id: product.stripe_price_id,
+        requires_configuration: product.requires_configuration || false
       });
 
       window.dispatchEvent(new Event('cartUpdated'));

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, RefreshCw, CheckCircle, Package, Star } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Save, X, RefreshCw, CheckCircle, Package, Star, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,7 +34,8 @@ export default function AdminProducts() {
     features: [],
     image_url: '',
     gallery: [],
-    is_active: true
+    is_active: true,
+    requires_configuration: 'none'
   });
 
   useEffect(() => {
@@ -65,7 +66,8 @@ export default function AdminProducts() {
       features: product.features || [],
       image_url: product.image_url || '',
       gallery: product.gallery || [],
-      is_active: product.is_active ?? true
+      is_active: product.is_active ?? true,
+      requires_configuration: product.requires_configuration || 'none'
     });
     setShowForm(true);
   };
@@ -83,7 +85,8 @@ export default function AdminProducts() {
       features: [],
       image_url: '',
       gallery: [],
-      is_active: true
+      is_active: true,
+      requires_configuration: 'none'
     });
     setShowForm(true);
   };
@@ -285,25 +288,39 @@ export default function AdminProducts() {
 
                   {/* Product Info */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-serif text-lg text-primary mb-1 truncate">{product.name}</h3>
-                          {product.is_featured && (
-                            <span className="flex items-center gap-1 text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full">
-                              <Star className="w-3 h-3 fill-current" />
-                              Populaire
+                    <div className="flex flex-col h-full">
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] uppercase font-bold tracking-widest text-primary/30">
+                              {product.material}
                             </span>
-                          )}
+                            {product.is_featured && (
+                              <span className="flex items-center gap-1 text-[10px] bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full font-bold">
+                                <Star className="w-2.5 h-2.5 fill-current" />
+                                Populaire
+                              </span>
+                            )}
+                            {product.requires_configuration && product.requires_configuration !== 'none' && (
+                              <span className="flex items-center gap-1 text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">
+                                <Settings className="w-2.5 h-2.5" />
+                                {product.requires_configuration === 'message_only' ? 'Gravure' : 'Gravure + Photo'}
+                              </span>
+                            )}
+                          </div>
+                          <h3 className="font-serif text-lg lg:text-xl text-primary leading-tight">
+                            {product.name}
+                          </h3>
                         </div>
-                        <p className="text-sm text-primary/60 capitalize">{product.material}</p>
                       </div>
-                      <div className="flex gap-2 ml-2">
+
+                      {/* Action Buttons Row */}
+                      <div className="flex gap-2 mt-auto">
                         <button
                           onClick={() => toggleFeatured(product)}
-                          className={`p-2.5 rounded-full transition-all duration-300 ${product.is_featured
-                              ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
-                              : 'bg-primary/5 text-primary/40 hover:bg-primary/10'
+                          className={`p-2 rounded-xl transition-all duration-300 ${product.is_featured
+                            ? 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100'
+                            : 'bg-primary/5 text-primary/40 hover:bg-primary/10'
                             }`}
                           title={product.is_featured ? 'Retirer des populaires' : 'Marquer comme populaire'}
                         >
@@ -311,7 +328,7 @@ export default function AdminProducts() {
                         </button>
                         <button
                           onClick={() => toggleActive(product)}
-                          className={`p-2.5 rounded-full transition-all duration-300 ${product.is_active
+                          className={`p-2 rounded-xl transition-all duration-300 ${product.is_active
                             ? 'bg-green-50 text-green-600 hover:bg-green-100'
                             : 'bg-primary/5 text-primary/40 hover:bg-primary/10'
                             }`}
@@ -325,13 +342,15 @@ export default function AdminProducts() {
                         </button>
                         <button
                           onClick={() => handleEdit(product)}
-                          className="p-2.5 bg-primary/5 text-primary rounded-full hover:bg-primary/10 transition-all duration-300"
+                          className="p-2 bg-primary/5 text-primary rounded-xl hover:bg-primary/10 transition-all duration-300"
+                          title="Modifier"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(product)}
-                          className="p-2.5 bg-red-50 text-red-500 rounded-full hover:bg-red-100 transition-all duration-300"
+                          className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-all duration-300"
+                          title="Supprimer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -346,16 +365,15 @@ export default function AdminProducts() {
 
                 <div className="flex items-center justify-between pt-4 border-t border-primary/10">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-primary/50 capitalize">{product.material}</span>
                     {product.stripe_price_id ? (
-                      <span className="flex items-center gap-1 text-xs bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">
+                      <span className="flex items-center gap-1 text-[10px] uppercase font-bold bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full">
                         <CheckCircle className="w-3 h-3" />
-                        Stripe
+                        Stripe Sync
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">
+                      <span className="flex items-center gap-1 text-[10px] uppercase font-bold bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">
                         <RefreshCw className="w-3 h-3" />
-                        Non sync
+                        Pas sync
                       </span>
                     )}
                   </div>
@@ -602,6 +620,27 @@ export default function AdminProducts() {
                     checked={formData.is_active}
                     onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
                   />
+                </div>
+
+                <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100 space-y-3">
+                  <Label className="flex items-center gap-2">
+                    <Settings className="w-4 h-4 text-blue-600" />
+                    Personnalisation de la plaque
+                  </Label>
+                  <p className="text-sm text-primary/60">Choisir le type de personnalisation disponible pour ce produit</p>
+                  <Select
+                    value={formData.requires_configuration}
+                    onValueChange={(value) => setFormData({ ...formData, requires_configuration: value })}
+                  >
+                    <SelectTrigger className="bg-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="none">Aucune personnalisation</SelectItem>
+                      <SelectItem value="message_only">Message à graver uniquement</SelectItem>
+                      <SelectItem value="message_and_photo">Message + Photo</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="flex gap-3 pt-4">

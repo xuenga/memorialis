@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, QrCode } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, QrCode, Settings, Image as ImageIcon, Check, Type } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -183,6 +183,68 @@ export default function Cart() {
                           <Trash2 className="w-5 h-5 text-red-400" />
                         </button>
                       </div>
+
+                      {/* Plaque Configuration Section */}
+                      {item.requires_configuration && item.requires_configuration !== 'none' && (
+                        <div className="mt-4 p-4 bg-background rounded-2xl border border-primary/5">
+                          {item.personalization?.configured ? (
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-bold text-green-600 uppercase tracking-widest flex items-center gap-2">
+                                  <Check className="w-3 h-3" />
+                                  Plaque configurée
+                                </span>
+                                <Link to={`/configure-plaque/${item.id}`}>
+                                  <Button variant="outline" size="sm" className="rounded-full text-xs h-8 px-4 border-primary/10">
+                                    <Settings className="w-3 h-3 mr-1" />
+                                    Modifier
+                                  </Button>
+                                </Link>
+                              </div>
+                              <div className="flex gap-3">
+                                {item.requires_configuration === 'message_and_photo' && item.personalization?.plaque_photo_url && (
+                                  <img
+                                    src={item.personalization.plaque_photo_url}
+                                    alt="Photo plaque"
+                                    className="w-12 h-12 object-cover rounded-lg border-2 border-white shadow-sm"
+                                  />
+                                )}
+                                {item.personalization?.engraving_message && (
+                                  <p className="text-sm text-primary/70 italic flex-1 line-clamp-2">
+                                    "{item.personalization.engraving_message}"
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                                  {item.requires_configuration === 'message_and_photo'
+                                    ? <ImageIcon className="w-5 h-5 text-amber-600" />
+                                    : <Type className="w-5 h-5 text-amber-600" />
+                                  }
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-primary">Personnalisez votre plaque</p>
+                                  <p className="text-xs text-primary/50">
+                                    {item.requires_configuration === 'message_and_photo'
+                                      ? 'Ajoutez une photo et un message à graver'
+                                      : 'Ajoutez un message à graver'
+                                    }
+                                  </p>
+                                </div>
+                              </div>
+                              <Link to={`/configure-plaque/${item.id}`}>
+                                <Button variant="secondary" size="sm" className="rounded-full text-xs h-10 px-6 shadow-lg shadow-accent/10">
+                                  <Settings className="w-3 h-3 mr-2" />
+                                  Configurer
+                                </Button>
+                              </Link>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center border border-primary/10 rounded-full p-1">

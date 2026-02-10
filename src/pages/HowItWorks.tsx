@@ -59,7 +59,7 @@ export default function HowItWorks() {
   const faqs = [
     {
       question: "Combien de temps dure l'accès au mémorial ?",
-      answer: "L'accès est à vie. Votre espace mémorial sera préservé indéfiniment et restera accessible tant que Memorialis existe."
+      answer: "L'accès est à vie. Votre espace mémorial sera préservé indéfiniment et restera accessible via l'adresse memorialis.shop."
     },
     {
       question: "Qui peut voir le mémorial ?",
@@ -202,10 +202,10 @@ export default function HowItWorks() {
                         <div
                           key={i}
                           className={`h-1 rounded-full transition-all duration-500 ${i === index
-                              ? 'w-12 bg-[#e0bd3e]'
-                              : i < index
-                                ? 'w-8 bg-[#e0bd3e]/50'
-                                : 'w-6 bg-[#2f4858]/10'
+                            ? 'w-12 bg-[#e0bd3e]'
+                            : i < index
+                              ? 'w-8 bg-[#e0bd3e]/50'
+                              : 'w-6 bg-[#2f4858]/10'
                             }`}
                         />
                       ))}

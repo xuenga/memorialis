@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
-import { Search, Eye, Package, Truck, CheckCircle, Clock, XCircle, ArrowUpDown, ShoppingBag, LogOut, QrCode } from 'lucide-react';
+import { Search, Eye, Package, Truck, CheckCircle, Clock, XCircle, ArrowUpDown, ShoppingBag, LogOut, QrCode, Image as ImageIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,9 @@ interface Order {
         dates?: string;
         birth_date?: string;
         death_date?: string;
+        plaque_photo_url?: string;
+        engraving_message?: string;
+        configured?: boolean;
     };
 }
 
@@ -251,6 +254,7 @@ export default function AdminOrders() {
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Commande</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Client</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Gravure (Défunt)</th>
+                                    <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Photo Plaque</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Date Commande</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Montant</th>
                                     <th className="text-left p-4 text-xs font-bold text-primary/60 uppercase tracking-widest">Mémorial</th>
@@ -261,7 +265,7 @@ export default function AdminOrders() {
                             <tbody>
                                 {filteredOrders.length === 0 ? (
                                     <tr>
-                                        <td colSpan={8} className="text-center py-12 text-primary/40">
+                                        <td colSpan={9} className="text-center py-12 text-primary/40">
                                             <ShoppingBag className="w-12 h-12 mx-auto mb-4 opacity-20" />
                                             <p>Aucune commande trouvée</p>
                                         </td>
@@ -285,6 +289,35 @@ export default function AdminOrders() {
                                             <td className="p-4">
                                                 <p className="text-sm font-bold text-primary">{order.personalization?.deceased_name || '-'}</p>
                                                 <p className="text-xs text-primary/60">{order.personalization?.dates || '-'}</p>
+                                            </td>
+                                            <td className="p-4">
+                                                {order.personalization?.plaque_photo_url || order.personalization?.engraving_message ? (
+                                                    <div className="space-y-2">
+                                                        {order.personalization?.plaque_photo_url && (
+                                                            <a
+                                                                href={order.personalization.plaque_photo_url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                            >
+                                                                <img
+                                                                    src={order.personalization.plaque_photo_url}
+                                                                    alt="Photo plaque"
+                                                                    className="w-12 h-12 object-cover rounded-lg border border-primary/10 hover:scale-105 transition-transform cursor-pointer"
+                                                                />
+                                                            </a>
+                                                        )}
+                                                        {order.personalization?.engraving_message && (
+                                                            <p className="text-xs text-primary/70 italic max-w-[120px] truncate" title={order.personalization.engraving_message}>
+                                                                "{order.personalization.engraving_message}"
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-primary/30 text-sm flex items-center gap-1">
+                                                        <ImageIcon className="w-4 h-4" />
+                                                        -
+                                                    </span>
+                                                )}
                                             </td>
                                             <td className="p-4">
                                                 <p className="text-sm text-primary">

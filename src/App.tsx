@@ -42,6 +42,7 @@ import QRRedirect from './pages/QRRedirect';
 import AdminQRCodes from './pages/AdminQRCodes';
 import AdminOrders from './pages/AdminOrders';
 import SetPassword from './pages/SetPassword';
+import ConfigurePlaque from './pages/ConfigurePlaque';
 
 export default function App() {
     return (
@@ -70,6 +71,7 @@ export default function App() {
                     <Route path="/admin/orders" element={<ProtectedRoute><Layout currentPageName="AdminOrders"><AdminOrders /></Layout></ProtectedRoute>} />
 
                     <Route path="/cart" element={<Layout currentPageName="Cart"><Cart /></Layout>} />
+                    <Route path="/configure-plaque/:cartItemId" element={<Layout currentPageName="ConfigurePlaque"><ConfigurePlaque /></Layout>} />
                     <Route path="/checkout" element={<Layout currentPageName="Checkout"><Checkout /></Layout>} />
 
                     {/* User-protected routes */}
