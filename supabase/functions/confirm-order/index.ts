@@ -388,13 +388,6 @@ serve(async (req: Request) => {
                 }
             }
 
-            // Merge all personalization data from all items (including plaque config)
-            const mergedPersonalization = items.reduce((acc: any, item: any) => {
-                if (item.personalization) {
-                    return { ...acc, ...item.personalization };
-                }
-                return acc;
-            }, {});
 
             // Create Order
             const { data: order, error: orderError } = await supabase
@@ -412,7 +405,6 @@ serve(async (req: Request) => {
                     status: 'paid',
                     memorial_id: memorialId,
                     stripe_payment_id: session.payment_intent as string,
-                    personalization: Object.keys(mergedPersonalization).length > 0 ? mergedPersonalization : null,
                 })
                 .select()
                 .single()

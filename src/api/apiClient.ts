@@ -199,6 +199,11 @@ export const api = {
             }
 
             return await response.json();
+        },
+        activateMemorial: async (code: string) => {
+            const { data, error } = await supabase.rpc('activate_memorial', { code_input: code });
+            if (error) throw error;
+            return data;
         }
     },
     storage: {

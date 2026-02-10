@@ -191,7 +191,6 @@ serve(async (req) => {
                     status: 'paid',
                     memorial_id: memorialId,
                     stripe_payment_id: session.payment_intent as string,
-                    personalization: items[0]?.personalization || null,
                 })
                 .select()
                 .single()

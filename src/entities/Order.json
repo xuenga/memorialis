@@ -78,20 +78,6 @@
     },
     "stripe_payment_id": {
       "type": "string"
-    },
-    "personalization": {
-      "type": "object",
-      "properties": {
-        "deceased_name": {
-          "type": "string"
-        },
-        "dates": {
-          "type": "string"
-        },
-        "custom_text": {
-          "type": "string"
-        }
-      }
     }
   },
   "required": [

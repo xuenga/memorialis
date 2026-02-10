@@ -77,22 +77,17 @@ export default function QRRedirect() {
 
         setIsActivating(true);
         try {
-            // Activer le QR code
-            await api.entities.QRCode.update(qrCode.id, {
-                status: 'activated',
-                activated_at: new Date().toISOString()
-            });
+            const result = await api.functions.activateMemorial(qrCode.code);
 
-            // Activer le mémorial
-            await api.entities.Memorial.update(qrCode.memorial_id, {
-                is_activated: true
-            });
+            if (!result.success) {
+                throw new Error(result.message || "Erreur lors de l'activation");
+            }
 
             // Rediriger vers l'édition du mémorial
-            navigate(createPageUrl('EditMemorial', { id: qrCode.memorial_id }), { replace: true });
-        } catch (e) {
+            navigate(createPageUrl('EditMemorial', { id: result.memorial_id }), { replace: true });
+        } catch (e: any) {
             console.error('Erreur lors de l\'activation:', e);
-            setError('Erreur lors de l\'activation. Veuillez réessayer.');
+            setError(e.message || 'Erreur lors de l\'activation. Veuillez réessayer.');
             setIsActivating(false);
         }
     };

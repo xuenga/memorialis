@@ -43,6 +43,7 @@ import AdminQRCodes from './pages/AdminQRCodes';
 import AdminOrders from './pages/AdminOrders';
 import SetPassword from './pages/SetPassword';
 import ConfigurePlaque from './pages/ConfigurePlaque';
+import AdminEmailPreview from './pages/AdminEmailPreview';
 
 export default function App() {
     return (
@@ -69,6 +70,7 @@ export default function App() {
                     <Route path="/admin/products" element={<ProtectedRoute><Layout currentPageName="AdminProducts"><AdminProducts /></Layout></ProtectedRoute>} />
                     <Route path="/admin/qrcodes" element={<ProtectedRoute><Layout currentPageName="AdminQRCodes"><AdminQRCodes /></Layout></ProtectedRoute>} />
                     <Route path="/admin/orders" element={<ProtectedRoute><Layout currentPageName="AdminOrders"><AdminOrders /></Layout></ProtectedRoute>} />
+                    <Route path="/admin/email-preview/:orderId?" element={<ProtectedRoute><Layout currentPageName="AdminEmailPreview"><AdminEmailPreview /></Layout></ProtectedRoute>} />
 
                     <Route path="/cart" element={<Layout currentPageName="Cart"><Cart /></Layout>} />
                     <Route path="/configure-plaque/:cartItemId" element={<Layout currentPageName="ConfigurePlaque"><ConfigurePlaque /></Layout>} />

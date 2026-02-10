@@ -15,7 +15,7 @@ interface Order {
   order_number: string;
   customer_name: string;
   customer_email: string;
-  created_date: string;
+  created_at: string;
   total: number;
   status: string;
 }
@@ -30,7 +30,7 @@ export default function AdminOrders() {
 
   useEffect(() => {
     const loadOrders = async () => {
-      const allOrders = await api.entities.Order.list('-created_date');
+      const allOrders = await api.entities.Order.list('-created_at');
       setOrders(allOrders);
       setFilteredOrders(allOrders);
       setIsLoading(false);
@@ -147,7 +147,7 @@ export default function AdminOrders() {
                     </td>
                     <td className="p-4">
                       <p className="text-sm text-[#2f4858]">
-                        {format(new Date(order.created_date), 'dd MMM yyyy', { locale: fr })}
+                        {format(new Date(order.created_at), 'dd MMM yyyy', { locale: fr })}
                       </p>
                     </td>
                     <td className="p-4">

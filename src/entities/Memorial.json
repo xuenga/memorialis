@@ -73,9 +73,6 @@
       "type": "boolean",
       "default": true
     },
-    "qr_code_url": {
-      "type": "string"
-    },
     "access_code": {
       "type": "string",
       "description": "Code unique du QR gravé sur la plaque"

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
-import { Search, Eye, Package, Truck, CheckCircle, Clock, XCircle, ArrowUpDown, ShoppingBag, LogOut, QrCode, Image as ImageIcon } from 'lucide-react';
+import { Search, Eye, Package, Truck, CheckCircle, Clock, XCircle, ArrowUpDown, ShoppingBag, LogOut, QrCode, Image as ImageIcon, Mail } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -13,14 +13,32 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { useAuth } from '@/contexts/AuthContext';
 
+interface Personalization {
+    deceased_name?: string;
+    dates?: string;
+    birth_date?: string;
+    death_date?: string;
+    plaque_photo_url?: string;
+    engraving_message?: string;
+    configured?: boolean;
+}
+
 interface Order {
     id: string;
     order_number: string;
     customer_name: string;
     customer_email: string;
+    customer_phone?: string;
+    shipping_address?: {
+        street?: string;
+        city?: string;
+        postal_code?: string;
+        country?: string;
+    };
     created_at: string;
     total: number;
     status: string;
+    items?: any[];
     memorial_id?: string;
     memorial?: {
         id: string;
@@ -28,15 +46,7 @@ interface Order {
         is_activated: boolean;
         name: string;
     };
-    personalization?: {
-        deceased_name?: string;
-        dates?: string;
-        birth_date?: string;
-        death_date?: string;
-        plaque_photo_url?: string;
-        engraving_message?: string;
-        configured?: boolean;
-    };
+    personalization?: Personalization;
 }
 
 export default function AdminOrders() {
@@ -68,7 +78,8 @@ export default function AdminOrders() {
                 // Enrichir les commandes avec les infos des mémoriaux
                 const enrichedOrders = allOrders.map((order: any) => ({
                     ...order,
-                    memorial: order.memorial_id ? memorialsMap.get(order.memorial_id) : null
+                    memorial: order.memorial_id ? memorialsMap.get(order.memorial_id) : null,
+                    personalization: order.items?.[0]?.personalization || null
                 }));
 
                 setOrders(enrichedOrders);
@@ -285,6 +296,14 @@ export default function AdminOrders() {
                                             <td className="p-4">
                                                 <p className="text-sm text-primary font-medium">{order.customer_name || '-'}</p>
                                                 <p className="text-xs text-primary/50">{order.customer_email}</p>
+                                                {order.customer_phone && <p className="text-xs text-primary/50 mt-1">{order.customer_phone}</p>}
+                                                {order.shipping_address && (
+                                                    <div className="text-xs text-primary/50 mt-1">
+                                                        <p>{order.shipping_address.street}</p>
+                                                        <p>{order.shipping_address.postal_code} {order.shipping_address.city}</p>
+                                                        <p>{order.shipping_address.country}</p>
+                                                    </div>
+                                                )}
                                             </td>
                                             <td className="p-4">
                                                 <p className="text-sm font-bold text-primary">{order.personalization?.deceased_name || '-'}</p>
@@ -366,6 +385,16 @@ export default function AdminOrders() {
                                                             </Button>
                                                         </Link>
                                                     )}
+                                                    <Link to={`/admin/email-preview/${order.id}`} target="_blank">
+                                                        <Button
+                                                            size="sm"
+                                                            variant="outline"
+                                                            className="rounded-full border-primary/10 text-primary"
+                                                            title="Aperçu de l'email"
+                                                        >
+                                                            <Mail className="w-4 h-4" />
+                                                        </Button>
+                                                    </Link>
                                                     <Select
                                                         value={order.status}
                                                         onValueChange={(value) => updateOrderStatus(order.id, value)}
