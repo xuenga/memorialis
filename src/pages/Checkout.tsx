@@ -38,9 +38,25 @@ export default function Checkout() {
         try {
           const cartItems = await api.entities.CartItem.filter({ session_id: sessionId });
           setItems(cartItems);
+
           if (cartItems.length === 0) {
             navigate(createPageUrl('Cart'));
+            return;
           }
+
+          // Check for unconfigured items
+          const unconfiguredItems = cartItems.filter((item: any) =>
+            item.requires_configuration &&
+            item.requires_configuration !== 'none' &&
+            !item.personalization?.configured
+          );
+
+          if (unconfiguredItems.length > 0) {
+            toast.error('Veuillez configurer vos articles avant de passer commande');
+            navigate(createPageUrl('Cart'));
+            return;
+          }
+
         } catch (e) {
           console.error(e);
         }

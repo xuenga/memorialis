@@ -306,12 +306,30 @@ export default function Cart() {
                 </div>
               </div>
 
-              <Link to={createPageUrl('Checkout')}>
-                <Button variant="secondary" className="w-full py-8 rounded-full text-lg font-bold flex items-center justify-center gap-3 shadow-2xl shadow-accent/20 transition-all duration-500">
+              {items.some(item => item.requires_configuration && item.requires_configuration !== 'none' && !item.personalization?.configured) && (
+                <div className="mb-6 p-4 bg-red-50 text-red-600 text-sm rounded-xl flex items-start gap-3">
+                  <div className="mt-0.5 min-w-[16px]">⚠️</div>
+                  <p>Veuillez configurer tous les articles personnalisables pour passer commande.</p>
+                </div>
+              )}
+
+              {items.some(item => item.requires_configuration && item.requires_configuration !== 'none' && !item.personalization?.configured) ? (
+                <Button
+                  disabled
+                  variant="secondary"
+                  className="w-full py-8 rounded-full text-lg font-bold flex items-center justify-center gap-3 opacity-50 cursor-not-allowed"
+                >
                   Passer commande
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-5 h-5" />
                 </Button>
-              </Link>
+              ) : (
+                <Link to={createPageUrl('Checkout')}>
+                  <Button variant="secondary" className="w-full py-8 rounded-full text-lg font-bold flex items-center justify-center gap-3 shadow-2xl shadow-accent/20 transition-all duration-500">
+                    Passer commande
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              )}
 
               <Link
                 to={createPageUrl('Products')}
