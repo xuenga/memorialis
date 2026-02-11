@@ -58,6 +58,7 @@ serve(async (req) => {
             payment_method_types: ['card'],
             line_items: lineItems,
             mode: 'payment',
+            allow_promotion_codes: true,
             success_url: success_url,
             cancel_url: cancel_url,
             customer_email: customer_email,
