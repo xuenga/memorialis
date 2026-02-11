@@ -27,23 +27,18 @@ serve(async (req) => {
         // Prepare line items
         const lineItems = items.map((item: any) => {
             // If we have a stripe_price_id, use it. Otherwise use price_data as fallback
-            if (item.stripe_price_id) {
-                return {
-                    price: item.stripe_price_id,
-                    quantity: item.quantity || 1,
-                }
-            } else {
-                return {
-                    price_data: {
-                        currency: 'eur',
-                        product_data: {
-                            name: item.product_name || 'Produit Memorialis',
-                            images: item.product_image ? [item.product_image] : [],
-                        },
-                        unit_amount: Math.round(item.price * 100),
+            // FORCE DYNAMIC PRICE CONSTRUCTION FOR SAFER MIGRATION TO LIVE MODE
+            // This avoids "No such price" errors if the DB has Test Mode IDs stored.
+            return {
+                price_data: {
+                    currency: 'eur',
+                    product_data: {
+                        name: item.product_name || 'Produit Memorialis',
+                        images: item.product_image ? [item.product_image] : [],
                     },
-                    quantity: item.quantity || 1,
-                }
+                    unit_amount: Math.round(item.price * 100),
+                },
+                quantity: item.quantity || 1,
             }
         })
 
