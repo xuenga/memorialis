@@ -9,6 +9,34 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function getMetadataItems(metadata: any) {
+    if (!metadata) return [];
+    if (metadata.items) {
+        try {
+            return JSON.parse(metadata.items);
+        } catch (e) {
+            console.error('Error parsing items metadata:', e);
+            return [];
+        }
+    }
+    // Check for split items
+    let itemsJson = '';
+    let i = 0;
+    while (metadata[`items_${i}`]) {
+        itemsJson += metadata[`items_${i}`];
+        i++;
+    }
+    if (itemsJson) {
+        try {
+            return JSON.parse(itemsJson);
+        } catch (e) {
+            console.error('Error parsing split items metadata:', e);
+            return [];
+        }
+    }
+    return [];
+}
+
 serve(async (req: Request) => {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
@@ -69,7 +97,7 @@ serve(async (req: Request) => {
                 // Let's implement specific repair logic here.
 
                 const metadata = session.metadata || {}
-                const items = JSON.parse(metadata.items || '[]')
+                const items = getMetadataItems(metadata)
                 const customerEmail = session.customer_email || ''
 
                 // Check if needs QR/Memorial
@@ -170,7 +198,7 @@ serve(async (req: Request) => {
                     const frontendUrl = Deno.env.get('FRONTEND_URL') || 'https://memorialis.shop';
                     const memorialLink = `${frontendUrl}/edit-memorial/${memorial.access_code}`;
                     const metadata = session.metadata || {};
-                    const items = JSON.parse(metadata.items || '[]');
+                    const items = getMetadataItems(metadata)
 
                     await sendOrderConfirmationEmail(
                         order.customer_email,
@@ -206,7 +234,7 @@ serve(async (req: Request) => {
         // 2. If not found, create it (Manual processing logic similar to webhook)
         if (session.payment_status === 'paid') {
             const metadata = session.metadata || {}
-            const items = JSON.parse(metadata.items || '[]')
+            const items = getMetadataItems(metadata)
             const customerName = metadata.customer_name || 'Client'
             const customerEmail = session.customer_email || ''
             const shippingAddress = metadata.shipping_address ? JSON.parse(metadata.shipping_address) : null

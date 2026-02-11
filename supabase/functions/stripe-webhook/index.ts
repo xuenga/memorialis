@@ -9,6 +9,34 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, stripe-signature',
 }
 
+function getMetadataItems(metadata: any) {
+    if (!metadata) return [];
+    if (metadata.items) {
+        try {
+            return JSON.parse(metadata.items);
+        } catch (e) {
+            console.error('Error parsing items metadata:', e);
+            return [];
+        }
+    }
+    // Check for split items
+    let itemsJson = '';
+    let i = 0;
+    while (metadata[`items_${i}`]) {
+        itemsJson += metadata[`items_${i}`];
+        i++;
+    }
+    if (itemsJson) {
+        try {
+            return JSON.parse(itemsJson);
+        } catch (e) {
+            console.error('Error parsing split items metadata:', e);
+            return [];
+        }
+    }
+    return [];
+}
+
 serve(async (req) => {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
@@ -56,7 +84,7 @@ serve(async (req) => {
             console.log('Processing checkout session:', session.id)
 
             const metadata = session.metadata || {}
-            const items = JSON.parse(metadata.items || '[]')
+            const items = getMetadataItems(metadata)
             const customerName = metadata.customer_name || 'Client'
             const customerEmail = session.customer_email || ''
             const shippingAddress = metadata.shipping_address ? JSON.parse(metadata.shipping_address) : null
