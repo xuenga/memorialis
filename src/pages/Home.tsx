@@ -149,8 +149,13 @@ export default function Home() {
                 className="lg:hidden"
               >
                 <Link to="/memorial/demo-memorial" className="flex items-center gap-4 p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl hover:border-accent/40 hover:bg-white/10 transition-all duration-300">
-                  <div className="w-12 h-12 rounded-xl bg-accent/20 flex items-center justify-center flex-shrink-0">
-                    <QrCode className="w-6 h-6 text-accent" />
+                  <div className="w-12 h-12 rounded-xl bg-accent/20 relative overflow-hidden flex-shrink-0">
+                    <img
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&data=https%3A%2F%2Fmemorialis.shop%2Fqr%2F2601-0001"
+                      alt="Demo QR"
+                      className="w-full h-full object-cover opacity-80"
+                    />
+                    <div className="absolute inset-0 bg-primary/60 mix-blend-overlay" />
                   </div>
                   <div className="flex-1">
                     <p className="text-white/50 text-[10px] uppercase tracking-widest font-bold">Exemple interactif</p>
@@ -171,12 +176,18 @@ export default function Home() {
               <Link to="/memorial/demo-memorial" className="relative block group cursor-pointer max-w-[320px] w-full">
                 <div className="absolute -inset-4 bg-gradient-to-br from-accent/20 to-transparent rounded-3xl blur-2xl group-hover:bg-accent/30 transition-all duration-500" />
                 <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-3xl p-6 group-hover:border-accent/40 transition-colors duration-500">
-                  <div className="aspect-square rounded-2xl bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-500">
-                    <QrCode className="w-24 h-24 text-accent" />
+                  <div className="relative aspect-square rounded-2xl overflow-hidden group-hover:scale-105 transition-transform duration-500 shadow-xl">
+                    <img
+                      src="https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&data=https%3A%2F%2Fmemorialis.shop%2Fqr%2F2601-0001"
+                      alt="QR Code démo"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-primary/40 mix-blend-multiply" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/50 via-transparent to-primary/30" />
                   </div>
                   <div className="mt-6 text-center">
-                    <span className="inline-block px-3 py-1.5 bg-accent/20 border border-accent/40 rounded-full text-accent text-[10px] font-medium tracking-wide group-hover:bg-accent/30 transition-all duration-300 uppercase">
-                      ✦ Mémorial Numérique Premium
+                    <span className="inline-block px-4 py-2 bg-accent/20 border border-accent/40 rounded-full text-accent text-sm md:text-base font-bold tracking-wide group-hover:bg-accent/30 transition-all duration-300">
+                      Cliquez pour découvrir un exemple de mémorial
                     </span>
                   </div>
                 </div>
