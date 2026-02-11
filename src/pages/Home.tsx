@@ -5,6 +5,7 @@ import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
 import { ArrowRight, QrCode, Heart, Shield, Users, Star, ChevronRight, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import SEO from '@/components/SEO';
 
 export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
@@ -97,6 +98,10 @@ export default function Home() {
 
   return (
     <div className="overflow-hidden bg-background">
+      <SEO
+        title="Memorialis - Plaques Mémorielles à QR Code"
+        description="Créez un hommage éternel pour vos proches avec nos plaques QR code mémorielles. Un espace numérique unique pour partager photos, vidéos et témoignages."
+      />
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center">
         <div className="absolute inset-0 overflow-hidden">

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /my-memorials
+Disallow: /edit-memorial/
+Disallow: /configure/
+Sitemap: https://memorialis.shop/sitemap.xml

@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import SEO from '@/components/SEO';
 
 interface MemorialData {
   id: string;
@@ -185,6 +186,12 @@ export default function ViewMemorial() {
 
   return (
     <div className="min-h-screen bg-background pb-32">
+      <SEO
+        title={`Mémorial de ${memorial.name} - Memorialis`}
+        description={`Hommage à la mémoire de ${memorial.name}. ${memorial.birth_date ? new Date(memorial.birth_date).getFullYear() : '?'} - ${memorial.death_date ? new Date(memorial.death_date).getFullYear() : '...'}. ${memorial.biography ? memorial.biography.substring(0, 150) + '...' : ''}`}
+        image={memorial.cover_photo || memorial.profile_photo}
+        url={`/memorial/${memorial.access_code || memorial.id}`}
+      />
       {/* Hero Header */}
       <div className="relative h-[40vh] lg:h-[60vh] overflow-hidden">
         {memorial.cover_photo ? (

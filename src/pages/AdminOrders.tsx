@@ -290,10 +290,10 @@ export default function AdminOrders() {
                                             transition={{ delay: index * 0.03 }}
                                             className="border-t border-primary/5 hover:bg-background/30 transition-colors"
                                         >
-                                            <td className="p-4">
+                                            <td className="p-4 align-top">
                                                 <p className="font-mono font-medium text-primary">{order.order_number || '-'}</p>
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-4 align-top">
                                                 <p className="text-sm text-primary font-medium">{order.customer_name || '-'}</p>
                                                 <p className="text-xs text-primary/50">{order.customer_email}</p>
                                                 {order.customer_phone && <p className="text-xs text-primary/50 mt-1">{order.customer_phone}</p>}
@@ -305,28 +305,54 @@ export default function AdminOrders() {
                                                     </div>
                                                 )}
                                             </td>
-                                            <td className="p-4">
-                                                <p className="text-sm font-bold text-primary">{order.personalization?.deceased_name || '-'}</p>
-                                                <p className="text-xs text-primary/60">{order.personalization?.dates || '-'}</p>
-                                                {order.personalization?.engraving_message && (
-                                                    <p className="text-xs text-primary/70 italic mt-1 max-w-[150px]" title={order.personalization.engraving_message}>
-                                                        "{order.personalization.engraving_message}"
-                                                    </p>
+                                            <td className="p-4 align-top">
+                                                {order.items && order.items.length > 0 ? (
+                                                    <div className="space-y-4">
+                                                        {order.items.map((item: any, i: number) => (
+                                                            <div key={i} className="pb-3 border-b border-primary/5 last:border-0 last:pb-0">
+                                                                <p className="text-xs font-bold text-accent uppercase tracking-wider mb-1">
+                                                                    Article {i + 1}
+                                                                </p>
+                                                                <p className="text-sm font-bold text-primary">{item.personalization?.deceased_name || '-'}</p>
+                                                                <p className="text-xs text-primary/60">{item.personalization?.dates || '-'}</p>
+                                                                {item.personalization?.engraving_message && (
+                                                                    <p className="text-xs text-primary/70 italic mt-1" title={item.personalization.engraving_message}>
+                                                                        "{item.personalization.engraving_message}"
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-primary/30">-</span>
                                                 )}
                                             </td>
-                                            <td className="p-4">
-                                                {order.personalization?.plaque_photo_url ? (
-                                                    <a
-                                                        href={order.personalization.plaque_photo_url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-                                                        <img
-                                                            src={order.personalization.plaque_photo_url}
-                                                            alt="Photo plaque"
-                                                            className="w-12 h-12 object-cover rounded-lg border border-primary/10 hover:scale-105 transition-transform cursor-pointer"
-                                                        />
-                                                    </a>
+                                            <td className="p-4 align-top">
+                                                {order.items && order.items.length > 0 ? (
+                                                    <div className="space-y-4">
+                                                        {order.items.map((item: any, i: number) => (
+                                                            <div key={i} className="pb-3 border-b border-primary/5 last:border-0 last:pb-0 min-h-[80px]">
+                                                                {item.personalization?.plaque_photo_url ? (
+                                                                    <a
+                                                                        href={item.personalization.plaque_photo_url}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                    >
+                                                                        <img
+                                                                            src={item.personalization.plaque_photo_url}
+                                                                            alt={`Photo article ${i + 1}`}
+                                                                            className="w-12 h-12 object-cover rounded-lg border border-primary/10 hover:scale-105 transition-transform cursor-pointer"
+                                                                        />
+                                                                    </a>
+                                                                ) : (
+                                                                    <span className="text-primary/30 text-sm flex items-center gap-1 h-12">
+                                                                        <ImageIcon className="w-4 h-4" />
+                                                                        -
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 ) : (
                                                     <span className="text-primary/30 text-sm flex items-center gap-1">
                                                         <ImageIcon className="w-4 h-4" />
@@ -334,7 +360,7 @@ export default function AdminOrders() {
                                                     </span>
                                                 )}
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-4 align-top">
                                                 <p className="text-sm text-primary">
                                                     {order.created_at
                                                         ? format(new Date(order.created_at), 'dd MMM yyyy', { locale: fr })
@@ -346,10 +372,10 @@ export default function AdminOrders() {
                                                         : ''}
                                                 </p>
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-4 align-top">
                                                 <p className="font-serif text-lg text-accent">{order.total?.toFixed(2)}€</p>
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-4 align-top">
                                                 {order.memorial ? (
                                                     <div className="space-y-1">
                                                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-accent/10 text-accent text-[10px] font-mono font-medium">
@@ -367,34 +393,36 @@ export default function AdminOrders() {
                                                     <span className="text-primary/30 text-sm">-</span>
                                                 )}
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-4 align-top">
                                                 <Badge className={statusConfig[order.status]?.color || 'bg-gray-100 text-gray-700'}>
                                                     {statusConfig[order.status]?.label || order.status}
                                                 </Badge>
                                             </td>
-                                            <td className="p-4">
-                                                <div className="flex gap-2">
-                                                    {order.memorial && (
-                                                        <Link to={createPageUrl('ViewMemorial', { id: order.memorial.id })}>
+                                            <td className="p-4 align-top">
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="flex gap-2">
+                                                        {order.memorial && (
+                                                            <Link to={createPageUrl('ViewMemorial', { id: order.memorial.id })}>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    className="rounded-full border-primary/10 text-primary w-8 h-8 p-0"
+                                                                >
+                                                                    <Eye className="w-4 h-4" />
+                                                                </Button>
+                                                            </Link>
+                                                        )}
+                                                        <Link to={`/admin/email-preview/${order.id}`} target="_blank">
                                                             <Button
                                                                 size="sm"
                                                                 variant="outline"
-                                                                className="rounded-full border-primary/10 text-primary"
+                                                                className="rounded-full border-primary/10 text-primary w-8 h-8 p-0"
+                                                                title="Aperçu de l'email"
                                                             >
-                                                                <Eye className="w-4 h-4" />
+                                                                <Mail className="w-4 h-4" />
                                                             </Button>
                                                         </Link>
-                                                    )}
-                                                    <Link to={`/admin/email-preview/${order.id}`} target="_blank">
-                                                        <Button
-                                                            size="sm"
-                                                            variant="outline"
-                                                            className="rounded-full border-primary/10 text-primary"
-                                                            title="Aperçu de l'email"
-                                                        >
-                                                            <Mail className="w-4 h-4" />
-                                                        </Button>
-                                                    </Link>
+                                                    </div>
                                                     <Select
                                                         value={order.status}
                                                         onValueChange={(value) => updateOrderStatus(order.id, value)}

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import SEO from '@/components/SEO';
 
 export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -117,6 +118,13 @@ export default function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-background py-8 lg:py-12">
+      <SEO
+        title={`${product.name} - Memorialis`}
+        description={product.description}
+        image={product.image_url}
+        url={`/product/${product.slug || product.id}`}
+        type="product"
+      />
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <Link
           to={createPageUrl('Products')}
