@@ -99,8 +99,9 @@ export default function Home() {
   return (
     <div className="overflow-hidden bg-background">
       <SEO
-        title="Memorialis - Plaques Mémorielles à QR Code"
-        description="Créez un hommage éternel pour vos proches avec nos plaques QR code mémorielles. Un espace numérique unique pour partager photos, vidéos et témoignages."
+        title="Memorialis - Plaques Funéraires & Mémoriaux Numériques QR Code"
+        description="Créez un mémorial numérique éternel avec nos plaques funéraires à QR code. Partagez souvenirs, photos et hommages directement depuis la tombe ou à distance."
+        keywords="plaque funéraire, mémorial numérique, qr code cimetière, plaque commémorative, souvenirs, hommage, tombe connectée, deuil, funérailles, memorialis"
       />
       {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center">

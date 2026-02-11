@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 interface SEOProps {
     title?: string;
     description?: string;
+    keywords?: string;
     image?: string;
     url?: string;
     type?: string;
@@ -11,7 +12,8 @@ interface SEOProps {
 
 const SEO: React.FC<SEOProps> = ({
     title = 'Memorialis - Plaques Mémorielles à QR Code',
-    description = 'Créez un hommage éternel pour vos proches avec nos plaques QR code mémorielles.',
+    description = 'Créez un hommage éternel pour vos proches avec nos plaques funéraires QR code. Un mémorial numérique unique pour partager souvenirs, photos et vidéos.',
+    keywords = 'plaque funéraire, qr code cimetière, mémorial numérique, souvenirs, tombe, hommage, memorialis',
     image = 'https://memorialis.shop/og-image.jpg',
     url,
     type = 'website'
@@ -24,6 +26,7 @@ const SEO: React.FC<SEOProps> = ({
             {/* Standard metadata tags */}
             <title>{title}</title>
             <meta name='description' content={description} />
+            <meta name='keywords' content={keywords} />
 
             {/* Facebook tags */}
             <meta property="og:type" content={type} />
