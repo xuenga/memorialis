@@ -11,19 +11,6 @@ serve(async (req) => {
         return new Response('ok', { headers: corsHeaders })
     }
 
-    function splitMetadata(key: string, value: string, maxChunkSize = 450) {
-        const chunks = [];
-        for (let i = 0; i < value.length; i += maxChunkSize) {
-            chunks.push(value.substring(i, i + maxChunkSize));
-        }
-        const metadata: any = {};
-        chunks.forEach((chunk, index) => {
-            metadata[`${key}_${index}`] = chunk;
-        });
-        metadata[`${key}_count`] = chunks.length;
-        return metadata;
-    }
-
     try {
         const { items, customer_email, customer_name, customer_phone, shipping_address, success_url, cancel_url } = await req.json()
 
@@ -78,12 +65,12 @@ serve(async (req) => {
                 customer_name: customer_name,
                 customer_phone: customer_phone || '',
                 shipping_address: JSON.stringify(shipping_address || {}),
-                ...splitMetadata('items', JSON.stringify(items.map((i: any) => ({
+                items: JSON.stringify(items.map((i: any) => ({
                     id: i.product_id,
                     name: i.product_name,
                     quantity: i.quantity,
                     personalization: i.personalization
-                })))),
+                }))),
             },
         })
 

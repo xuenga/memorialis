@@ -104,24 +104,13 @@ export default function PlaqueConfigurator({
     };
 
     const handleSubmit = () => {
-        if (showPhoto) {
-            if (!photoUrl && !message) {
-                toast.error('Veuillez ajouter une photo et un message');
-                return;
-            }
-            if (!photoUrl) {
-                toast.error('Veuillez ajouter une photo');
-                return;
-            }
-            if (!message) {
-                toast.error('Veuillez saisir un message à graver');
-                return;
-            }
-        } else {
-            if (!message) {
-                toast.error('Veuillez saisir un message à graver');
-                return;
-            }
+        if (showPhoto && !photoUrl && !message) {
+            toast.error('Veuillez ajouter au moins une photo ou un message');
+            return;
+        }
+        if (!showPhoto && !message) {
+            toast.error('Veuillez saisir un message à graver');
+            return;
         }
         onSave(showPhoto ? photoUrl : null, message);
     };
