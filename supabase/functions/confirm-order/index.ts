@@ -36,49 +36,41 @@ serve(async (req: Request) => {
 
         const supabase = createClient(supabaseUrl!, supabaseServiceKey!)
 
-        // 1. Check database first to avoid duplicates
-        const { data: existingOrder } = await supabase
-            .from('Order')
-            .select('*')
-            .eq('stripe_payment_id', session_id) // We'll assume we stored session_id or payment_intent here
-            .single()
-
-        // Also check by payment_intent as that's what we usually store
-        // Retrieve session details from Stripe
+        // 1. Retrieve session details from Stripe FIRST to get the payment_intent
         const session = await stripe.checkout.sessions.retrieve(session_id)
 
         if (!session) {
             throw new Error('Session not found')
         }
 
-        // Check if order exists with this payment_intent
-        const { data: existingOrderByIntent } = await supabase
+        // 2. Check logic: Try to find order by stripe_payment_id (which should store the payment_intent)
+        // We check both session_id (just in case) and payment_intent (correct way)
+        const { data: existingOrders } = await supabase
             .from('Order')
             .select('*')
-            .eq('stripe_payment_id', session.payment_intent as string)
-            .single()
+            .or(`stripe_payment_id.eq.${session_id},stripe_payment_id.eq.${session.payment_intent}`)
 
-        if (existingOrder || existingOrderByIntent) {
-            let order = existingOrder || existingOrderByIntent
+        let order = existingOrders && existingOrders.length > 0 ? existingOrders[0] : null;
+
+        if (order) {
+            console.log('Order found:', order.id);
 
             // Check if order has memorial_id
             if (!order.memorial_id) {
                 console.log('Existing order found but missing memorial_id. Attempting auto-repair.')
-                // Logic to create missing memorial will be handled below by skipping this return block
-                // But we need to be careful not to duplicate effort if we just fall through.
-                // Let's implement specific repair logic here.
+                // FALL THROUGH to the creation logic below, but we need to set a flag or handle it carefully
+                // Since the code below creates a NEW order, we should instead specifically run the repair logic here
+                // and return.
 
                 const metadata = session.metadata || {}
                 const items = JSON.parse(metadata.items || '[]')
                 const customerEmail = session.customer_email || ''
 
-                // Check if needs QR/Memorial
                 // Relaxed check: If there are items, we assume it's a memorial product
                 const needsQRCode = items.length > 0;
 
-                console.log('Auto-repair: Checking needsQRCode', needsQRCode, items);
-
                 if (needsQRCode) {
+                    console.log('Repairing: Finding available QR...');
                     // Find available QR
                     const { data: qrCodes } = await supabase
                         .from('QRCode')
@@ -105,6 +97,7 @@ serve(async (req: Request) => {
                         .single()
 
                     if (newMemorial) {
+                        console.log('Repairing: Memorial created', newMemorial.id);
                         // Update Order
                         const { data: updatedOrder, error: updateError } = await supabase
                             .from('Order')
@@ -162,6 +155,9 @@ serve(async (req: Request) => {
                 .select('*')
                 .eq('id', order.memorial_id)
                 .single()
+
+            // ... (rest of standard return logic)
+
 
             // Send confirmation email if not already sent
             if (!order.email_sent && memorial) {
