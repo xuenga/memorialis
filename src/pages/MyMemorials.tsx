@@ -3,18 +3,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
-import { Plus, QrCode, Edit, Eye, Heart, Calendar, Key, Package } from 'lucide-react';
+import { Plus, QrCode, Edit, Eye, Heart, Calendar, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { toast } from 'sonner';
+
 
 export default function MyMemorials() {
   const [memorials, setMemorials] = useState<any[]>([]);
   const [ordersMap, setOrdersMap] = useState<Record<string, any>>({});
   const [isLoading, setIsLoading] = useState(true);
-  const [searchCode, setSearchCode] = useState('');
+
   const navigate = useNavigate();
 
   const statusConfig: Record<string, { label: string; color: string }> = {
@@ -61,42 +61,7 @@ export default function MyMemorials() {
     loadData();
   }, []);
 
-  const handleAccessByCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchCode.trim()) return;
 
-    try {
-      // Get current user email
-      let currentUserEmail: string | null = null;
-      try {
-        const currentUser = await api.auth.me();
-        currentUserEmail = currentUser?.email || null;
-      } catch {
-        toast.error('Veuillez vous connecter pour accéder à un mémorial');
-        return;
-      }
-
-      const found = await api.entities.Memorial.filter({
-        access_code: searchCode.toUpperCase()
-      });
-
-      if (found.length > 0) {
-        const memorial = found[0];
-
-        // SECURITY CHECK: Verify ownership
-        if (memorial.owner_email !== currentUserEmail) {
-          toast.error('Ce code ne correspond pas à l\'un de vos mémoriaux');
-          return;
-        }
-
-        navigate(createPageUrl('EditMemorial', { id: memorial.id }));
-      } else {
-        toast.error('Code d\'accès invalide');
-      }
-    } catch (e) {
-      toast.error('Erreur lors de la recherche');
-    }
-  };
 
   if (isLoading) {
     return (
@@ -123,18 +88,7 @@ export default function MyMemorials() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            <form onSubmit={handleAccessByCode} className="relative flex-1 sm:min-w-[320px]">
-              <Input
-                value={searchCode}
-                onChange={(e) => setSearchCode(e.target.value)}
-                placeholder="Code d'accès (ex: MEM-123)"
-                className="pl-12 h-14 rounded-full border-primary/20 focus:border-accent text-lg"
-              />
-              <Key className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-primary/30" />
-              <Button type="submit" variant="default" className="absolute right-1 top-1 h-12 rounded-full px-8 shadow-md">
-                Accéder
-              </Button>
-            </form>
+
             <Link to={createPageUrl('Products')}>
               <Button variant="secondary" className="h-14 px-10 rounded-full flex items-center gap-3 whitespace-nowrap shadow-lg shadow-accent/20">
                 <Plus className="w-6 h-6" />
