@@ -40,6 +40,20 @@ export default function Checkout() {
           setItems(cartItems);
           if (cartItems.length === 0) {
             navigate(createPageUrl('Cart'));
+            return;
+          }
+
+          // Check for unconfigured items
+          const hasUnconfigured = cartItems.some((item: any) =>
+            item.requires_configuration &&
+            item.requires_configuration !== 'none' &&
+            !item.personalization?.configured
+          );
+
+          if (hasUnconfigured) {
+            toast.error('Veuillez configurer toutes vos plaques avant de valider votre commande');
+            navigate(createPageUrl('Cart'));
+            return;
           }
         } catch (e) {
           console.error(e);

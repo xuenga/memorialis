@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 export default function Cart() {
   const [items, setItems] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   const loadCart = async () => {
     setIsLoading(true);
@@ -72,6 +73,28 @@ export default function Cart() {
   const subtotal = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
   const shipping = 0;
   const total = subtotal + shipping;
+  const unconfiguredItems = items.filter(item =>
+    item.requires_configuration &&
+    item.requires_configuration !== 'none' &&
+    !item.personalization?.configured
+  );
+  const hasUnconfiguredItems = unconfiguredItems.length > 0;
+
+  const handleCheckout = () => {
+    if (hasUnconfiguredItems) {
+      toast.error('Veuillez configurer toutes vos plaques avant de passer commande', {
+        duration: 4000,
+        icon: <Settings className="w-5 h-5 text-amber-500" />
+      });
+      // Scroll to the first unconfigured item if possible
+      const element = document.querySelector('[data-configured="false"]');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+    navigate(createPageUrl('Checkout'));
+  };
 
   if (isLoading) {
     return (
@@ -147,6 +170,7 @@ export default function Cart() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                   className="bg-white rounded-3xl p-6 shadow-sm group"
+                  data-configured={item.requires_configuration && item.requires_configuration !== 'none' ? !!item.personalization?.configured : true}
                 >
                   <div className="flex gap-6">
                     {/* Image */}
@@ -306,12 +330,27 @@ export default function Cart() {
                 </div>
               </div>
 
-              <Link to={createPageUrl('Checkout')}>
-                <Button variant="secondary" className="w-full py-8 rounded-full text-lg font-bold flex items-center justify-center gap-3 shadow-2xl shadow-accent/20 transition-all duration-500">
-                  Passer commande
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
+              {hasUnconfiguredItems && (
+                <div className="mb-6 p-4 bg-amber-50 border border-amber-100 rounded-2xl flex items-start gap-3">
+                  <Settings className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-bold text-amber-900">Configuration requise</p>
+                    <p className="text-xs text-amber-700 leading-relaxed">Certaines plaques n'ont pas encore été personnalisées. Veuillez les configurer pour continuer.</p>
+                  </div>
+                </div>
+              )}
+
+              <Button
+                variant="secondary"
+                onClick={handleCheckout}
+                className={`w-full py-8 rounded-full text-lg font-bold flex items-center justify-center gap-3 transition-all duration-500 ${hasUnconfiguredItems
+                    ? 'opacity-80 bg-primary/20 text-primary/40 cursor-not-allowed hover:bg-primary/20 shadow-none'
+                    : 'shadow-2xl shadow-accent/20'
+                  }`}
+              >
+                Passer commande
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
 
               <Link
                 to={createPageUrl('Products')}
