@@ -560,7 +560,7 @@ export default function ViewMemorial() {
             <img
               src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`https://memorialis.shop/qr/${memorial.access_code}`)}`}
               alt="QR Code mémorial"
-              className="w-24 h-24 mx-auto opacity-60 hover:opacity-100 transition-opacity"
+              className="w-24 h-24 mx-auto transition-opacity"
             />
             <p className="text-xs text-primary/30 mt-3 font-mono">{memorial.access_code}</p>
           </div>

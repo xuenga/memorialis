@@ -2,7 +2,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import Stripe from 'https://esm.sh/stripe@13.10.0?target=deno'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4'
-import { sendOrderConfirmationEmail } from '../_shared/email.ts'
+import { sendOrderConfirmationEmail, sendAdminNotificationEmail } from '../_shared/email.ts'
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -245,6 +245,30 @@ serve(async (req) => {
                 );
             } catch (emailError) {
                 console.error('Failed to send confirmation email:', emailError);
+            }
+
+            // Send Admin Notification
+            try {
+                const itemsWithAccess = items.map((it: any, idx: number) => ({
+                    ...it,
+                    personalization: {
+                        ...it.personalization,
+                        access_code: idx === 0 ? accessCode : it.personalization?.access_code
+                    }
+                }));
+                await sendAdminNotificationEmail(
+                    customerName,
+                    customerEmail,
+                    metadata.customer_phone,
+                    orderNumber,
+                    itemsWithAccess,
+                    session.amount_subtotal ? session.amount_subtotal / 100 : 0,
+                    0,
+                    session.amount_total ? session.amount_total / 100 : 0,
+                    shippingAddress
+                );
+            } catch (adminEmailError) {
+                console.error('Failed to send admin notification (webhook):', adminEmailError);
             }
         }
 
