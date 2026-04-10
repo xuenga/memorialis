@@ -121,7 +121,7 @@ export default function AdminEmailPreview() {
             <!-- QR Code Image -->
             <div style="margin: 20px 0;">
               <img 
-                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&format=png&data=${encodeURIComponent(`${window.location.origin}/qr/${accessCode}`)}" 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&format=png&ecc=H&data=${encodeURIComponent(`${window.location.origin}/qr/${accessCode}`)}" 
                 alt="QR Code du mémorial" 
                 style="width: 180px; height: 180px; border-radius: 12px; border: 4px solid #ffffff; box-shadow: 0 4px 15px rgba(190, 24, 93, 0.2);"
               />

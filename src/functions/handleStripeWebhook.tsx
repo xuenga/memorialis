@@ -72,7 +72,7 @@ export default async function handleStripeWebhook(event: any, context: any) {
       : `${context.appUrl}/memorial/${memorial.id}`;
 
     // Générer l'image QR code pour référence admin
-    const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(qrRedirectUrl)}`;
+    const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&ecc=H&data=${encodeURIComponent(qrRedirectUrl)}`;
 
     // Mettre à jour le mémorial avec l'URL du QR code
     await context.api.asServiceRole.entities.Memorial.update(memorial.id, {

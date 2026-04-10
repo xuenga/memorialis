@@ -28,8 +28,8 @@ export default function ShareModal({ memorial, onClose, isOpen, url, title }: Sh
 
   // QR Code URL
   const qrCodeUrl = memorial?.access_code
-    ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(`https://memorialis.shop/qr/${memorial.access_code}`)}`
-    : `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(memorialUrl)}`;
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&ecc=H&data=${encodeURIComponent(`https://memorialis.shop/qr/${memorial.access_code}`)}`
+    : `https://api.qrserver.com/v1/create-qr-code/?size=300x300&ecc=H&data=${encodeURIComponent(memorialUrl)}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(memorialUrl);

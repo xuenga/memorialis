@@ -558,7 +558,7 @@ export default function ViewMemorial() {
         <div className="max-w-4xl mx-auto px-6 py-12 text-center">
           <div className="inline-block p-6 bg-white rounded-3xl shadow-sm border border-primary/5">
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(`https://memorialis.shop/qr/${memorial.access_code}`)}`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&ecc=H&data=${encodeURIComponent(`https://memorialis.shop/qr/${memorial.access_code}`)}`}
               alt="QR Code mémorial"
               className="w-24 h-24 mx-auto transition-opacity"
             />

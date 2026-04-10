@@ -142,7 +142,7 @@ export const sendOrderConfirmationEmail = async (
             <!-- QR Code Image -->
             <div style="margin: 20px 0;">
               <img 
-                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&format=png&data=${encodeURIComponent(`https://memorialis.shop/qr/${accessCode}`)}" 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&format=png&ecc=H&data=${encodeURIComponent(`https://memorialis.shop/qr/${accessCode}`)}" 
                 alt="QR Code du mémorial" 
                 style="width: 180px; height: 180px; border-radius: 12px; border: 4px solid #ffffff; box-shadow: 0 4px 15px rgba(190, 24, 93, 0.2);"
               />
@@ -386,7 +386,7 @@ export const sendAdminNotificationEmail = async (
           ${items.map(item => {
     // Find access code if stored in personalization or items
     const accessCode = item.personalization?.access_code || 'CODE-ERREUR';
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&data=${encodeURIComponent(`https://memorialis.shop/qr/${accessCode}`)}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=1000x1000&format=png&ecc=H&data=${encodeURIComponent(`https://memorialis.shop/qr/${accessCode}`)}`;
 
     return `
               <div style="margin: 20px 0;">
