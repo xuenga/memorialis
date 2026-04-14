@@ -29,6 +29,7 @@ interface MemorialData {
   allow_comments?: boolean;
   require_moderation?: boolean;
   access_code?: string;
+  slug?: string;
 }
 
 interface TributeData {
