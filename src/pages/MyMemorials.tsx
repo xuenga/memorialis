@@ -178,7 +178,7 @@ export default function MyMemorials() {
                       )}
                     </div>
                     <div className="flex gap-2">
-                      <Link to={createPageUrl('ViewMemorial', { id: memorial.id })}>
+                      <Link to={createPageUrl('ViewMemorial', { id: memorial.id })} state={{ isPreview: true }}>
                         <Button variant="ghost" size="icon" className="rounded-full hover:bg-primary/5">
                           <Eye className="w-5 h-5 text-primary/60" />
                         </Button>

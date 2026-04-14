@@ -398,7 +398,7 @@ export default function EditMemorial() {
               <Share2 className="w-4 h-4 text-accent" />
               Partager
             </Button>
-            <Link to={createPageUrl('ViewMemorial', { id: memorialId || '' })}>
+            <Link to={createPageUrl('ViewMemorial', { id: memorialId || '' })} state={{ isPreview: true }}>
               <Button variant="outline" className="rounded-full border-primary/20 gap-2 h-12 px-8 shadow-sm font-bold uppercase tracking-widest text-xs">
                 <Eye className="w-4 h-4 text-accent" />
                 Aperçu

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { useAuth } from '@/contexts/AuthContext';
@@ -44,6 +44,8 @@ export default function ViewMemorial() {
   const { id: memorialId } = useParams<{ id: string }>();
   const { user: authUser } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isPreview = location.state?.isPreview;
   const [memorial, setMemorial] = useState<MemorialData | null>(null);
   const [tributes, setTributes] = useState<TributeData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -202,11 +204,17 @@ export default function ViewMemorial() {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-black/30" />
 
-        {/* Bouton fermer */}
+        {/* Bouton retour / fermer */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => {
+            if (isPreview) {
+              navigate(-1);
+            } else {
+              window.location.href = 'https://memorialis.shop/';
+            }
+          }}
           className="absolute top-6 right-6 z-20 p-3 bg-white/20 backdrop-blur-md rounded-full hover:bg-white/40 transition-colors group"
-          title="Fermer"
+          title={isPreview ? "Fermer l'aperçu" : "Retour à l'accueil"}
         >
           <X className="w-5 h-5 text-white group-hover:text-primary transition-colors" />
         </button>
