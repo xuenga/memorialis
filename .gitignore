@@ -83,3 +83,9 @@ coverage/
 .vercel
 .netlify
 .turbo
+
+# Local Documentation (Private)
+documentation.md
+supabase_database_structure.md
+memorialis.md
+

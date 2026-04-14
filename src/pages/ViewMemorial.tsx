@@ -373,7 +373,12 @@ export default function ViewMemorial() {
                     </div>
                     <h3 className="font-serif text-lg text-primary truncate flex-1">{audio.title || 'Message audio'}</h3>
                   </div>
-                  <audio src={audio.url} controls className="w-full" />
+                  <audio 
+                    src={audio.url} 
+                    controls 
+                    autoPlay={(memorial.slug === 'demo-memorial' || memorialId === 'demo-memorial') && index === 0} 
+                    className="w-full" 
+                  />
                 </motion.div>
               ))}
             </div>

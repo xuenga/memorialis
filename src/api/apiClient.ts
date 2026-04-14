@@ -249,6 +249,49 @@ export const api = {
                 console.error('Bunny upload error:', error);
                 throw error;
             }
+        },
+        delete: async (fileUrl: string) => {
+            const storageName = import.meta.env.VITE_BUNNY_STORAGE_ZONE;
+            const apiKey = import.meta.env.VITE_BUNNY_ACCESS_KEY;
+            const pullZone = import.meta.env.VITE_BUNNY_PULL_ZONE_URL;
+
+            if (!storageName || !apiKey || !pullZone) {
+                throw new Error('Bunny.net storage is not configured');
+            }
+
+            const cleanPullZone = pullZone.replace(/\/$/, '');
+
+            // On s'assure que l'URL à supprimer correspond bien à notre Pull Zone
+            if (!fileUrl.startsWith(cleanPullZone)) {
+                console.warn('Le fichier ne semble pas appartenir à cette Pull Zone:', fileUrl);
+                return false; 
+            }
+
+            // On extrait le chemin relatif (ex: /memorials/nom-du-fichier.mp3)
+            const relativePath = fileUrl.substring(cleanPullZone.length);
+            
+            // On reconstruit l'URL de l'API de stockage
+            const deleteUrl = `https://storage.bunnycdn.com/${storageName}${relativePath}`;
+
+            try {
+                const response = await fetch(deleteUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'AccessKey': apiKey,
+                    },
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Erreur Suppression Bunny:', { status: response.status, body: errorText });
+                    throw new Error(`Échec de la suppression Bunny: ${response.status} - ${errorText}`);
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Erreur lors de la suppression Bunny:', error);
+                throw error;
+            }
         }
     }
 };

@@ -168,8 +168,14 @@ export default function EditMemorial() {
       const file_url = await api.storage.upload(file, uploadFolder);
 
       if (type === 'profile') {
+        if (memorial.profile_photo) {
+          api.storage.delete(memorial.profile_photo).catch(e => console.error("Impossible de supprimer l'ancienne photo de profil", e));
+        }
         setMemorial(prev => prev ? { ...prev, profile_photo: file_url } : null);
       } else if (type === 'cover') {
+        if (memorial.cover_photo) {
+          api.storage.delete(memorial.cover_photo).catch(e => console.error("Impossible de supprimer l'ancienne photo de couverture", e));
+        }
         setMemorial(prev => prev ? { ...prev, cover_photo: file_url } : null);
       } else if (type === 'gallery') {
         setMemorial(prev => {
@@ -196,8 +202,18 @@ export default function EditMemorial() {
     toast.success('Vidéo ajoutée !');
   };
 
-  const removeVideo = (index: number) => {
+  const removeVideo = async (index: number) => {
     if (!confirm('Voulez-vous vraiment supprimer cette vidéo ?')) return;
+
+    const video = memorial?.videos?.[index];
+    if (video?.type === 'file' && video.url) {
+      try {
+        await api.storage.delete(video.url);
+      } catch (e) {
+        console.error("Impossible de supprimer la vidéo sur Bunny", e);
+      }
+    }
+
     setMemorial(prev => {
       if (!prev) return null;
       const videos = [...(prev.videos || [])];
@@ -241,8 +257,18 @@ export default function EditMemorial() {
     e.target.value = '';
   };
 
-  const removeAudio = (index: number) => {
+  const removeAudio = async (index: number) => {
     if (!confirm('Voulez-vous vraiment supprimer cet audio ?')) return;
+
+    const audio = memorial?.audios?.[index];
+    if (audio?.url) {
+      try {
+        await api.storage.delete(audio.url);
+      } catch (e) {
+        console.error("Impossible de supprimer l'audio sur Bunny", e);
+      }
+    }
+
     setMemorial(prev => {
       if (!prev) return null;
       const audios = [...(prev.audios || [])];
@@ -251,8 +277,18 @@ export default function EditMemorial() {
     });
   };
 
-  const removePhoto = (index: number) => {
+  const removePhoto = async (index: number) => {
     if (!confirm('Voulez-vous vraiment supprimer cette photo ?')) return;
+
+    const photoUrl = memorial?.photos?.[index];
+    if (photoUrl) {
+      try {
+        await api.storage.delete(photoUrl);
+      } catch (e) {
+        console.error("Impossible de supprimer la photo sur Bunny", e);
+      }
+    }
+
     setMemorial(prev => {
       if (!prev) return null;
       const photos = [...(prev.photos || [])];
