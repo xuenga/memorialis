@@ -197,6 +197,30 @@ export default function QRRedirect() {
         );
     }
 
-    // Fallback - ne devrait pas arriver car les activated redirigent automatiquement
+    // Si le code est activé mais n'a pas de memorial_id (données corrompues)
+    if (qrCode?.status === 'activated' && !qrCode.memorial_id) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center p-6">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center max-w-md"
+                >
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-100 flex items-center justify-center">
+                        <AlertCircle className="w-10 h-10 text-red-500" />
+                    </div>
+                    <h1 className="font-serif text-2xl text-primary mb-4">Mémorial introuvable</h1>
+                    <p className="text-primary/60 mb-8">Ce code QR a déjà été activé, mais le mémorial associé est introuvable. Veuillez contacter le support technique.</p>
+                    <Link to="/">
+                        <Button className="btn-primary rounded-full px-8">
+                            Retour à l'accueil
+                        </Button>
+                    </Link>
+                </motion.div>
+            </div>
+        );
+    }
+
+    // Fallback - ne devrait pas arriver
     return null;
 }
