@@ -69,8 +69,17 @@ export default function Signup() {
                     <div className="w-12 h-12 bg-accent/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <UserPlus className="w-6 h-6 text-accent" />
                     </div>
-                    <h1 className="font-serif text-3xl text-primary mb-2">Créer un compte</h1>
-                    <p className="text-primary/60">Rejoignez Memorialis et créez votre premier mémorial</p>
+                    {localStorage.getItem('pending_qr_code') ? (
+                        <>
+                            <h1 className="font-serif text-3xl text-primary mb-2">Presque terminé !</h1>
+                            <p className="text-primary/60">Créez votre compte pour activer votre plaque <span className="font-bold text-accent">{localStorage.getItem('pending_qr_code')}</span></p>
+                        </>
+                    ) : (
+                        <>
+                            <h1 className="font-serif text-3xl text-primary mb-2">Créer un compte</h1>
+                            <p className="text-primary/60">Rejoignez Memorialis et créez votre premier mémorial</p>
+                        </>
+                    )}
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">

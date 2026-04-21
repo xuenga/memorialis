@@ -5,6 +5,7 @@ import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
 import { QrCode, Heart, AlertCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface QRCodeData {
     id: string;
@@ -17,6 +18,7 @@ interface QRCodeData {
 export default function QRRedirect() {
     const { code } = useParams<{ code: string }>();
     const navigate = useNavigate();
+    const { user, isLoading: authLoading } = useAuth();
     const [qrCode, setQRCode] = useState<QRCodeData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -73,13 +75,13 @@ export default function QRRedirect() {
     }, [code, navigate]);
 
     const handleActivate = async () => {
-        if (!qrCode || qrCode.status !== 'reserved' || !qrCode.memorial_id) return;
+        if (!qrCode || (qrCode.status !== 'reserved' && qrCode.status !== 'available')) return;
 
         setIsActivating(true);
         try {
             const result = await api.functions.activateMemorial(qrCode.code);
 
-            if (!result.success) {
+            if (!result.success && !result.memorial_id) {
                 throw new Error(result.message || "Erreur lors de l'activation");
             }
 
@@ -132,44 +134,15 @@ export default function QRRedirect() {
         );
     }
 
-    // Status: available - Le QR n'a pas encore été acheté
-    if (qrCode?.status === 'available') {
-        return (
-            <div className="min-h-screen bg-background flex items-center justify-center p-6">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center max-w-md"
-                >
-                    <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-accent/20 flex items-center justify-center">
-                        <QrCode className="w-12 h-12 text-accent" />
-                    </div>
-                    <h1 className="font-serif text-3xl text-primary mb-4">
-                        Code non activé
-                    </h1>
-                    <p className="text-primary/60 mb-8 leading-relaxed">
-                        Ce QR code n'a pas encore été associé à une commande.
-                        <br />Si vous venez d'acheter une plaque, veuillez patienter quelques instants.
-                    </p>
-                    <div className="space-y-4">
-                        <Link to={createPageUrl('Products')}>
-                            <Button className="btn-accent rounded-full px-8 py-6 text-lg w-full">
-                                Découvrir nos plaques
-                            </Button>
-                        </Link>
-                        <Link to={createPageUrl('Contact')}>
-                            <Button variant="outline" className="rounded-full px-8 py-6 w-full border-primary/20 text-primary">
-                                Contacter le support
-                            </Button>
-                        </Link>
-                    </div>
-                </motion.div>
-            </div>
-        );
+    // Determine if we need to redirect unauthenticated users
+    if ((qrCode?.status === 'available' || qrCode?.status === 'reserved') && !authLoading && !user) {
+        localStorage.setItem('pending_qr_code', qrCode.code);
+        window.location.href = createPageUrl('Signup');
+        return null;
     }
 
-    // Status: reserved - Premier scan, activation nécessaire
-    if (qrCode?.status === 'reserved') {
+    // Status: available or reserved - Activation nécessaire
+    if (qrCode?.status === 'available' || qrCode?.status === 'reserved') {
         return (
             <div className="min-h-screen bg-gradient-to-b from-primary to-primary/90 flex items-center justify-center p-6">
                 <motion.div
@@ -201,7 +174,7 @@ export default function QRRedirect() {
 
                     <Button
                         onClick={handleActivate}
-                        disabled={isActivating}
+                        disabled={isActivating || authLoading}
                         className="btn-accent w-full py-8 rounded-full text-xl font-bold shadow-xl shadow-accent/20"
                     >
                         {isActivating ? (

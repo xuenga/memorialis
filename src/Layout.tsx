@@ -5,6 +5,7 @@ import { api } from '@/api/apiClient';
 import { Menu, X, ShoppingBag, User, QrCode, LogOut, LogIn, UserCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from './contexts/AuthContext';
+import PendingQRHandler from './components/PendingQRHandler';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -306,6 +307,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
 
       {/* Main Content */}
       <main className={`min-h-[70vh] ${currentPageName !== 'Home' ? 'pt-24 lg:pt-32' : ''}`}>
+        <PendingQRHandler />
         {children}
       </main>
 
