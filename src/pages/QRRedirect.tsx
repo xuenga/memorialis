@@ -94,7 +94,14 @@ export default function QRRedirect() {
         }
     };
 
-    if (isLoading) {
+    useEffect(() => {
+        if (!isLoading && qrCode && !authLoading && !user && (qrCode.status === 'available' || qrCode.status === 'reserved')) {
+            localStorage.setItem('pending_qr_code', qrCode.code);
+            navigate('/signup', { replace: true });
+        }
+    }, [isLoading, qrCode, authLoading, user, navigate]);
+
+    if (isLoading || authLoading) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
                 <motion.div
@@ -105,7 +112,7 @@ export default function QRRedirect() {
                     <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-accent/20 flex items-center justify-center">
                         <Loader2 className="w-10 h-10 text-accent animate-spin" />
                     </div>
-                    <p className="text-primary/60 text-lg">Vérification du code QR...</p>
+                    <p className="text-primary/60 text-lg">Vérification de l'accès...</p>
                 </motion.div>
             </div>
         );
@@ -124,7 +131,7 @@ export default function QRRedirect() {
                     </div>
                     <h1 className="font-serif text-2xl text-primary mb-4">Code non reconnu</h1>
                     <p className="text-primary/60 mb-8">{error}</p>
-                    <Link to={createPageUrl('Home')}>
+                    <Link to="/">
                         <Button className="btn-primary rounded-full px-8">
                             Retour à l'accueil
                         </Button>
@@ -135,9 +142,8 @@ export default function QRRedirect() {
     }
 
     // Determine if we need to redirect unauthenticated users
-    if ((qrCode?.status === 'available' || qrCode?.status === 'reserved') && !authLoading && !user) {
-        localStorage.setItem('pending_qr_code', qrCode.code);
-        window.location.href = createPageUrl('Signup');
+    if ((qrCode?.status === 'available' || qrCode?.status === 'reserved') && !user) {
+        // Redirection en cours via le useEffect...
         return null;
     }
 
