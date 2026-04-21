@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { api } from '@/api/apiClient';
 import { motion } from 'framer-motion';
@@ -94,13 +94,6 @@ export default function QRRedirect() {
         }
     };
 
-    useEffect(() => {
-        if (!isLoading && qrCode && !authLoading && !user && (qrCode.status === 'available' || qrCode.status === 'reserved')) {
-            localStorage.setItem('pending_qr_code', qrCode.code);
-            navigate('/signup', { replace: true });
-        }
-    }, [isLoading, qrCode, authLoading, user, navigate]);
-
     if (isLoading || authLoading) {
         return (
             <div className="min-h-screen bg-background flex items-center justify-center">
@@ -143,8 +136,8 @@ export default function QRRedirect() {
 
     // Determine if we need to redirect unauthenticated users
     if ((qrCode?.status === 'available' || qrCode?.status === 'reserved') && !user) {
-        // Redirection en cours via le useEffect...
-        return null;
+        localStorage.setItem('pending_qr_code', qrCode.code);
+        return <Navigate to="/signup" replace />;
     }
 
     // Status: available or reserved - Activation nécessaire
