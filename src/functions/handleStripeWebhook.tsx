@@ -63,7 +63,6 @@ export default async function handleStripeWebhook(event: any, context: any) {
       require_moderation: true,
       is_public: false,
       is_activated: false,  // Sera activé au premier scan de la plaque
-      theme: 'classic',
     });
 
     // URL de redirection QR (utilise le nouveau système /qr/:code)
