@@ -21,7 +21,7 @@ export default function PendingQRHandler() {
                 toast.loading('Activation de votre plaque en cours...');
                 
                 try {
-                    const result = await api.functions.activateMemorial(pendingToken);
+                    const result = await api.functions.activateMemorial(pendingToken, user?.email);
                     
                     if (result.success || result.memorial_id) {
                         toast.dismiss();

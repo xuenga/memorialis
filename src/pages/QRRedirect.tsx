@@ -84,8 +84,8 @@ export default function QRRedirect() {
 
         setIsActivating(true);
         try {
-            // activateMemorial now accepts the secure UUID
-            const result = await api.functions.activateMemorial(qrCode.id);
+            // activateMemorial now accepts the secure UUID and email
+            const result = await api.functions.activateMemorial(qrCode.id, user?.email);
 
             if (!result.success && !result.memorial_id) {
                 throw new Error(result.message || "Erreur lors de l'activation");

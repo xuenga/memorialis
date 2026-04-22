@@ -200,8 +200,8 @@ export const api = {
 
             return await response.json();
         },
-        activateMemorial: async (code: string) => {
-            const { data, error } = await supabase.rpc('activate_memorial', { code_input: code });
+        activateMemorial: async (code: string, email?: string) => {
+            const { data, error } = await supabase.rpc('activate_memorial', { code_input: code, email_input: email });
             if (error) throw error;
             return data;
         }
