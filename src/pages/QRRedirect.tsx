@@ -33,7 +33,12 @@ export default function QRRedirect() {
             }
 
             try {
-                const results = await api.entities.QRCode.filter({ code: code.toUpperCase() });
+                let results;
+                if (code.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+                    results = await api.entities.QRCode.filter({ id: code });
+                } else {
+                    results = await api.entities.QRCode.filter({ code: code.toUpperCase() });
+                }
 
                 if (results.length === 0) {
                     setError('Ce code QR n\'existe pas dans notre système');
@@ -79,7 +84,8 @@ export default function QRRedirect() {
 
         setIsActivating(true);
         try {
-            const result = await api.functions.activateMemorial(qrCode.code);
+            // activateMemorial now accepts the secure UUID
+            const result = await api.functions.activateMemorial(qrCode.id);
 
             if (!result.success && !result.memorial_id) {
                 throw new Error(result.message || "Erreur lors de l'activation");
@@ -136,7 +142,8 @@ export default function QRRedirect() {
 
     // Determine if we need to redirect unauthenticated users
     if ((qrCode?.status === 'available' || qrCode?.status === 'reserved') && !user) {
-        localStorage.setItem('pending_qr_code', qrCode.code);
+        localStorage.setItem('pending_qr_token', qrCode.id);
+        localStorage.setItem('pending_qr_display', qrCode.code);
         return <Navigate to="/signup" replace />;
     }
 

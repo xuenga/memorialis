@@ -15,17 +15,19 @@ export default function PendingQRHandler() {
             // Uniquement si l'utilisateur est connecté et qu'on n'est pas déjà en train d'activer
             if (!user || isLoading || isActivating) return;
 
-            const pendingCode = localStorage.getItem('pending_qr_code');
-            if (pendingCode) {
+            const pendingToken = localStorage.getItem('pending_qr_token') || localStorage.getItem('pending_qr_code');
+            if (pendingToken) {
                 setIsActivating(true);
                 toast.loading('Activation de votre plaque en cours...');
                 
                 try {
-                    const result = await api.functions.activateMemorial(pendingCode);
+                    const result = await api.functions.activateMemorial(pendingToken);
                     
                     if (result.success || result.memorial_id) {
                         toast.dismiss();
                         toast.success('Plaque activée avec succès !');
+                        localStorage.removeItem('pending_qr_token');
+                        localStorage.removeItem('pending_qr_display');
                         localStorage.removeItem('pending_qr_code');
                         
                         // Rediriger vers l'espace de personnalisation
@@ -41,7 +43,9 @@ export default function PendingQRHandler() {
                     // On ne supprime pas forcément le code s'il y a une erreur temporaire, 
                     // mais si c'est une erreur définitive (déjà activé), on pourrait le supprimer.
                     // Pour l'instant, laissons l'utilisateur réessayer ou contacter le support.
-                    localStorage.removeItem('pending_qr_code'); 
+                    localStorage.removeItem('pending_qr_token');
+                    localStorage.removeItem('pending_qr_display');
+                    localStorage.removeItem('pending_qr_code');
                 } finally {
                     setIsActivating(false);
                 }
