@@ -6,7 +6,8 @@ import { supabase } from '@/lib/supabaseClient';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     QrCode, Plus, Search, Trash2, Eye, Download,
-    CheckCircle2, Clock, AlertCircle, Package, X
+    CheckCircle2, Clock, AlertCircle, Package, X,
+    ArrowUpDown, ChevronUp, ChevronDown
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +34,7 @@ export default function AdminQRCodes() {
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [selectedQR, setSelectedQR] = useState<QRCodeData | null>(null);
+    const [codeSortDirection, setCodeSortDirection] = useState<'asc' | 'desc' | null>(null);
 
     // Génération en lot
     const [prefix, setPrefix] = useState('');
@@ -52,7 +54,7 @@ export default function AdminQRCodes() {
     }, []);
 
     useEffect(() => {
-        let filtered = qrCodes;
+        let filtered = [...qrCodes];
 
         if (searchQuery) {
             filtered = filtered.filter(qr =>
@@ -65,8 +67,24 @@ export default function AdminQRCodes() {
             filtered = filtered.filter(qr => qr.status === statusFilter);
         }
 
+        if (codeSortDirection) {
+            filtered.sort((a, b) => {
+                if (codeSortDirection === 'asc') {
+                    return a.code.localeCompare(b.code);
+                } else {
+                    return b.code.localeCompare(a.code);
+                }
+            });
+        }
+
         setFilteredCodes(filtered);
-    }, [searchQuery, statusFilter, qrCodes]);
+    }, [searchQuery, statusFilter, qrCodes, codeSortDirection]);
+
+    const toggleCodeSort = () => {
+        if (codeSortDirection === 'asc') setCodeSortDirection('desc');
+        else if (codeSortDirection === 'desc') setCodeSortDirection(null);
+        else setCodeSortDirection('asc');
+    };
 
     const loadQRCodes = async () => {
         try {
@@ -320,7 +338,21 @@ export default function AdminQRCodes() {
                 <div className="bg-white rounded-2xl border border-primary/5 overflow-hidden">
                     <div className="grid grid-cols-12 gap-4 p-4 bg-background/50 text-xs text-primary/60 uppercase tracking-widest font-bold">
                         <div className="col-span-1">QR</div>
-                        <div className="col-span-2">Code</div>
+                        <div
+                            className="col-span-2 flex items-center gap-1 cursor-pointer hover:text-primary transition-colors group"
+                            onClick={toggleCodeSort}
+                        >
+                            Code
+                            <div className={`transition-opacity ${codeSortDirection ? 'opacity-100' : 'opacity-20 group-hover:opacity-100'}`}>
+                                {codeSortDirection === 'asc' ? (
+                                    <ChevronUp className="w-4 h-4" />
+                                ) : codeSortDirection === 'desc' ? (
+                                    <ChevronDown className="w-4 h-4" />
+                                ) : (
+                                    <ArrowUpDown className="w-4 h-4" />
+                                )}
+                            </div>
+                        </div>
                         <div className="col-span-2">Statut</div>
                         <div className="col-span-3">Client</div>
                         <div className="col-span-2">Date</div>
