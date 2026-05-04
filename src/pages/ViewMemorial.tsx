@@ -191,7 +191,7 @@ export default function ViewMemorial() {
     <div className="min-h-screen bg-background pb-32">
       <SEO
         title={`Mémorial de ${memorial.name} - Memorialis`}
-        description={`Hommage à la mémoire de ${memorial.name}. ${memorial.birth_date ? new Date(memorial.birth_date).getFullYear() : '?'} - ${memorial.death_date ? new Date(memorial.death_date).getFullYear() : '...'}. ${memorial.biography ? memorial.biography.substring(0, 150) + '...' : ''}`}
+        description={`Hommage à la mémoire de ${memorial.name}. ${memorial.birth_date ? format(new Date(memorial.birth_date), 'd MMMM yyyy', { locale: fr }) : '?'} - ${memorial.death_date ? format(new Date(memorial.death_date), 'd MMMM yyyy', { locale: fr }) : '...'}. ${memorial.biography ? memorial.biography.substring(0, 150) + '...' : ''}`}
         image={memorial.cover_photo || memorial.profile_photo}
         url={`/memorial/${memorial.access_code || memorial.id}`}
       />
@@ -245,9 +245,9 @@ export default function ViewMemorial() {
             <div className="flex items-center justify-center gap-4 text-primary/60 font-medium font-serif text-xl">
               <span className="flex items-center gap-2">
                 <Calendar className="w-5 h-5" />
-                {memorial.birth_date ? format(new Date(memorial.birth_date), 'yyyy') : '?'}
+                {memorial.birth_date ? format(new Date(memorial.birth_date), 'd MMMM yyyy', { locale: fr }) : '?'}
                 {' - '}
-                {memorial.death_date ? format(new Date(memorial.death_date), 'yyyy') : '...'}
+                {memorial.death_date ? format(new Date(memorial.death_date), 'd MMMM yyyy', { locale: fr }) : '...'}
               </span>
             </div>
           </motion.div>
